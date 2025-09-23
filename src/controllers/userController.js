@@ -1,8 +1,6 @@
-const httpStatus = require('http-status-codes')
-const pick = require('../utils/pick')
-const ApiError = require('../utils/ApiErrors')
-const catchAsync = require('../utils/catchAsync')
-const { userService } = require('../services')
+const httpStatus = require('http-status')
+const { pick, catchAsync } = require('../utils/index')
+const { userService, authService } = require('../services/index')
 
 /**
  * Tạo người dùng mới
@@ -10,11 +8,72 @@ const { userService } = require('../services')
  * @param {Object} res - Phản hồi HTTP
  */
 const createUser = catchAsync(async (req, res) => {
-  const user = await userService.createUser(req.body)
+  const result = await userService.createUser(req.body)
   res.status(httpStatus.CREATED).json({
     success: true,
-    data: user,
-    message: 'Tạo người dùng thành công'
+    data: { userId: result.userId },
+    message: result.message
+  })
+})
+
+/**
+ * Xác minh OTP cho người dùng
+ * @param {Object} req - Yêu cầu HTTP
+ * @param {Object} res - Phản hồi HTTP
+ */
+const verifyUserOTP = catchAsync(async (req, res) => {
+  const { userId, email, otp } = pick(req.body, ['userId', 'email', 'otp'])
+  const result = await authService.verifyAndActivateUser(userId, email, otp)
+  res.json({
+    success: true,
+    message: result.message
+  })
+})
+
+/**
+ * Đăng nhập người dùng
+ * @param {Object} req - Yêu cầu HTTP
+ * @param {Object} res - Phản hồi HTTP
+ */
+const login = catchAsync(async (req, res) => {
+  const { email, password } = pick(req.body, ['email', 'password'])
+  const result = await authService.login(email, password)
+  res.json({
+    success: true,
+    data: result,
+    message: 'Đăng nhập thành công'
+  })
+})
+
+/**
+ * Yêu cầu đặt lại mật khẩu
+ * @param {Object} req - Yêu cầu HTTP
+ * @param {Object} res - Phản hồi HTTP
+ */
+const requestResetPassword = catchAsync(async (req, res) => {
+  const { email } = pick(req.body, ['email'])
+  const result = await authService.requestResetPassword(email)
+  res.json({
+    success: true,
+    message: result.message
+  })
+})
+
+/**
+ * Đặt lại mật khẩu
+ * @param {Object} req - Yêu cầu HTTP
+ * @param {Object} res - Phản hồi HTTP
+ */
+const resetPassword = catchAsync(async (req, res) => {
+  const { email, otp, newPassword } = pick(req.body, [
+    'email',
+    'otp',
+    'newPassword'
+  ])
+  const result = await authService.resetPassword(email, otp, newPassword)
+  res.json({
+    success: true,
+    message: result.message
   })
 })
 
@@ -26,9 +85,6 @@ const createUser = catchAsync(async (req, res) => {
 const getUserById = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])
   const user = await userService.getUserById(userId)
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Người dùng không tồn tại')
-  }
   res.json({
     success: true,
     data: user,
@@ -42,11 +98,8 @@ const getUserById = catchAsync(async (req, res) => {
  * @param {Object} res - Phản hồi HTTP
  */
 const getUserByEmail = catchAsync(async (req, res) => {
-  const { email } = pick(req.query, ['email']) // Sử dụng query thay vì params
+  const { email } = pick(req.query, ['email'])
   const user = await userService.getUserByEmail(email)
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Người dùng không tồn tại')
-  }
   res.json({
     success: true,
     data: user,
@@ -85,6 +138,10 @@ const deleteUser = catchAsync(async (req, res) => {
 
 module.exports = {
   createUser,
+  verifyUserOTP,
+  login,
+  requestResetPassword,
+  resetPassword,
   getUserById,
   getUserByEmail,
   updateUser,

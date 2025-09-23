@@ -1,1 +1,6 @@
-module.exports.userService = require('./user.service')
+module.exports.userService = require('./userService')
+module.exports.otpService = require('./otpService')
+module.exports.tokenService = require('./tokenService')
+module.exports.firebaseService = require('./firebaseService')
+module.exports.emailService = require('./emailService')
+module.exports.authService = require('./authService')

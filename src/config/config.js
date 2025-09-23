@@ -15,15 +15,11 @@ module.exports = {
     projectNumber: process.env.FIREBASE_PROJECT_NUMBER,
     databaseURL: process.env.FIREBASE_DATABASE_URL,
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET
-  },
-  jwt: {
-    secret: process.env.JWT_SECRET,
-    accessExpirationMinutes: process.env.JWT_ACCESS_EXPIRATION_MINUTES,
-    refreshExpirationDays: process.env.JWT_REFRESH_EXPIRATION_DAYS,
-    resetPasswordExpirationMinutes:
-      process.env.JWT_RESET_PASSWORD_EXPIRATION_MINUTES,
-    verifyEmailExpirationMinutes:
-      process.env.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES
+    // Client config ẩn tạm thời - chỉ cần cho backend logic
+    // apiKey: process.env.FIREBASE_API_KEY,
+    // authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    // messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    // appId: process.env.FIREBASE_APP_ID
   },
   email: {
     smtp: {
@@ -53,5 +49,19 @@ module.exports = {
     origin: process.env.CORS_ORIGIN,
     methods: process.env.CORS_METHODS.split(','),
     credentials: process.env.CORS_CREDENTIALS === 'true'
+  },
+  otp: {
+    length: parseInt(process.env.OTP_LENGTH, 10) || 6,
+    expiry: parseInt(process.env.OTP_EXPIRY, 10) || 300,
+    provider: process.env.OTP_PROVIDER || 'email'
+  },
+  twilio: {
+    accountSid: process.env.TWILIO_ACCOUNT_SID,
+    authToken: process.env.TWILIO_AUTH_TOKEN,
+    phoneNumber: process.env.TWILIO_PHONE_NUMBER
+  },
+  cache: {
+    ttl: parseInt(process.env.CACHE_TTL, 10) || 300, // 5 minutes
+    checkperiod: parseInt(process.env.CACHE_CHECKPERIOD, 10) || 120 // 2 minutes
   }
 }

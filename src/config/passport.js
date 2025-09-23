@@ -1,54 +1,60 @@
 /**
- * Passport JWT Strategy configuration
+ * Passport Firebase Auth Strategy configuration
  *
- * - Sử dụng passport-jwt để xác thực người dùng qua JSON Web Token (JWT)
- * - Token được truyền qua Authorization Header dạng: "Bearer <token>"
- * - Chỉ chấp nhận token loại ACCESS (không dùng refresh/reset/verify cho API call)
- * - Sau khi xác thực, payload trong token được kiểm tra và ánh xạ đến user trong DB
+ * - Sử dụng Firebase ID Token để xác thực người dùng
+ * - Token được truyền qua Authorization Header dạng: "Bearer <firebase-id-token>"
+ * - Xác thực token với Firebase Admin SDK
+ * - Sau khi xác thực, lấy thông tin user từ Firebase Auth và Realtime Database
  */
 
-const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt')
-const config = require('./config')
-const { tokenTypes } = require('./token')
-const User = require('../models/userModel')
-
-// Các option cho JWT strategy
-const jwtOptions = {
-  secretOrKey: config.jwt.secret, // Khóa bí mật để verify token (JWT_SECRET trong .env)
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
-  // => Token sẽ được lấy từ header "Authorization: Bearer <token>"
-}
+const { Strategy } = require('passport-custom')
+const { verifyIdToken } = require('./db')
+const { getUserById } = require('../services/userService')
+const logger = require('./logger')
 
 /**
- * Hàm verify JWT payload
- * - payload: dữ liệu bên trong JWT (decoded)
+ * Hàm verify Firebase ID Token
+ * - req: Request object chứa token trong header
  * - done: callback của Passport (done(error, user, info?))
  */
-const jwtVerify = async (payload, done) => {
+const firebaseVerify = async (req, done) => {
   try {
-    // 1. Chỉ cho phép loại token ACCESS
-    if (payload.type !== tokenTypes.ACCESS) {
-      throw new Error('Invalid token type')
+    // 1. Lấy token từ Authorization header
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return done(null, false, { message: 'Không tìm thấy token' })
     }
 
-    // 2. Lấy user từ DB bằng userId (được lưu ở payload.sub khi tạo token)
-    const user = await User.findById(payload.sub)
+    const idToken = authHeader.substring(7)
+
+    // 2. Xác thực token với Firebase
+    const decodedToken = await verifyIdToken(idToken)
+    // 3. Lấy thông tin user từ Realtime Database
+    const user = await getUserById(decodedToken.uid)
     if (!user) {
-      // Không tìm thấy user -> fail auth
-      return done(null, false)
+      return done(null, false, { message: 'Không tìm thấy user trong database' })
     }
 
-    // 3. Thành công -> trả về user cho Passport
+    // 4. Thêm thông tin Firebase vào user object
+    user.firebase = {
+      uid: decodedToken.uid,
+      emailVerified: decodedToken.emailVerified,
+      phoneVerified: decodedToken.phoneVerified,
+      customClaims: decodedToken.customClaims,
+      authTime: decodedToken.authTime
+    }
+
+    // 5. Thành công -> trả về user cho Passport
     done(null, user)
   } catch (error) {
-    // Nếu verify lỗi (token sai, hết hạn, DB lỗi, ...) -> fail auth
-    done(error, false)
+    logger.error('Xác thực Firebase Auth thất bại:', error)
+    done(error, false, { message: error.message })
   }
 }
 
 // Tạo strategy instance
-const jwtStrategy = new JwtStrategy(jwtOptions, jwtVerify)
+const firebaseStrategy = new Strategy(firebaseVerify)
 
 module.exports = {
-  jwtStrategy
+  firebaseStrategy
 }

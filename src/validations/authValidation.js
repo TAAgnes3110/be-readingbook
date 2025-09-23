@@ -6,17 +6,24 @@ const register = {
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
     fullname: Joi.string().required(),
-    customId: Joi.string().required(),
-    preferences: Joi.array().items(Joi.string()),
-    avatar: Joi.string(),
-    role: Joi.string().valid('user', 'admin'),
-    isActive: Joi.boolean()
+    phonenumber: Joi.string()
+      .required()
+      .pattern(/^[0-9]{10,11}$/),
+    role: Joi.string().valid('user', 'admin').default('user')
+  })
+}
+
+const verifyAndActivateUser = {
+  body: Joi.object().keys({
+    userId: Joi.string().required(),
+    email: Joi.string().required().email(),
+    otp: Joi.string().required()
   })
 }
 
 const login = {
   body: Joi.object().keys({
-    email: Joi.string().required(),
+    email: Joi.string().required().email(),
     password: Joi.string().required()
   })
 }
@@ -35,21 +42,21 @@ const refreshTokens = {
 
 const forgotPassword = {
   body: Joi.object().keys({
-    email: Joi.string().email().required()
+    email: Joi.string().required().email()
   })
 }
 
 const resetPassword = {
-  query: Joi.object().keys({
-    token: Joi.string().required()
-  }),
   body: Joi.object().keys({
-    password: Joi.string().required().custom(password)
+    email: Joi.string().required().email(),
+    otp: Joi.string().required(),
+    newPassword: Joi.string().required().custom(password)
   })
 }
 
 module.exports = {
   register,
+  verifyAndActivateUser,
   login,
   logout,
   refreshTokens,

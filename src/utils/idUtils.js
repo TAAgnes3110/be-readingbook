@@ -1,6 +1,6 @@
 const admin = require('firebase-admin')
 const httpStatus = require('http-status')
-const ApiError = require('../utils/ApiErrors')
+const { ApiError } = require('./index')
 
 const db = admin.database()
 const metadataRef = db.ref('metadata/lastCustomId')

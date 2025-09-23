@@ -2,45 +2,81 @@ const express = require('express')
 const cors = require('cors')
 const passport = require('passport')
 const rateLimit = require('express-rate-limit')
-const { jwtStrategy } = require('./config/passport')
-const routes = require('./routes/users_routes')
+const compression = require('compression')
+const helmet = require('helmet')
+const httpStatus = require('http-status')
+
+const { firebaseStrategy } = require('./config/passport')
 const config = require('./config/config')
-const morgan = require('./config/morgan')
-// const { errorConverter, errorHandler } = require("./middlewares/error");
+const logger = require('./config/logger')
+const auth = require('./routes/authRoute')
+const user = require('./routes/userRoute')
 
 const app = express()
 
-// // logging
-// if (config.env !== "test") {
-//   app.use(morgan.successHandler);
-//   app.use(morgan.errorHandler);
-// }
+// SECURITY MIDDLEWARE
+app.use(helmet())
+app.use(compression())
 
-// parse json request body
-app.use(express.json({ limit: config.upload.limit }))
-app.use(express.urlencoded({ extended: true, limit: config.upload.limit }))
-
-// enable cors
+// CORS CONFIGURATION
 app.use(cors(config.cors))
 app.options('*', cors())
 
-// jwt authentication
-app.use(passport.initialize())
-passport.use('jwt', jwtStrategy)
-
-// rate limiting
+// BODY PARSING
 app.use(
-  rateLimit({
-    windowMs: config.rateLimit.windowMs,
-    max: config.rateLimit.max
+  express.json({
+    limit: config.upload.limit,
+    verify: (req, res, buf) => {
+      req.rawBody = buf
+    }
+  })
+)
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: config.upload.limit
   })
 )
 
-// api routes
-// app.use(config.app.prefix, routes)
+// RATE LIMITING
+const limiter = rateLimit({
+  windowMs: config.rateLimit.windowMs,
+  max: config.rateLimit.max,
+  message: {
+    success: false,
+    message: 'Quá nhiều yêu cầu từ IP này, vui lòng thử lại sau'
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+})
+app.use(limiter)
 
-// error handling
-// app.use(errorConverter);
-// app.use(errorHandler);
+// AUTHENTICATION
+app.use(passport.initialize())
+passport.use('firebase', firebaseStrategy)
+
+// HEALTH CHECK
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server đang hoạt động bình thường',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  })
+})
+
+// API ROUTES
+app.use('/api/auth', auth) // Sửa từ auth.route thành auth
+app.use('/api/users', user) // Thêm route cho user
+
+// ERROR HANDLER
+app.use((error, req, res, next) => {
+  logger.error('Unhandled error:', error)
+  res.status(error.status || httpStatus.INTERNAL_SERVER_ERROR).json({
+    success: false,
+    message: error.message || 'Lỗi server nội bộ',
+    ...(config.env === 'development' && { stack: error.stack })
+  })
+})
 
 module.exports = app

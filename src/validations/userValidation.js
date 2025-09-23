@@ -6,11 +6,42 @@ const createUser = {
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
     fullname: Joi.string().required(),
-    customId: Joi.string().required(),
-    role: Joi.string().valid('user', 'admin'),
+    username: Joi.string().required().min(3).max(30),
+    phonenumber: Joi.string()
+      .required()
+      .pattern(/^[0-9]{10,11}$/),
+    role: Joi.string().valid('user', 'admin').default('user'),
     preferences: Joi.array().items(Joi.string()),
-    avatar: Joi.string(),
-    isActive: Joi.boolean()
+    avatar: Joi.string()
+  })
+}
+
+const verifyUserOTP = {
+  body: Joi.object().keys({
+    userId: Joi.string().required(),
+    email: Joi.string().required().email(),
+    otp: Joi.string().required()
+  })
+}
+
+const login = {
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required()
+  })
+}
+
+const requestResetPassword = {
+  body: Joi.object().keys({
+    email: Joi.string().required().email()
+  })
+}
+
+const resetPassword = {
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    otp: Joi.string().required(),
+    newPassword: Joi.string().required().custom(password)
   })
 }
 
@@ -39,6 +70,8 @@ const updateUser = {
       email: Joi.string().email(),
       password: Joi.string().custom(password),
       fullname: Joi.string(),
+      username: Joi.string().min(3).max(30),
+      phonenumber: Joi.string().pattern(/^[0-9]{10,11}$/),
       preferences: Joi.array().items(Joi.string()),
       avatar: Joi.string(),
       isActive: Joi.boolean()
@@ -54,6 +87,10 @@ const deleteUser = {
 
 module.exports = {
   createUser,
+  verifyUserOTP,
+  login,
+  requestResetPassword,
+  resetPassword,
   getUsers,
   getUser,
   updateUser,
