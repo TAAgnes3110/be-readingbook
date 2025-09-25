@@ -1,11 +1,12 @@
-const admin = require('firebase-admin')
 const config = require('../config/config')
 const logger = require('../config/logger')
+const { db } = require('../config/db')
+const { createEmailKey } = require('../utils/emailUtils')
 
-const otpRef = admin.database().ref('otps')
+const otpRef = db.ref('otps')
 
 /**
- * Sinh OTP ngẫu nhiên
+ * Generate random OTP
  * @param {number} length
  * @returns {string}
  */
@@ -20,12 +21,12 @@ function generate(length = config.otp.length) {
 }
 
 /**
- * Lưu OTP vào Realtime Database
+ * Store OTP in Realtime Database
  * @param {string} email
  * @param {string} otp
  */
 async function store(email, otp) {
-  const key = `email:${email.toLowerCase()}`
+  const key = createEmailKey(email)
   const data = {
     otp,
     attempts: 0,
@@ -42,12 +43,12 @@ async function store(email, otp) {
 }
 
 /**
- * Lấy OTP theo email
+ * Get OTP by email
  * @param {string} email
  * @returns {Promise<object|null>}
  */
 async function get(email) {
-  const key = `email:${email.toLowerCase()}`
+  const key = createEmailKey(email)
   try {
     const snapshot = await otpRef.child(key).once('value')
     const data = snapshot.val()
@@ -62,25 +63,25 @@ async function get(email) {
 }
 
 /**
- * Xác thực OTP
+ * Verify OTP
  * @param {string} email
  * @param {string} inputOTP
  * @returns {Promise<{success: boolean, message: string}>}
  */
 async function verify(email, inputOTP) {
-  const key = `email:${email.toLowerCase()}`
+  const key = createEmailKey(email)
   const data = await get(email)
   if (!data) {
     logger.warn(
       `OTP verification failed for ${email}: OTP not found or expired`
     )
-    return { success: false, message: 'OTP không tồn tại hoặc đã hết hạn' }
+    return { success: false, message: 'OTP not found or expired' }
   }
 
   if (Date.now() > data.expiresAt) {
     await remove(email)
     logger.warn(`OTP verification failed for ${email}: OTP expired`)
-    return { success: false, message: 'OTP đã hết hạn' }
+    return { success: false, message: 'OTP expired' }
   }
 
   if (data.otp !== inputOTP) {
@@ -91,7 +92,7 @@ async function verify(email, inputOTP) {
           data.attempts + 1
         }`
       )
-      return { success: false, message: 'Mã OTP không đúng' }
+      return { success: false, message: 'Invalid OTP code' }
     } catch (error) {
       logger.error(
         `Failed to update OTP attempts for ${email}: ${error.stack}`
@@ -102,15 +103,15 @@ async function verify(email, inputOTP) {
 
   await remove(email)
   logger.info(`OTP verified successfully for ${email}`)
-  return { success: true, message: 'Xác thực OTP thành công' }
+  return { success: true, message: 'OTP verification successful' }
 }
 
 /**
- * Xoá OTP
+ * Delete OTP
  * @param {string} email
  */
 async function remove(email) {
-  const key = `email:${email.toLowerCase()}`
+  const key = createEmailKey(email)
   try {
     await otpRef.child(key).remove()
     logger.info(`Deleted OTP for ${email}`)

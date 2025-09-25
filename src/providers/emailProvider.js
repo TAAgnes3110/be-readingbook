@@ -5,7 +5,7 @@ const logger = require('../config/logger')
 let transporter = null
 
 /**
- * Khởi tạo email transporter từ config
+ * Initialize email transporter from config
  */
 function initialize() {
   if (config.email.smtp.host && config.email.smtp.auth.user) {
@@ -25,7 +25,7 @@ function initialize() {
 }
 
 /**
- * Gửi email
+ * Send email
  * @param {string} email
  * @param {string} subject
  * @param {string} html
@@ -34,7 +34,7 @@ function initialize() {
 async function send(email, subject, html) {
   if (!transporter) {
     logger.error('Email transporter not initialized')
-    throw new Error('Email service chưa được cấu hình')
+    throw new Error('Email service not configured')
   }
   const mailOptions = {
     from: config.email.from,

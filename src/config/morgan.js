@@ -6,19 +6,19 @@ morgan.token('message', (req, res) => res.locals.errorMessage || '')
 morgan.token('client-ip', (req) => req.headers['x-forwarded-for'] || req.ip)
 
 /**
- * Format cho log thành công (status < 400)
+ * Format for successful logs (status < 400)
  */
 const successResponseFormat =
   ':client-ip - :method :url :status - :response-time ms'
 
 /**
- * Format cho log lỗi (status >= 400)
+ * Format for error logs (status >= 400)
  */
 const errorResponseFormat =
   ':client-ip - :method :url :status - :response-time ms - message: :message'
 
 /**
- * Middleware log request thành công
+ * Middleware for successful request logging
  */
 const successHandler = morgan(successResponseFormat, {
   skip: (req, res) => res.statusCode >= 400,
@@ -26,7 +26,7 @@ const successHandler = morgan(successResponseFormat, {
 })
 
 /**
- * Middleware log request lỗi
+ * Middleware for error request logging
  */
 const errorHandler = morgan(errorResponseFormat, {
   skip: (req, res) => res.statusCode < 400,

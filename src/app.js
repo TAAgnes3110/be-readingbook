@@ -25,10 +25,7 @@ app.options('*', cors())
 // BODY PARSING
 app.use(
   express.json({
-    limit: config.upload.limit,
-    verify: (req, res, buf) => {
-      req.rawBody = buf
-    }
+    limit: config.upload.limit
   })
 )
 app.use(
@@ -44,7 +41,7 @@ const limiter = rateLimit({
   max: config.rateLimit.max,
   message: {
     success: false,
-    message: 'Quá nhiều yêu cầu từ IP này, vui lòng thử lại sau'
+    message: 'Too many requests from this IP, please try again later'
   },
   standardHeaders: true,
   legacyHeaders: false
@@ -59,23 +56,28 @@ passport.use('firebase', firebaseStrategy)
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Server đang hoạt động bình thường',
+    message: 'Server is running normally',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   })
 })
 
 // API ROUTES
-app.use('/api/auth', auth) // Sửa từ auth.route thành auth
-app.use('/api/users', user) // Thêm route cho user
+app.use('/api/auth', auth)
+app.use('/api/users', user)
 
 // ERROR HANDLER
 app.use((error, req, res, next) => {
   logger.error('Unhandled error:', error)
-  res.status(error.status || httpStatus.INTERNAL_SERVER_ERROR).json({
+
+  let statusCode = error.status || error.statusCode || httpStatus.INTERNAL_SERVER_ERROR
+  if (!statusCode || typeof statusCode !== 'number') {
+    statusCode = httpStatus.INTERNAL_SERVER_ERROR
+  }
+
+  res.status(statusCode).json({
     success: false,
-    message: error.message || 'Lỗi server nội bộ',
-    ...(config.env === 'development' && { stack: error.stack })
+    message: error.message || 'Internal server error'
   })
 })
 

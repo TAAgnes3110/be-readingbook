@@ -1,9 +1,9 @@
 const { otpProvider } = require('../providers/index')
-const { emailService } = require('./index')
+const emailService = require('./emailService')
 const logger = require('../config/logger')
 
 /**
- * Gửi OTP đến email theo loại yêu cầu
+ * Send OTP to email by request type
  * @param {string} email
  * @param {'register'|'reset'|'update'} type
  * @returns {Promise<object>}
@@ -11,14 +11,14 @@ const logger = require('../config/logger')
 async function sendOTP(email, type) {
   if (!['register', 'reset', 'update'].includes(type)) {
     logger.error(`Invalid OTP type: ${type}`)
-    throw new Error('Loại OTP không hợp lệ')
+    throw new Error('Invalid OTP type')
   }
   try {
     const otp = otpProvider.generate()
     await otpProvider.store(email, otp)
     const result = await emailService.sendOTP(email, otp, type)
     logger.info(`OTP sent to ${email} for ${type}`)
-    return { success: true, message: 'OTP đã được gửi', data: result }
+    return { success: true, message: 'OTP sent successfully', data: result }
   } catch (error) {
     logger.error(`Failed to send OTP to ${email} for ${type}: ${error.stack}`)
     throw error
@@ -26,7 +26,7 @@ async function sendOTP(email, type) {
 }
 
 /**
- * Xác minh OTP
+ * Verify OTP
  * @param {string} email
  * @param {string} otp
  * @returns {Promise<object>}
@@ -47,7 +47,7 @@ async function verifyOTP(email, otp) {
 }
 
 /**
- * Xoá OTP đã lưu
+ * Clear stored OTP
  * @param {string} email
  * @returns {Promise<void>}
  */

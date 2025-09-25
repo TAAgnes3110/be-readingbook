@@ -10,6 +10,15 @@ const password = (value, helpers) => {
   return value
 }
 
+const confirmPassword = (value, helpers) => {
+  const { password } = helpers.state.ancestors[0]
+  if (value !== password) {
+    return helpers.message('confirmPassword must match password')
+  }
+  return value
+}
+
 module.exports = {
-  password
+  password,
+  confirmPassword
 }

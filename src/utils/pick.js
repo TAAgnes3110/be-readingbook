@@ -1,12 +1,12 @@
 /**
- * chọn các khóa được phép từ một đối tượng
+ * select allowed keys from an object
  * @param {Object} object
  * @param {string[]} keys
  * @returns {Object}
- * ví dụ:
+ * example:
  * const obj = { email: 'taagnes@gmail.com', password: '123', role : 'admin'};
  * keys = [email, password];
- * const picked = pick(obj, keys); => kết quả đưa ra { email: 'taagnes@gmail.com', password: '123' }
+ * const picked = pick(obj, keys); => result { email: 'taagnes@gmail.com', password: '123' }
  */
 const pick = (object, keys) => {
   return keys.reduce((obj, key) => {

@@ -1,76 +1,77 @@
-const admin = require('firebase-admin')
 const httpStatus = require('http-status')
-const { ApiError, hashPassword } = require('../utils/index')
+const { ApiError } = require('../utils/index')
+const { hashPassword } = require('../utils/passwordUtils')
 const userModel = require('../models/userModel')
+const { admin } = require('../config/db')
 
 /**
- * Lấy thông tin người dùng theo ID
- * @param {string} id - ID của người dùng (Firebase Auth UID)
- * @returns {Promise<Object>} - Đối tượng người dùng
- * @throws {ApiError} 404 - Người dùng không tồn tại
+ * Get user by ID
+ * @param {string} id - User ID (Firebase Auth UID)
+ * @returns {Promise<Object>} - User object
+ * @throws {ApiError} 404 - User not found
  */
 const getUserById = async (id) => {
   try {
     if (!id)
       throw new ApiError(
-        httpStatus.BAD_REQUEST,
-        'Yêu cầu cung cấp ID người dùng'
+        httpStatus.status.BAD_REQUEST,
+        'User ID is required'
       )
     const user = await userModel.findById(id)
     if (!user || !user.isActive) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'Người dùng không tồn tại')
+      throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found')
     }
     return { _id: id, ...user }
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      `Không thể lấy thông tin người dùng: ${error.message}`
+      httpStatus.status.INTERNAL_SERVER_ERROR,
+      `Failed to get user information: ${error.message}`
     )
   }
 }
 
 /**
- * Lấy thông tin người dùng theo email
- * @param {string} email - Email của người dùng
- * @returns {Promise<Object>} - Đối tượng người dùng
- * @throws {ApiError} 404 - Người dùng không tồn tại
+ * Get user by email
+ * @param {string} email - User email
+ * @returns {Promise<Object>} - User object
+ * @throws {ApiError} 404 - User not found
  */
 const getUserByEmail = async (email) => {
   try {
     if (!email)
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Yêu cầu cung cấp email')
+      throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email is required')
     const users = await userModel.findByEmail(email.trim().toLowerCase())
     if (!users) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'Người dùng không tồn tại')
+      throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found')
     }
     const userId = Object.keys(users)[0]
     const user = users[userId]
     if (!user.isActive) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'Người dùng không tồn tại')
+      throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found')
     }
     return { _id: userId, ...user }
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      `Không thể lấy thông tin người dùng: ${error.message}`
+      httpStatus.status.INTERNAL_SERVER_ERROR,
+      `Failed to get user information: ${error.message}`
     )
   }
 }
 
 /**
- * Cập nhật thông tin người dùng theo ID
- * @param {string} userId - ID của người dùng
- * @param {Object} updateBody - Dữ liệu cập nhật
- * @returns {Promise<Object>} - Đối tượng người dùng đã cập nhật
- * @throws {ApiError} 404 - Người dùng không tồn tại
+ * Update user by ID
+ * @param {string} userId - User ID
+ * @param {Object} updateBody - Update data
+ * @returns {Promise<Object>} - Updated user object
+ * @throws {ApiError} 404 - User not found
  */
 const updateUserById = async (userId, updateBody) => {
   try {
     const user = await getUserById(userId)
 
-    // Kiểm tra email trùng lặp
+    // Check for duplicate email
     if (
       updateBody.email &&
       updateBody.email.trim().toLowerCase() !== user.email.trim().toLowerCase()
@@ -79,7 +80,7 @@ const updateUserById = async (userId, updateBody) => {
         updateBody.email.trim().toLowerCase()
       )
       if (users && Object.keys(users).some((id) => id !== userId)) {
-        throw new ApiError(httpStatus.BAD_REQUEST, 'Email đã được sử dụng')
+        throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email already in use')
       }
 
       await admin
@@ -87,7 +88,7 @@ const updateUserById = async (userId, updateBody) => {
         .updateUser(userId, { email: updateBody.email.trim().toLowerCase() })
     }
 
-    // Hash mật khẩu nếu được cung cấp
+    // Hash password if provided
     const hashedPassword = updateBody.password
       ? await hashPassword(updateBody.password)
       : user.password
@@ -108,7 +109,7 @@ const updateUserById = async (userId, updateBody) => {
       preferences: updateBody.preferences || user.preferences,
       comments: updateBody.comments || user.comments,
       history: updateBody.history || user.history,
-      customId: user.customId, // Không cho phép cập nhật
+      customId: user.customId, // Not allowed to update
       isActive: user.isActive,
       updatedAt: admin.database.ServerValue.TIMESTAMP
     }
@@ -119,21 +120,21 @@ const updateUserById = async (userId, updateBody) => {
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      `Không thể cập nhật người dùng: ${error.message}`
+      httpStatus.status.INTERNAL_SERVER_ERROR,
+      `Failed to update user: ${error.message}`
     )
   }
 }
 
 /**
- * Xóa người dùng theo ID (xóa mềm)
- * @param {string} userId - ID của người dùng
- * @returns {Promise<Object>} - Đối tượng người dùng đã xóa
- * @throws {ApiError} 404 - Người dùng không tồn tại
+ * Delete user by ID (soft delete)
+ * @param {string} userId - User ID
+ * @returns {Promise<Object>} - Deleted user object
+ * @throws {ApiError} 404 - User not found
  */
 const deleteUserById = async (userId) => {
   try {
-    await getUserById(userId) // Kiểm tra tồn tại
+    await getUserById(userId) // Check if exists
     await userModel.update(userId, {
       isActive: false,
       updatedAt: admin.database.ServerValue.TIMESTAMP
@@ -143,8 +144,8 @@ const deleteUserById = async (userId) => {
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      `Không thể xóa người dùng: ${error.message}`
+      httpStatus.status.INTERNAL_SERVER_ERROR,
+      `Failed to delete user: ${error.message}`
     )
   }
 }

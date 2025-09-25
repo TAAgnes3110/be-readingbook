@@ -20,7 +20,7 @@ const userSocket = (io) => {
 
     socket.on('user:otpSent', (data) => {
       socket.emit('user:otpNotification', {
-        message: `OTP đã được gửi đến ${data.email} cho ${data.type}`,
+        message: `OTP sent to ${data.email} for ${data.type}`,
         email: data.email,
         type: data.type
       })

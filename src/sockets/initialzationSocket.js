@@ -2,7 +2,6 @@ const userSocket = require('./userSocket')
 const userModel = require('./userModel')
 
 const initializeSockets = (io) => {
-  // Initialize socket middleware
   io.use(async (socket, next) => {
     const userId = socket.handshake.auth.userId
     if (!userId) {
@@ -20,7 +19,6 @@ const initializeSockets = (io) => {
     }
   })
 
-  // Initialize user sockets
   userSocket(io)
 }
 

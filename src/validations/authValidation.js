@@ -1,65 +1,46 @@
 const Joi = require('joi')
-const { password } = require('./custom')
+const { password, confirmPassword } = require('./custom')
 
 const register = {
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
-    fullname: Joi.string().required(),
-    phonenumber: Joi.string()
+    confirmPassword: Joi.string().required().custom(confirmPassword),
+    fullName: Joi.string().required(),
+    phoneNumber: Joi.string()
       .required()
       .pattern(/^[0-9]{10,11}$/),
-    role: Joi.string().valid('user', 'admin').default('user')
-  })
-}
-
-const verifyAndActivateUser = {
-  body: Joi.object().keys({
-    userId: Joi.string().required(),
-    email: Joi.string().required().email(),
-    otp: Joi.string().required()
+    role: Joi.string().valid('user', 'admin').default('user'),
+    _id: Joi.number().integer().positive().optional(),
+    userId: Joi.number().integer().positive().optional()
   })
 }
 
 const login = {
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required()
+    password: Joi.string().required().min(1)
   })
 }
 
-const logout = {
+
+const verifyAndActivateUser = {
   body: Joi.object().keys({
-    refreshToken: Joi.string().required()
+    email: Joi.string().required().email(),
+    otp: Joi.string().required()
   })
 }
 
-const refreshTokens = {
-  body: Joi.object().keys({
-    refreshToken: Joi.string().required()
-  })
-}
-
-const forgotPassword = {
+const resendOTP = {
   body: Joi.object().keys({
     email: Joi.string().required().email()
   })
 }
 
-const resetPassword = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    otp: Joi.string().required(),
-    newPassword: Joi.string().required().custom(password)
-  })
-}
 
 module.exports = {
   register,
-  verifyAndActivateUser,
   login,
-  logout,
-  refreshTokens,
-  forgotPassword,
-  resetPassword
+  verifyAndActivateUser,
+  resendOTP
 }

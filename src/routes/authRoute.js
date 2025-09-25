@@ -10,6 +10,24 @@ router.post(
   validate(authValidation.register),
   authController.register
 )
-router.post('/login', validate(authValidation.login), authController.login)
+
+router.post(
+  '/login',
+  validate(authValidation.login),
+  authController.login
+)
+
+router.post(
+  '/verify-otp',
+  validate(authValidation.verifyAndActivateUser),
+  authController.verifyOTP
+)
+
+router.post(
+  '/resend-otp',
+  validate(authValidation.resendOTP),
+  authController.resendOTP
+)
+
 
 module.exports = router

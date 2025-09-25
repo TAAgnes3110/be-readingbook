@@ -63,5 +63,9 @@ module.exports = {
   cache: {
     ttl: parseInt(process.env.CACHE_TTL, 10) || 300, // 5 minutes
     checkperiod: parseInt(process.env.CACHE_CHECKPERIOD, 10) || 120 // 2 minutes
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    expiry: process.env.JWT_EXPIRY
   }
 }

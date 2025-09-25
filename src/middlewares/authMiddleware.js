@@ -8,8 +8,8 @@ const authMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new ApiError(
-        httpStatus.UNAUTHORIZED,
-        'Yêu cầu cung cấp token hợp lệ'
+        httpStatus.status.UNAUTHORIZED,
+        'Valid token is required'
       )
     }
     const token = authHeader.split(' ')[1]
@@ -17,11 +17,11 @@ const authMiddleware = async (req, res, next) => {
     req.userId = payload.userId
     next()
   } catch (error) {
-    logger.error(`Lỗi xác thực token: ${error.stack}`)
+    logger.error(`Token authentication error: ${error.stack}`)
     next(
       error instanceof ApiError
         ? error
-        : new ApiError(httpStatus.UNAUTHORIZED, 'Token không hợp lệ')
+        : new ApiError(httpStatus.status.UNAUTHORIZED, 'Invalid token')
     )
   }
 }

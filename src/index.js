@@ -13,7 +13,7 @@ let server = null
 const startServer = () => {
   try {
     server = app.listen(port, host, () => {
-      logger.info(`Server đang chạy tại http://${host}:${port}${prefix}`)
+      logger.info(`Server running at http://${host}:${port}${prefix}`)
       logger.info(`Environment: ${config.env}`)
       logger.info(`Started at: ${new Date().toISOString()}`)
     })
@@ -21,7 +21,7 @@ const startServer = () => {
     // Handle server errors
     server.on('error', (error) => {
       if (error.code === 'EADDRINUSE') {
-        logger.error(`❌ Port ${port} đã được sử dụng. Vui lòng chọn port khác.`)
+        logger.error(`❌ Port ${port} is already in use. Please choose a different port.`)
       } else {
         logger.error('❌ Server error:', error)
       }
@@ -29,22 +29,22 @@ const startServer = () => {
     })
 
   } catch (error) {
-    logger.error('❌ Không thể khởi động server:', error)
+    logger.error('❌ Failed to start server:', error)
     process.exit(1)
   }
 }
 
 // GRACEFUL SHUTDOWN
 const gracefulShutdown = (signal) => {
-  logger.info(`📴 Nhận tín hiệu ${signal}. Đang tắt server...`)
+  logger.info(`📴 Received signal ${signal}. Shutting down server...`)
 
   if (server) {
     server.close((error) => {
       if (error) {
-        logger.error('❌ Lỗi khi tắt server:', error)
+        logger.error('❌ Error shutting down server:', error)
         process.exit(1)
       } else {
-        logger.info('✅ Server đã được tắt thành công')
+        logger.info('✅ Server shut down successfully')
         process.exit(0)
       }
     })

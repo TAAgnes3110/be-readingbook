@@ -4,7 +4,7 @@ const logger = require('../config/logger')
 const ref = getRef('users')
 
 /**
- * Lắng nghe thay đổi toàn bộ user object
+ * Listen to entire user object changes
  * @param {string} userId
  * @param {Function} callback
  */
@@ -14,13 +14,13 @@ function listenToUserChanges(userId, callback) {
       callback(snapshot.val())
     })
   } catch (error) {
-    logger.error(`Lỗi khi lắng nghe thay đổi user ${userId}: ${error.stack}`)
+    logger.error(`Error listening to user changes ${userId}: ${error.stack}`)
     throw error
   }
 }
 
 /**
- * Lắng nghe trạng thái online/offline
+ * Listen to online/offline status
  * @param {string} userId
  * @param {Function} callback
  */
@@ -30,26 +30,26 @@ function listenToUserStatus(userId, callback) {
       callback(snapshot.val())
     })
   } catch (error) {
-    logger.error(`Lỗi khi lắng nghe trạng thái user ${userId}: ${error.stack}`)
+    logger.error(`Error listening to user status ${userId}: ${error.stack}`)
     throw error
   }
 }
 
 /**
- * Dừng lắng nghe thay đổi user
+ * Stop listening to user changes
  * @param {string} userId
  */
 function stopListening(userId) {
   try {
     ref.child(userId).off()
   } catch (error) {
-    logger.error(`Lỗi khi dừng listener cho user ${userId}: ${error.stack}`)
+    logger.error(`Error stopping listener for user ${userId}: ${error.stack}`)
     throw error
   }
 }
 
 /**
- * Cập nhật trạng thái user
+ * Update user status
  * @param {string} userId
  * @param {boolean} isOnline
  */
@@ -61,7 +61,7 @@ async function updateUserStatus(userId, isOnline) {
       updatedAt: Date.now()
     })
   } catch (error) {
-    logger.error(`Lỗi khi cập nhật trạng thái user ${userId}: ${error.stack}`)
+    logger.error(`Error updating user status ${userId}: ${error.stack}`)
     throw error
   }
 }

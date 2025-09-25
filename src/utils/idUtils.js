@@ -1,12 +1,11 @@
-const admin = require('firebase-admin')
 const httpStatus = require('http-status')
 const { ApiError } = require('./index')
+const { db } = require('../config/db')
 
-const db = admin.database()
 const metadataRef = db.ref('metadata/lastCustomId')
 
 /**
- * Sinh customId tự động
+ * Generate custom ID automatically
  * @returns {Promise<string>}
  * @throws {ApiError}
  */
@@ -18,8 +17,8 @@ const generateCustomId = async () => {
 
     if (!newCustomId.committed) {
       throw new ApiError(
-        httpStatus.INTERNAL_SERVER_ERROR,
-        'Không thể sinh customId do xung đột transaction'
+        httpStatus.status.INTERNAL_SERVER_ERROR,
+        'Unable to generate customId due to transaction conflict'
       )
     }
 
@@ -27,8 +26,8 @@ const generateCustomId = async () => {
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      `Không thể sinh customId: ${error.message}`
+      httpStatus.status.INTERNAL_SERVER_ERROR,
+      `Failed to generate customId: ${error.message}`
     )
   }
 }

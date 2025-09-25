@@ -1,13 +1,13 @@
 const jwt = require('jsonwebtoken')
-const admin = require('firebase-admin')
 const NodeCache = require('node-cache')
 const config = require('../config/config')
 const logger = require('../config/logger')
+const { auth } = require('../config/db')
 
 const refreshTokenCache = new NodeCache({ stdTTL: config.cache.ttl })
 
 /**
- * Tạo access token
+ * Generate access token
  * @param {string} userId
  * @param {string} role
  * @returns {string}
@@ -28,7 +28,7 @@ function generateAccessToken(userId, role) {
 }
 
 /**
- * Tạo refresh token
+ * Generate refresh token
  * @param {string} userId
  * @returns {string}
  */
@@ -49,17 +49,21 @@ function generateRefreshToken(userId) {
 }
 
 /**
- * Tạo Firebase custom token
+ * Generate Firebase custom token
  * @param {string} userId
  * @param {object} additionalClaims
  * @returns {Promise<string>}
  */
 async function generateFirebaseCustomToken(userId, additionalClaims = {}) {
   try {
-    const token = await admin
-      .auth()
-      .createCustomToken(userId, additionalClaims)
-    logger.info(`Generated Firebase custom token for user ${userId}`)
+    const stringUserId = String(userId)
+    if (!stringUserId || stringUserId === 'undefined' || stringUserId === 'null') {
+      throw new Error('Invalid userId provided for Firebase custom token')
+    }
+
+    const token = await auth
+      .createCustomToken(stringUserId, additionalClaims)
+    logger.info(`Generated Firebase custom token for user ${stringUserId}`)
     return token
   } catch (error) {
     logger.error(
@@ -70,7 +74,7 @@ async function generateFirebaseCustomToken(userId, additionalClaims = {}) {
 }
 
 /**
- * Xác minh token JWT
+ * Verify JWT token
  * @param {string} token
  * @returns {object|null}
  */
@@ -86,7 +90,7 @@ function verifyToken(token) {
 }
 
 /**
- * Làm mới access token bằng refresh token
+ * Refresh access token using refresh token
  * @param {string} refreshToken
  * @returns {Promise<{ accessToken: string, refreshToken: string }>}
  */
@@ -95,12 +99,12 @@ async function refresh(refreshToken) {
     const decoded = verifyToken(refreshToken)
     if (!decoded) {
       logger.warn('Invalid refresh token')
-      throw new Error('Refresh token không hợp lệ')
+      throw new Error('Invalid refresh token')
     }
     const cached = refreshTokenCache.get(`refresh:${decoded.sub}`)
     if (cached !== refreshToken) {
       logger.warn(`Refresh token mismatch for user ${decoded.sub}`)
-      throw new Error('Refresh token không hợp lệ')
+      throw new Error('Invalid refresh token')
     }
     const newAccessToken = generateAccessToken(decoded.sub, 'user')
     logger.info(`Refreshed tokens for user ${decoded.sub}`)
@@ -112,7 +116,7 @@ async function refresh(refreshToken) {
 }
 
 /**
- * Thu hồi refresh token
+ * Revoke refresh token
  * @param {string} userId
  */
 function revoke(userId) {

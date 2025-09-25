@@ -3,13 +3,13 @@ const { pick, catchAsync } = require('../utils/index')
 const { userService, authService } = require('../services/index')
 
 /**
- * Tạo người dùng mới
- * @param {Object} req - Yêu cầu HTTP
- * @param {Object} res - Phản hồi HTTP
+ * Create new user
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
  */
 const createUser = catchAsync(async (req, res) => {
   const result = await userService.createUser(req.body)
-  res.status(httpStatus.CREATED).json({
+  res.status(httpStatus.status.CREATED).json({
     success: true,
     data: { userId: result.userId },
     message: result.message
@@ -17,9 +17,9 @@ const createUser = catchAsync(async (req, res) => {
 })
 
 /**
- * Xác minh OTP cho người dùng
- * @param {Object} req - Yêu cầu HTTP
- * @param {Object} res - Phản hồi HTTP
+ * Verify OTP for user
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
  */
 const verifyUserOTP = catchAsync(async (req, res) => {
   const { userId, email, otp } = pick(req.body, ['userId', 'email', 'otp'])
@@ -30,57 +30,12 @@ const verifyUserOTP = catchAsync(async (req, res) => {
   })
 })
 
-/**
- * Đăng nhập người dùng
- * @param {Object} req - Yêu cầu HTTP
- * @param {Object} res - Phản hồi HTTP
- */
-const login = catchAsync(async (req, res) => {
-  const { email, password } = pick(req.body, ['email', 'password'])
-  const result = await authService.login(email, password)
-  res.json({
-    success: true,
-    data: result,
-    message: 'Đăng nhập thành công'
-  })
-})
+
 
 /**
- * Yêu cầu đặt lại mật khẩu
- * @param {Object} req - Yêu cầu HTTP
- * @param {Object} res - Phản hồi HTTP
- */
-const requestResetPassword = catchAsync(async (req, res) => {
-  const { email } = pick(req.body, ['email'])
-  const result = await authService.requestResetPassword(email)
-  res.json({
-    success: true,
-    message: result.message
-  })
-})
-
-/**
- * Đặt lại mật khẩu
- * @param {Object} req - Yêu cầu HTTP
- * @param {Object} res - Phản hồi HTTP
- */
-const resetPassword = catchAsync(async (req, res) => {
-  const { email, otp, newPassword } = pick(req.body, [
-    'email',
-    'otp',
-    'newPassword'
-  ])
-  const result = await authService.resetPassword(email, otp, newPassword)
-  res.json({
-    success: true,
-    message: result.message
-  })
-})
-
-/**
- * Lấy thông tin người dùng theo ID
- * @param {Object} req - Yêu cầu HTTP
- * @param {Object} res - Phản hồi HTTP
+ * Get user by ID
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
  */
 const getUserById = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])
@@ -88,14 +43,14 @@ const getUserById = catchAsync(async (req, res) => {
   res.json({
     success: true,
     data: user,
-    message: 'Lấy thông tin người dùng thành công'
+    message: 'User retrieved successfully'
   })
 })
 
 /**
- * Lấy thông tin người dùng theo email
- * @param {Object} req - Yêu cầu HTTP
- * @param {Object} res - Phản hồi HTTP
+ * Get user by email
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
  */
 const getUserByEmail = catchAsync(async (req, res) => {
   const { email } = pick(req.query, ['email'])
@@ -103,14 +58,14 @@ const getUserByEmail = catchAsync(async (req, res) => {
   res.json({
     success: true,
     data: user,
-    message: 'Lấy thông tin người dùng theo email thành công'
+    message: 'User retrieved by email successfully'
   })
 })
 
 /**
- * Cập nhật thông tin người dùng
- * @param {Object} req - Yêu cầu HTTP
- * @param {Object} res - Phản hồi HTTP
+ * Update user information
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
  */
 const updateUser = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])
@@ -118,30 +73,27 @@ const updateUser = catchAsync(async (req, res) => {
   res.json({
     success: true,
     data: user,
-    message: 'Cập nhật người dùng thành công'
+    message: 'User updated successfully'
   })
 })
 
 /**
- * Xóa người dùng (soft delete)
- * @param {Object} req - Yêu cầu HTTP
- * @param {Object} res - Phản hồi HTTP
+ * Delete user (soft delete)
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
  */
 const deleteUser = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])
   await userService.deleteUserById(userId)
-  res.status(httpStatus.NO_CONTENT).json({
+  res.status(httpStatus.status.NO_CONTENT).json({
     success: true,
-    message: 'Xóa người dùng thành công'
+    message: 'User deleted successfully'
   })
 })
 
 module.exports = {
   createUser,
   verifyUserOTP,
-  login,
-  requestResetPassword,
-  resetPassword,
   getUserById,
   getUserByEmail,
   updateUser,
