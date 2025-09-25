@@ -86,7 +86,6 @@ async function login(email, password) {
       role: user.role
     })
 
-    // eslint-disable-next-line no-unused-vars
     const { password: userPassword, ...userWithoutPassword } = user
 
     logger.info(`User ${email} logged in successfully`)
