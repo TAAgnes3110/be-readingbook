@@ -1,13 +1,14 @@
 const { Strategy } = require('passport-custom')
 const { verifyIdToken } = require('./db')
 const { getUserById } = require('../services/userService')
+const { getAuthError, getUserError } = require('../constants/errorMessages')
 const logger = require('./logger')
 
 const firebaseVerify = async (req, done) => {
   try {
     const authHeader = req.headers.authorization
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return done(null, false, { message: 'Token not found' })
+      return done(null, false, { message: getAuthError('TOKEN_REQUIRED') })
     }
 
     const idToken = authHeader.substring(7)
@@ -16,7 +17,7 @@ const firebaseVerify = async (req, done) => {
 
     const user = await getUserById(decodedToken.uid)
     if (!user) {
-      return done(null, false, { message: 'User not found in database' })
+      return done(null, false, { message: getUserError('USER_NOT_FOUND') })
     }
 
     user.firebase = {

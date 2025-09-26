@@ -1,17 +1,18 @@
 const { otpProvider } = require('../providers/index')
 const emailService = require('./emailService')
+const { getAuthError } = require('../constants/errorMessages')
 const logger = require('../config/logger')
 
 /**
  * Send OTP to email by request type
  * @param {string} email
- * @param {'register'|'reset'|'update'} type
+ * @param {'register'|'update'} type
  * @returns {Promise<object>}
  */
 async function sendOTP(email, type) {
-  if (!['register', 'reset', 'update'].includes(type)) {
+  if (!['register', 'update'].includes(type)) {
     logger.error(`Invalid OTP type: ${type}`)
-    throw new Error('Invalid OTP type')
+    throw new Error(getAuthError('OTP_GENERATION_FAILED'))
   }
   try {
     const otp = otpProvider.generate()

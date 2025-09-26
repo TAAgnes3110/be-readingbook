@@ -31,19 +31,6 @@ const login = {
   })
 }
 
-const requestResetPassword = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email()
-  })
-}
-
-const resetPassword = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    otp: Joi.string().required(),
-    newPassword: Joi.string().required().custom(password)
-  })
-}
 
 const getUsers = {
   query: Joi.object().keys({
@@ -89,8 +76,6 @@ module.exports = {
   createUser,
   verifyUserOTP,
   login,
-  requestResetPassword,
-  resetPassword,
   getUsers,
   getUser,
   updateUser,

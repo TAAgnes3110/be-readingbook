@@ -1,6 +1,13 @@
+const { getValidationError } = require('../constants/errorMessages')
+
 const validate = (schema) => {
   return (req, res, next) => {
     let validationResult = { error: null, value: {} }
+
+    // Ensure req.body exists
+    if (!req.body) {
+      req.body = {}
+    }
 
     // Validate body
     if (schema.body) {
@@ -29,7 +36,7 @@ const validate = (schema) => {
     if (validationResult.error) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid data',
+        message: getValidationError('VALIDATION.INVALID_FORMAT'),
         errors: validationResult.error.details.map((detail) => ({
           message: detail.message,
           path: detail.path,

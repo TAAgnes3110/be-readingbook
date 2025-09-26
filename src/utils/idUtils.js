@@ -1,5 +1,6 @@
 const httpStatus = require('http-status')
 const { ApiError } = require('./index')
+const { getErrorMessage } = require('../constants/errorMessages')
 const { db } = require('../config/db')
 
 const metadataRef = db.ref('metadata/lastCustomId')
@@ -18,7 +19,7 @@ const generateCustomId = async () => {
     if (!newCustomId.committed) {
       throw new ApiError(
         httpStatus.status.INTERNAL_SERVER_ERROR,
-        'Unable to generate customId due to transaction conflict'
+        getErrorMessage('DATABASE.TRANSACTION_FAILED')
       )
     }
 
@@ -27,7 +28,7 @@ const generateCustomId = async () => {
     if (error instanceof ApiError) throw error
     throw new ApiError(
       httpStatus.status.INTERNAL_SERVER_ERROR,
-      `Failed to generate customId: ${error.message}`
+      getErrorMessage('DATABASE.QUERY_FAILED', `Failed to generate customId: ${error.message}`)
     )
   }
 }

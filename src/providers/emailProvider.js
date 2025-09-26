@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer')
+const { getErrorMessage } = require('../constants/errorMessages')
 const config = require('../config/config')
 const logger = require('../config/logger')
 
@@ -34,7 +35,7 @@ function initialize() {
 async function send(email, subject, html) {
   if (!transporter) {
     logger.error('Email transporter not initialized')
-    throw new Error('Email service not configured')
+    throw new Error(getErrorMessage('EMAIL.EMAIL_SERVICE_UNAVAILABLE'))
   }
   const mailOptions = {
     from: config.email.from,
@@ -48,7 +49,7 @@ async function send(email, subject, html) {
     return { success: true, messageId: result.messageId }
   } catch (error) {
     logger.error(`Failed to send email to ${email}: ${error.stack}`)
-    throw error
+    throw new Error(getErrorMessage('EMAIL.SEND_FAILED', `Failed to send email: ${error.message}`))
   }
 }
 

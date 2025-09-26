@@ -19,21 +19,6 @@ function listenToUserChanges(userId, callback) {
   }
 }
 
-/**
- * Listen to online/offline status
- * @param {string} userId
- * @param {Function} callback
- */
-function listenToUserStatus(userId, callback) {
-  try {
-    ref.child(`${userId}/isOnline`).on('value', (snapshot) => {
-      callback(snapshot.val())
-    })
-  } catch (error) {
-    logger.error(`Error listening to user status ${userId}: ${error.stack}`)
-    throw error
-  }
-}
 
 /**
  * Stop listening to user changes
@@ -68,7 +53,6 @@ async function updateUserStatus(userId, isOnline) {
 
 module.exports = {
   listenToUserChanges,
-  listenToUserStatus,
   stopListening,
   updateUserStatus
 }

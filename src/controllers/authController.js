@@ -31,6 +31,7 @@ const login = catchAsync(async (req, res) => {
   })
 })
 
+
 /**
  * Verify OTP and activate account
  * @param {Object} req - HTTP request
@@ -46,7 +47,7 @@ const verifyOTP = catchAsync(async (req, res) => {
 })
 
 /**
- * Resend OTP
+ * Resend OTP for user activation
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
  */

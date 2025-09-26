@@ -31,7 +31,6 @@ const verifyUserOTP = catchAsync(async (req, res) => {
 })
 
 
-
 /**
  * Get user by ID
  * @param {Object} req - HTTP request

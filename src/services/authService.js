@@ -2,6 +2,7 @@ const httpStatus = require('http-status')
 const logger = require('../config/logger')
 const { ApiError } = require('../utils/index')
 const { otpService, tokenService } = require('../services/index')
+const { getUserError } = require('../constants/errorMessages')
 const userModel = require('../models/userModel')
 
 /**
@@ -38,7 +39,7 @@ async function SignUp(userBody) {
       // If user found, email already exists
       throw new ApiError(
         httpStatus.status.BAD_REQUEST,
-        'Email already in use'
+        getUserError('EMAIL_ALREADY_EXISTS')
       )
     } catch (error) {
       if (error instanceof ApiError && error.statusCode === httpStatus.status.NOT_FOUND) {
@@ -71,6 +72,7 @@ async function SignUp(userBody) {
  * @returns {Promise<Object>} - Login result
  * @throws {ApiError} - If login fails
  */
+// eslint-disable-next-line no-unused-vars
 async function login(email, password) {
   try {
     const user = await userModel.verifyPassword(email, password)
@@ -86,7 +88,8 @@ async function login(email, password) {
       role: user.role
     })
 
-    const { password: userPassword, ...userWithoutPassword } = user
+    // eslint-disable-next-line no-unused-vars
+    const { password, ...userWithoutPassword } = user
 
     logger.info(`User ${email} logged in successfully`)
 
@@ -109,6 +112,7 @@ async function login(email, password) {
   }
 }
 
+
 /**
  * Verify OTP and activate user
  * @param {string} email - User email
@@ -123,7 +127,6 @@ async function verifyAndActivateUser(email, otp) {
       throw new ApiError(httpStatus.status.BAD_REQUEST, otpResult.message)
     }
 
-    // Find userId from email (without checking isActive)
     const user = await userModel.findByEmailForActivation(email)
     const userId = user._id
     await userModel.activateUser(userId)
@@ -141,20 +144,25 @@ async function verifyAndActivateUser(email, otp) {
 }
 
 /**
- * Resend OTP
+ * Resend OTP for user activation
  * @param {string} email - User email
  * @returns {Promise<Object>} - OTP sending result
  * @throws {ApiError} - If sending fails
  */
 async function resendOTP(email) {
   try {
-    // Check if user exists
-    await userModel.findByEmailForActivation(email)
+    const user = await userModel.findByEmailForActivation(email)
 
-    // Send new OTP
+    if (!user) {
+      throw new ApiError(httpStatus.status.BAD_REQUEST, getUserError('USER_NOT_FOUND'))
+    }
+
     await otpService.sendOTP(email, 'register')
 
-    return { message: 'OTP resent successfully' }
+    return {
+      success: true,
+      message: 'Mã xác thực đã được gửi lại đến email của bạn. Vui lòng kiểm tra hộp thư.'
+    }
   } catch (error) {
     logger.error(`Error resending OTP for ${email}: ${error.stack}`)
     throw error instanceof ApiError

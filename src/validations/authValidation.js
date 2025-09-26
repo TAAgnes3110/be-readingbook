@@ -23,13 +23,13 @@ const login = {
   })
 }
 
-
 const verifyAndActivateUser = {
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     otp: Joi.string().required()
   })
 }
+
 
 const resendOTP = {
   body: Joi.object().keys({

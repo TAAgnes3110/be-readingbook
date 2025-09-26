@@ -70,15 +70,41 @@ app.use('/api/users', user)
 app.use((error, req, res, next) => {
   logger.error('Unhandled error:', error)
 
-  let statusCode = error.status || error.statusCode || httpStatus.INTERNAL_SERVER_ERROR
-  if (!statusCode || typeof statusCode !== 'number') {
+  // More robust status code handling
+  let statusCode = httpStatus.INTERNAL_SERVER_ERROR
+
+  if (error && typeof error === 'object') {
+    if (typeof error.status === 'number' && error.status >= 100 && error.status <= 599) {
+      statusCode = error.status
+    } else if (typeof error.statusCode === 'number' && error.statusCode >= 100 && error.statusCode <= 599) {
+      statusCode = error.statusCode
+    }
+  }
+
+  // Ensure response hasn't been sent already
+  if (res.headersSent) {
+    return next(error)
+  }
+
+  // Final safety check
+  if (typeof statusCode !== 'number' || statusCode < 100 || statusCode > 599) {
     statusCode = httpStatus.INTERNAL_SERVER_ERROR
   }
 
-  res.status(statusCode).json({
-    success: false,
-    message: error.message || 'Internal server error'
-  })
+  try {
+    res.status(statusCode).json({
+      success: false,
+      message: (error && error.message) || 'Internal server error'
+    })
+  } catch (responseError) {
+    logger.error('Failed to send error response:', responseError)
+    // If JSON response fails, try plain text
+    try {
+      res.status(statusCode).send('Internal server error')
+    } catch (fallbackError) {
+      logger.error('Failed to send fallback response:', fallbackError)
+    }
+  }
 })
 
 module.exports = app

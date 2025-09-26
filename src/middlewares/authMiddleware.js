@@ -1,6 +1,7 @@
 const httpStatus = require('http-status')
 const { ApiError } = require('../utils/index')
 const { tokenService } = require('../services/index')
+const { getAuthError } = require('../constants/errorMessages')
 const logger = require('../config/logger')
 
 const authMiddleware = async (req, res, next) => {
@@ -9,7 +10,7 @@ const authMiddleware = async (req, res, next) => {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new ApiError(
         httpStatus.status.UNAUTHORIZED,
-        'Valid token is required'
+        getAuthError('TOKEN_REQUIRED')
       )
     }
     const token = authHeader.split(' ')[1]
@@ -21,7 +22,7 @@ const authMiddleware = async (req, res, next) => {
     next(
       error instanceof ApiError
         ? error
-        : new ApiError(httpStatus.status.UNAUTHORIZED, 'Invalid token')
+        : new ApiError(httpStatus.status.UNAUTHORIZED, getAuthError('TOKEN_INVALID'))
     )
   }
 }

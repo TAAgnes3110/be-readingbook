@@ -1,6 +1,7 @@
 const httpStatus = require('http-status')
 const { ApiError } = require('../utils/index')
 const { hashPassword } = require('../utils/passwordUtils')
+const { getUserError } = require('../constants/errorMessages')
 const userModel = require('../models/userModel')
 const { admin } = require('../config/db')
 
@@ -15,11 +16,11 @@ const getUserById = async (id) => {
     if (!id)
       throw new ApiError(
         httpStatus.status.BAD_REQUEST,
-        'User ID is required'
+        getUserError('USER_ID_REQUIRED')
       )
     const user = await userModel.findById(id)
     if (!user || !user.isActive) {
-      throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found')
+      throw new ApiError(httpStatus.status.NOT_FOUND, getUserError('USER_NOT_FOUND'))
     }
     return { _id: id, ...user }
   } catch (error) {
@@ -40,15 +41,15 @@ const getUserById = async (id) => {
 const getUserByEmail = async (email) => {
   try {
     if (!email)
-      throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email is required')
+      throw new ApiError(httpStatus.status.BAD_REQUEST, getUserError('EMAIL_REQUIRED'))
     const users = await userModel.findByEmail(email.trim().toLowerCase())
     if (!users) {
-      throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found')
+      throw new ApiError(httpStatus.status.NOT_FOUND, getUserError('USER_NOT_FOUND'))
     }
     const userId = Object.keys(users)[0]
     const user = users[userId]
     if (!user.isActive) {
-      throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found')
+      throw new ApiError(httpStatus.status.NOT_FOUND, getUserError('USER_NOT_FOUND'))
     }
     return { _id: userId, ...user }
   } catch (error) {
@@ -80,7 +81,7 @@ const updateUserById = async (userId, updateBody) => {
         updateBody.email.trim().toLowerCase()
       )
       if (users && Object.keys(users).some((id) => id !== userId)) {
-        throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email already in use')
+        throw new ApiError(httpStatus.status.BAD_REQUEST, getUserError('EMAIL_ALREADY_EXISTS'))
       }
 
       await admin

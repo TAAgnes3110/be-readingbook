@@ -1,5 +1,6 @@
 const httpStatus = require('http-status')
 const { ApiError } = require('../utils/index')
+const { getUserError, getAuthError } = require('../constants/errorMessages')
 const logger = require('../config/logger')
 const { auth } = require('../config/db')
 const config = require('../config/config')
@@ -27,22 +28,22 @@ async function createAuthUser(email, password) {
     if (error.code === 'auth/email-already-exists') {
       throw new ApiError(
         httpStatus.status.BAD_REQUEST,
-        'Email already in use'
+        getUserError('EMAIL_ALREADY_EXISTS')
       )
     } else if (error.code === 'auth/invalid-email') {
       throw new ApiError(
         httpStatus.status.BAD_REQUEST,
-        'Invalid email'
+        getUserError('INVALID_EMAIL')
       )
     } else if (error.code === 'auth/weak-password') {
       throw new ApiError(
         httpStatus.status.BAD_REQUEST,
-        'Password too weak'
+        getUserError('PASSWORD_TOO_WEAK')
       )
     } else {
       throw new ApiError(
         httpStatus.status.INTERNAL_SERVER_ERROR,
-        'Unable to create user'
+        getAuthError('TOKEN_GENERATION_FAILED')
       )
     }
   }
