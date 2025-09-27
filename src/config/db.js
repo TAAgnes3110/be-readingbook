@@ -5,8 +5,7 @@ const serviceAccount = require('../../serviceAccountKey.json')
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: config.firebase.databaseURL,
-    webApiKey: config.firebase.webApiKey
+    databaseURL: config.firebase.databaseURL
   })
 }
 
@@ -22,6 +21,5 @@ module.exports = {
 
   createUser: (userRecord) => auth.createUser(userRecord),
   getUser: (uid) => auth.getUser(uid),
-  signInWithEmailAndPassword: (email, password) => auth.signInWithEmailAndPassword(email, password),
   deleteUser: (uid) => auth.deleteUser(uid)
 }

@@ -2,7 +2,6 @@ const httpStatus = require('http-status')
 const { ApiError } = require('../utils/index')
 const logger = require('../config/logger')
 const { auth } = require('../config/db')
-const config = require('../config/config')
 
 /**
  * Create new user in Firebase Auth
@@ -49,5 +48,5 @@ async function createAuthUser(email, password) {
 }
 
 module.exports = {
-  createAuthUser,
+  createAuthUser
 }

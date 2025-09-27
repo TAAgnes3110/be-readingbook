@@ -1,7 +1,8 @@
 const httpStatus = require('http-status')
 const logger = require('../config/logger')
 const { ApiError } = require('../utils/index')
-const { otpService, tokenService } = require('../services/index')
+const { otpService, firebaseService, tokenService } = require('../services/index')
+const { comparePassword } = require('../utils/passwordUtils')
 const userModel = require('../models/userModel')
 
 /**
@@ -44,12 +45,18 @@ async function SignUp(userBody) {
       if (error instanceof ApiError && error.statusCode === httpStatus.status.NOT_FOUND) {
         // Email does not exist, continue
       } else {
+        // Other error or email already exists
         throw error
       }
     }
 
+    // Create user in Firebase Auth
+    await firebaseService.createAuthUser(userData.email, userData.password)
+
+    // Create user in Realtime Database
     const { userId: createdUserId, message } = await userModel.create(userData)
 
+    // Send OTP
     await otpService.sendOTP(userData.email, 'register')
 
     return { userId: createdUserId, message }
@@ -60,51 +67,6 @@ async function SignUp(userBody) {
       : new ApiError(
         httpStatus.status.INTERNAL_SERVER_ERROR,
         `Registration failed: ${error.message}`
-      )
-  }
-}
-
-/**
- * Login user
- * @param {string} email - User email
- * @param {string} password - User password
- * @returns {Promise<Object>} - Login result
- * @throws {ApiError} - If login fails
- */
-async function login(email, password) {
-  try {
-    const user = await userModel.verifyPassword(email, password)
-
-    await userModel.update(user._id, {
-      lastLogin: Date.now(),
-      isOnline: true
-    })
-
-    const accessToken = tokenService.generateAccessToken(user._id, user.role)
-    const refreshToken = tokenService.generateRefreshToken(user._id)
-    const firebaseToken = await tokenService.generateFirebaseCustomToken(user._id, {
-      role: user.role
-    })
-
-    const { password: userPassword, ...userWithoutPassword } = user
-
-    logger.info(`User ${email} logged in successfully`)
-
-    return {
-      user: userWithoutPassword,
-      token: {
-        access: accessToken,
-        refresh: refreshToken,
-        firebase: firebaseToken
-      }
-    }
-  } catch (error) {
-    logger.error(`Error logging in user: ${error.message}`)
-    throw error instanceof ApiError
-      ? error
-      : new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
-        `Login failed: ${error.message}`
       )
   }
 }
@@ -148,10 +110,8 @@ async function verifyAndActivateUser(email, otp) {
  */
 async function resendOTP(email) {
   try {
-    // Check if user exists
     await userModel.findByEmailForActivation(email)
 
-    // Send new OTP
     await otpService.sendOTP(email, 'register')
 
     return { message: 'OTP resent successfully' }
@@ -166,10 +126,68 @@ async function resendOTP(email) {
   }
 }
 
+/**
+ * Login user
+ * @param {string} email - User email
+ * @param {string} password - User password
+ * @returns {Promise<Object>} - Login result with user data and tokens
+ * @throws {ApiError} - If login fails
+ */
+async function login(email, password) {
+  try {
+    let user
+    try {
+      user = await userModel.findByEmail(email)
+    } catch (error) {
+      if (error.statusCode === httpStatus.status.NOT_FOUND) {
+        throw new ApiError(
+          httpStatus.status.UNAUTHORIZED,
+          'Email hoặc mật khẩu không đúng'
+        )
+      }
+      throw error
+    }
+
+    const isPasswordValid = await comparePassword(password, user.password)
+    if (!isPasswordValid) {
+      throw new ApiError(
+        httpStatus.status.UNAUTHORIZED,
+        'Email hoặc mật khẩu không đúng'
+      )
+    }
+
+    const accessToken = tokenService.generateAccessToken(user._id, user.role)
+    const refreshToken = tokenService.generateRefreshToken(user._id)
+
+    await userModel.update(user._id, {
+      isOnline: true,
+      lastLogin: Date.now()
+    })
+
+    const { password: userPassword, ...userWithoutPassword } = user
+
+    logger.info(`User ${user._id} logged in successfully`)
+
+    return {
+      user: userWithoutPassword,
+      accessToken,
+      refreshToken,
+      message: 'Login successful'
+    }
+  } catch (error) {
+    logger.error(`Error logging in user ${email}: ${error.stack}`)
+    throw error instanceof ApiError
+      ? error
+      : new ApiError(
+        httpStatus.status.INTERNAL_SERVER_ERROR,
+        `Login failed: ${error.message}`
+      )
+  }
+}
 
 module.exports = {
   SignUp,
-  login,
   verifyAndActivateUser,
-  resendOTP
+  resendOTP,
+  login
 }

@@ -25,7 +25,10 @@ app.options('*', cors())
 // BODY PARSING
 app.use(
   express.json({
-    limit: config.upload.limit
+    limit: config.upload.limit,
+    verify: (req, res, buf) => {
+      req.rawBody = buf
+    }
   })
 )
 app.use(
@@ -70,9 +73,9 @@ app.use('/api/users', user)
 app.use((error, req, res, next) => {
   logger.error('Unhandled error:', error)
 
-  let statusCode = error.status || error.statusCode || httpStatus.INTERNAL_SERVER_ERROR
+  let statusCode = error.status || error.statusCode || httpStatus.status.INTERNAL_SERVER_ERROR
   if (!statusCode || typeof statusCode !== 'number') {
-    statusCode = httpStatus.INTERNAL_SERVER_ERROR
+    statusCode = 500
   }
 
   res.status(statusCode).json({

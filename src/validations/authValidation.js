@@ -16,14 +16,6 @@ const register = {
   })
 }
 
-const login = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(1)
-  })
-}
-
-
 const verifyAndActivateUser = {
   body: Joi.object().keys({
     email: Joi.string().required().email(),
@@ -37,10 +29,16 @@ const resendOTP = {
   })
 }
 
+const login = {
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required()
+  })
+}
 
 module.exports = {
   register,
-  login,
   verifyAndActivateUser,
-  resendOTP
+  resendOTP,
+  login
 }

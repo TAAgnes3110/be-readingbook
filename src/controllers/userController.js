@@ -30,7 +30,52 @@ const verifyUserOTP = catchAsync(async (req, res) => {
   })
 })
 
+/**
+ * User login
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
+ */
+const login = catchAsync(async (req, res) => {
+  const { email, password } = pick(req.body, ['email', 'password'])
+  const result = await authService.login(email, password)
+  res.json({
+    success: true,
+    data: result,
+    message: 'Login successful'
+  })
+})
 
+/**
+ * Request password reset
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
+ */
+const requestResetPassword = catchAsync(async (req, res) => {
+  const { email } = pick(req.body, ['email'])
+  const result = await authService.requestResetPassword(email)
+  res.json({
+    success: true,
+    message: result.message
+  })
+})
+
+/**
+ * Reset password
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
+ */
+const resetPassword = catchAsync(async (req, res) => {
+  const { email, otp, newPassword } = pick(req.body, [
+    'email',
+    'otp',
+    'newPassword'
+  ])
+  const result = await authService.resetPassword(email, otp, newPassword)
+  res.json({
+    success: true,
+    message: result.message
+  })
+})
 
 /**
  * Get user by ID
@@ -94,6 +139,9 @@ const deleteUser = catchAsync(async (req, res) => {
 module.exports = {
   createUser,
   verifyUserOTP,
+  login,
+  requestResetPassword,
+  resetPassword,
   getUserById,
   getUserByEmail,
   updateUser,

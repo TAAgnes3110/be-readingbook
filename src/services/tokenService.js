@@ -56,14 +56,9 @@ function generateRefreshToken(userId) {
  */
 async function generateFirebaseCustomToken(userId, additionalClaims = {}) {
   try {
-    const stringUserId = String(userId)
-    if (!stringUserId || stringUserId === 'undefined' || stringUserId === 'null') {
-      throw new Error('Invalid userId provided for Firebase custom token')
-    }
-
     const token = await auth
-      .createCustomToken(stringUserId, additionalClaims)
-    logger.info(`Generated Firebase custom token for user ${stringUserId}`)
+      .createCustomToken(userId, additionalClaims)
+    logger.info(`Generated Firebase custom token for user ${userId}`)
     return token
   } catch (error) {
     logger.error(

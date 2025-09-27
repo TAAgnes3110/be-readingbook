@@ -9,25 +9,10 @@ const { authService } = require('../services/index')
  */
 const register = catchAsync(async (req, res) => {
   const result = await authService.SignUp(req.body)
-  res.status(httpStatus.CREATED).json({
+  res.status(httpStatus.status.CREATED).json({
     success: true,
     data: { userId: result.userId },
     message: result.message
-  })
-})
-
-/**
- * Login user
- * @param {Object} req - HTTP request
- * @param {Object} res - HTTP response
- */
-const login = catchAsync(async (req, res) => {
-  const { email, password } = req.body
-  const result = await authService.login(email, password)
-  res.json({
-    success: true,
-    data: result,
-    message: 'Login successful'
   })
 })
 
@@ -59,10 +44,28 @@ const resendOTP = catchAsync(async (req, res) => {
   })
 })
 
+/**
+ * Login user
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
+ */
+const login = catchAsync(async (req, res) => {
+  const { email, password } = req.body
+  const result = await authService.login(email, password)
+  res.json({
+    success: true,
+    data: {
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken
+    },
+    message: result.message
+  })
+})
 
 module.exports = {
   register,
-  login,
   verifyOTP,
-  resendOTP
+  resendOTP,
+  login
 }

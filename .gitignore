@@ -18,12 +18,11 @@ serviceAccountKey.json
 
 # Environment files
 .env
+.env.*
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-# Keep .env.example for team reference
-!.env.example
 
 # misc
 .service_account.js

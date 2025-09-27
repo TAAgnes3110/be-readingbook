@@ -1,6 +1,6 @@
 const db = require('../config/db.js')
 const { ApiError } = require('../utils/index')
-const { hashPassword, comparePassword } = require('../utils/passwordUtils')
+const { hashPassword } = require('../utils/passwordUtils')
 const { generateCustomId } = require('../utils/idUtils')
 const httpStatus = require('http-status')
 
@@ -240,11 +240,10 @@ const userModel = {
         )
       }
       const sanitizedUpdateData = {
-        ...updateData,
         updatedAt: Date.now()
       }
 
-      // Only add fields that are provided and not undefined
+      // Only add fields that have values
       if (updateData.email) {
         sanitizedUpdateData.email = updateData.email.trim().toLowerCase()
       }
@@ -260,13 +259,11 @@ const userModel = {
       if (updateData.isOnline !== undefined) {
         sanitizedUpdateData.isOnline = updateData.isOnline
       }
-      if (updateData.lastLogin !== undefined) {
-        sanitizedUpdateData.lastLogin = updateData.lastLogin
-      }
-      if (updateData.lastSeen !== undefined) {
+      if (updateData.lastSeen) {
         sanitizedUpdateData.lastSeen = updateData.lastSeen
-      } else if (updateData.lastLogin) {
-        sanitizedUpdateData.lastSeen = Date.now()
+      }
+      if (updateData.lastLogin) {
+        sanitizedUpdateData.lastLogin = updateData.lastLogin
       }
       // Check phone number format if being updated
       if (sanitizedUpdateData.phoneNumber) {
@@ -317,68 +314,6 @@ const userModel = {
           `Failed to activate user: ${error.message}`
         )
     }
-  },
-
-  /**
-   * Verify user password
-   * @param {string} email - User email
-   * @param {string} password - Plain text password
-   * @returns {Promise<Object>} - User object if password matches
-   * @throws {ApiError} - If user not found or password doesn't match
-   */
-  verifyPassword: async (email, password) => {
-    try {
-      if (!email || !password) {
-        throw new ApiError(
-          httpStatus.status.BAD_REQUEST,
-          'Email and password are required'
-        )
-      }
-
-      // Find user by email
-      const snapshot = await db
-        .getRef('users')
-        .orderByChild('email')
-        .equalTo(email.trim().toLowerCase())
-        .once('value')
-
-      const users = snapshot.val()
-      if (!users) {
-        throw new ApiError(
-          httpStatus.status.NOT_FOUND,
-          'User not found'
-        )
-      }
-
-      const userId = Object.keys(users)[0]
-      const user = users[userId]
-
-      // Check if user is active
-      if (!user.isActive) {
-        throw new ApiError(
-          httpStatus.status.FORBIDDEN,
-          'User account is not activated'
-        )
-      }
-
-      // Compare password
-      const isPasswordValid = await comparePassword(password, user.password)
-      if (!isPasswordValid) {
-        throw new ApiError(
-          httpStatus.status.UNAUTHORIZED,
-          'Invalid password'
-        )
-      }
-
-      return { _id: userId, ...user }
-    } catch (error) {
-      throw error instanceof ApiError
-        ? error
-        : new ApiError(
-          httpStatus.status.INTERNAL_SERVER_ERROR,
-          `Password verification failed: ${error.message}`
-        )
-    }
   }
 }
 
@@ -388,6 +323,5 @@ module.exports = {
   findByEmail: userModel.findByEmail,
   findByEmailForActivation: userModel.findByEmailForActivation,
   update: userModel.update,
-  activateUser: userModel.activateUser,
-  verifyPassword: userModel.verifyPassword
+  activateUser: userModel.activateUser
 }
