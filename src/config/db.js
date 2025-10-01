@@ -21,5 +21,6 @@ module.exports = {
 
   createUser: (userRecord) => auth.createUser(userRecord),
   getUser: (uid) => auth.getUser(uid),
-  deleteUser: (uid) => auth.deleteUser(uid)
+  deleteUser: (uid) => auth.deleteUser(uid),
+  getUserByEmail: (email) => auth.getUserByEmail(email)
 }

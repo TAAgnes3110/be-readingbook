@@ -6,10 +6,10 @@ const { comparePassword } = require('../utils/passwordUtils')
 const userModel = require('../models/userModel')
 
 /**
- * Register new user
- * @param {Object} userBody - User data
- * @returns {Promise<Object>} - User ID and message
- * @throws {ApiError} - If registration fails
+ * Đăng ký người dùng mới
+ * @param {Object} userBody - Dữ liệu người dùng
+ * @returns {Promise<Object>} - ID người dùng và thông báo
+ * @throws {ApiError} - Nếu đăng ký thất bại
  */
 async function SignUp(userBody) {
   try {
@@ -23,6 +23,7 @@ async function SignUp(userBody) {
       _id,
       userId
     } = userBody
+
     const userData = {
       email,
       password,
@@ -36,27 +37,21 @@ async function SignUp(userBody) {
 
     try {
       await userModel.findByEmailForActivation(userData.email)
-      // If user found, email already exists
       throw new ApiError(
         httpStatus.status.BAD_REQUEST,
-        'Email already in use'
+        'Email đã được sử dụng'
       )
     } catch (error) {
       if (error instanceof ApiError && error.statusCode === httpStatus.status.NOT_FOUND) {
-        // Email does not exist, continue
+        // Email không tồn tại, tiếp tục
       } else {
-        // Other error or email already exists
         throw error
       }
     }
 
-    // Create user in Firebase Auth
+    // Tạo user trong Firebase Auth và database
     await firebaseService.createAuthUser(userData.email, userData.password)
-
-    // Create user in Realtime Database
     const { userId: createdUserId, message } = await userModel.create(userData)
-
-    // Send OTP
     await otpService.sendOTP(userData.email, 'register')
 
     return { userId: createdUserId, message }
@@ -66,72 +61,89 @@ async function SignUp(userBody) {
       ? error
       : new ApiError(
         httpStatus.status.INTERNAL_SERVER_ERROR,
-        `Registration failed: ${error.message}`
+        `Đăng ký thất bại: ${error.message}`
       )
   }
 }
 
 /**
- * Verify OTP and activate user
- * @param {string} email - User email
- * @param {string} otp - OTP code
- * @returns {Promise<Object>} - Verification result
- * @throws {ApiError} - If verification fails
+ * Xác thực OTP (tự động phát hiện loại dựa trên trạng thái user)
+ * @param {string} email - Email người dùng
+ * @param {string} otp - Mã OTP
+ * @returns {Promise<Object>} - Kết quả xác thực
+ * @throws {ApiError} - Nếu xác thực thất bại
  */
-async function verifyAndActivateUser(email, otp) {
+async function verifyOTP(email, otp) {
   try {
+    // Xác thực OTP
     const otpResult = await otpService.verifyOTP(email, otp)
     if (!otpResult.success) {
       throw new ApiError(httpStatus.status.BAD_REQUEST, otpResult.message)
     }
 
-    // Find userId from email (without checking isActive)
-    const user = await userModel.findByEmailForActivation(email)
-    const userId = user._id
-    await userModel.activateUser(userId)
-    await otpService.clearOTP(email)
-    return { success: true, message: 'Account activated successfully' }
+    try {
+      await userModel.findByEmail(email)
+      return { success: true, message: 'Xác thực OTP thành công, bạn có thể đặt mật khẩu mới' }
+    } catch (error) {
+      if (error.statusCode === httpStatus.status.NOT_FOUND) {
+        // User chưa active, kích hoạt tài khoản
+        try {
+          const inactiveUser = await userModel.findByEmailForActivation(email)
+          const userId = inactiveUser._id
+          await userModel.activateUser(userId)
+          await otpService.clearOTP(email)
+          return { success: true, message: 'Tài khoản đã được kích hoạt thành công' }
+        } catch (inactiveError) {
+          throw new ApiError(
+            httpStatus.status.NOT_FOUND,
+            'Không tìm thấy tài khoản nào liên quan đến email này'
+          )
+        }
+      }
+      throw error
+    }
   } catch (error) {
     logger.error(`Error verifying OTP for ${email}: ${error.stack}`)
     throw error instanceof ApiError
       ? error
       : new ApiError(
         httpStatus.status.INTERNAL_SERVER_ERROR,
-        `OTP verification failed: ${error.message}`
+        `Xác thực OTP thất bại: ${error.message}`
       )
   }
 }
 
 /**
- * Resend OTP
- * @param {string} email - User email
- * @returns {Promise<Object>} - OTP sending result
- * @throws {ApiError} - If sending fails
+ * Gửi lại OTP
+ * @param {string} email - Email người dùng
+ * @returns {Promise<Object>} - Kết quả gửi OTP
+ * @throws {ApiError} - Nếu gửi thất bại
  */
 async function resendOTP(email) {
   try {
-    await userModel.findByEmailForActivation(email)
-
     await otpService.sendOTP(email, 'register')
-
-    return { message: 'OTP resent successfully' }
+    return {
+      success: true,
+      message: 'Mã OTP đã được gửi lại đến email của bạn'
+    }
   } catch (error) {
     logger.error(`Error resending OTP for ${email}: ${error.stack}`)
     throw error instanceof ApiError
       ? error
       : new ApiError(
         httpStatus.status.INTERNAL_SERVER_ERROR,
-        `Failed to resend OTP: ${error.message}`
+        `Gửi lại OTP thất bại: ${error.message}`
       )
   }
 }
 
+
 /**
- * Login user
- * @param {string} email - User email
- * @param {string} password - User password
- * @returns {Promise<Object>} - Login result with user data and tokens
- * @throws {ApiError} - If login fails
+ * Đăng nhập người dùng
+ * @param {string} email - Email người dùng
+ * @param {string} password - Mật khẩu người dùng
+ * @returns {Promise<Object>} - Kết quả đăng nhập với dữ liệu người dùng và token
+ * @throws {ApiError} - Nếu đăng nhập thất bại
  */
 async function login(email, password) {
   try {
@@ -140,10 +152,17 @@ async function login(email, password) {
       user = await userModel.findByEmail(email)
     } catch (error) {
       if (error.statusCode === httpStatus.status.NOT_FOUND) {
-        throw new ApiError(
-          httpStatus.status.UNAUTHORIZED,
-          'Email hoặc mật khẩu không đúng'
-        )
+        if (error.message === 'User not found or not activated') {
+          throw new ApiError(
+            httpStatus.status.UNAUTHORIZED,
+            'Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email để kích hoạt tài khoản.'
+          )
+        } else {
+          throw new ApiError(
+            httpStatus.status.UNAUTHORIZED,
+            'Email hoặc mật khẩu không đúng'
+          )
+        }
       }
       throw error
     }
@@ -164,7 +183,9 @@ async function login(email, password) {
       lastLogin: Date.now()
     })
 
-    const { password: userPassword, ...userWithoutPassword } = user
+    // Loại bỏ password khỏi response
+    const userWithoutPassword = { ...user }
+    delete userWithoutPassword.password
 
     logger.info(`User ${user._id} logged in successfully`)
 
@@ -172,7 +193,7 @@ async function login(email, password) {
       user: userWithoutPassword,
       accessToken,
       refreshToken,
-      message: 'Login successful'
+      message: 'Đăng nhập thành công'
     }
   } catch (error) {
     logger.error(`Error logging in user ${email}: ${error.stack}`)
@@ -180,14 +201,93 @@ async function login(email, password) {
       ? error
       : new ApiError(
         httpStatus.status.INTERNAL_SERVER_ERROR,
-        `Login failed: ${error.message}`
+        `Đăng nhập thất bại: ${error.message}`
+      )
+  }
+}
+
+/**
+ * Quên mật khẩu
+ * @param {string} email - Email người dùng
+ * @returns {Promise<Object>} - Kết quả quên mật khẩu
+ * @throws {ApiError} - Nếu quên mật khẩu thất bại
+ */
+async function forgotPassword(email) {
+  try {
+    // Kiểm tra email có tồn tại không
+    try {
+      await userModel.findByEmail(email)
+    } catch (error) {
+      if (error.statusCode === httpStatus.status.NOT_FOUND) {
+        throw new ApiError(
+          httpStatus.status.NOT_FOUND,
+          'Email không tồn tại trong hệ thống'
+        )
+      }
+      throw error
+    }
+
+    await otpService.sendOTP(email, 'reset')
+
+    return {
+      success: true,
+      message: 'Mã OTP đã được gửi đến email của bạn'
+    }
+  } catch (error) {
+    logger.error(`Error forgot password for ${email}: ${error.stack}`)
+    throw error instanceof ApiError
+      ? error
+      : new ApiError(
+        httpStatus.status.INTERNAL_SERVER_ERROR,
+        `Quên mật khẩu thất bại: ${error.message}`
+      )
+  }
+}
+
+
+/**
+ * Đặt lại mật khẩu
+ * @param {string} email - Email người dùng
+ * @param {string} newPassword - Mật khẩu mới
+ * @param {string} confirmPassword - Xác nhận mật khẩu
+ * @returns {Promise<Object>} - Kết quả đặt lại mật khẩu
+ * @throws {ApiError} - Nếu đặt lại mật khẩu thất bại
+ */
+async function resetPassword(email, newPassword, confirmPassword) {
+  try {
+    if (newPassword !== confirmPassword) {
+      throw new ApiError(
+        httpStatus.status.BAD_REQUEST,
+        'Mật khẩu mới và xác nhận mật khẩu không khớp'
+      )
+    }
+
+    await userModel.findByEmail(email)
+
+    await firebaseService.updateAuthUserPassword(email, newPassword)
+    await userModel.updatePassword(email, newPassword)
+    await otpService.clearOTP(email)
+
+    return {
+      success: true,
+      message: 'Đặt lại mật khẩu thành công'
+    }
+  } catch (error) {
+    logger.error(`Error resetting password for ${email}: ${error.stack}`)
+    throw error instanceof ApiError
+      ? error
+      : new ApiError(
+        httpStatus.status.INTERNAL_SERVER_ERROR,
+        `Đặt lại mật khẩu thất bại: ${error.message}`
       )
   }
 }
 
 module.exports = {
   SignUp,
-  verifyAndActivateUser,
+  verifyOTP,
   resendOTP,
-  login
+  login,
+  forgotPassword,
+  resetPassword
 }

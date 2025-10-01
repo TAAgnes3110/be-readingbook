@@ -13,7 +13,7 @@ router.post(
 
 router.post(
   '/verify-otp',
-  validate(authValidation.verifyAndActivateUser),
+  validate(authValidation.verifyOTP),
   authController.verifyOTP
 )
 
@@ -23,10 +23,25 @@ router.post(
   authController.resendOTP
 )
 
+
 router.post(
   '/login',
   validate(authValidation.login),
   authController.login
 )
+
+router.post(
+  '/forgot-password',
+  validate(authValidation.forgotPassword),
+  authController.forgotPassword
+)
+
+
+router.post(
+  '/reset-password',
+  validate(authValidation.resetPassword),
+  authController.resetPassword
+)
+
 
 module.exports = router

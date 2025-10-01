@@ -6,7 +6,7 @@ const { createEmailKey } = require('../utils/emailUtils')
 const otpRef = db.ref('otps')
 
 /**
- * Generate random OTP
+ * Tạo OTP ngẫu nhiên
  * @param {number} length
  * @returns {string}
  */
@@ -21,7 +21,7 @@ function generate(length = config.otp.length) {
 }
 
 /**
- * Store OTP in Realtime Database
+ * Lưu trữ OTP trong Realtime Database
  * @param {string} email
  * @param {string} otp
  */
@@ -43,7 +43,7 @@ async function store(email, otp) {
 }
 
 /**
- * Get OTP by email
+ * Lấy OTP theo email
  * @param {string} email
  * @returns {Promise<object|null>}
  */
@@ -63,7 +63,7 @@ async function get(email) {
 }
 
 /**
- * Verify OTP
+ * Xác thực OTP
  * @param {string} email
  * @param {string} inputOTP
  * @returns {Promise<{success: boolean, message: string}>}
@@ -71,20 +71,24 @@ async function get(email) {
 async function verify(email, inputOTP) {
   const key = createEmailKey(email)
   const data = await get(email)
+
+  // Kiểm tra OTP có tồn tại không
   if (!data) {
     logger.warn(
       `OTP verification failed for ${email}: OTP not found or expired`
     )
-    return { success: false, message: 'OTP not found or expired' }
+    return { success: false, message: 'OTP không tìm thấy hoặc đã hết hạn' }
   }
 
+  // Kiểm tra OTP có hết hạn không
   if (Date.now() > data.expiresAt) {
     await remove(email)
     logger.warn(`OTP verification failed for ${email}: OTP expired`)
-    return { success: false, message: 'OTP expired' }
+    return { success: false, message: 'OTP đã hết hạn' }
   }
 
-  if (data.otp !== inputOTP) {
+  // Kiểm tra OTP có đúng không
+  if (String(data.otp) !== String(inputOTP)) {
     try {
       await otpRef.child(key).update({ attempts: data.attempts + 1 })
       logger.warn(
@@ -92,7 +96,7 @@ async function verify(email, inputOTP) {
           data.attempts + 1
         }`
       )
-      return { success: false, message: 'Invalid OTP code' }
+      return { success: false, message: 'Mã OTP không hợp lệ' }
     } catch (error) {
       logger.error(
         `Failed to update OTP attempts for ${email}: ${error.stack}`
@@ -101,13 +105,14 @@ async function verify(email, inputOTP) {
     }
   }
 
+  // Xác thực thành công, xóa OTP
   await remove(email)
   logger.info(`OTP verified successfully for ${email}`)
-  return { success: true, message: 'OTP verification successful' }
+  return { success: true, message: 'Xác thực OTP thành công' }
 }
 
 /**
- * Delete OTP
+ * Xóa OTP
  * @param {string} email
  */
 async function remove(email) {

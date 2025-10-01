@@ -6,13 +6,14 @@ const httpStatus = require('http-status')
 
 const userModel = {
   /**
-   * Create new user
-   * @param {Object} userData - User data
-   * @returns {Promise<Object>} - User ID and message
-   * @throws {ApiError} - If data is invalid or creation fails
+   * Tạo người dùng mới
+   * @param {Object} userData - Dữ liệu người dùng
+   * @returns {Promise<Object>} - ID người dùng và thông báo
+   * @throws {ApiError} - Nếu dữ liệu không hợp lệ hoặc tạo thất bại
    */
   create: async (userData) => {
     try {
+      // Kiểm tra dữ liệu đầu vào
       if (
         !userData.email ||
         !userData.password ||
@@ -22,53 +23,51 @@ const userModel = {
       ) {
         throw new ApiError(
           httpStatus.status.BAD_REQUEST,
-          'Email, password, confirm password, full name and phone number are required'
+          'Email, mật khẩu, xác nhận mật khẩu, họ tên và số điện thoại là bắt buộc'
         )
       }
 
-      // Handle custom ID if provided
+      // Xử lý userId
       let userId = userData._id || userData.userId
       if (userId) {
-        // Check if ID already exists
+        // Kiểm tra userId đã tồn tại chưa
         const existingUser = await db.getRef(`users/${userId}`).once('value')
         if (existingUser.val()) {
           throw new ApiError(
             httpStatus.status.BAD_REQUEST,
-            'User ID already exists'
+            'ID người dùng đã tồn tại'
           )
         }
 
-        // Validate custom ID format (numeric only)
+        // Kiểm tra userId hợp lệ
         if (isNaN(userId) || userId <= 0) {
           throw new ApiError(
             httpStatus.status.BAD_REQUEST,
-            'User ID must be a positive integer'
+            'ID người dùng phải là số nguyên dương'
           )
         }
 
-        // Convert to number
         userId = parseInt(userId)
       }
 
-      // Check if confirmPassword matches password
+      // Kiểm tra mật khẩu và xác nhận mật khẩu
       if (userData.password !== userData.confirmPassword) {
         throw new ApiError(
           httpStatus.status.BAD_REQUEST,
-          'Password confirmation does not match'
+          'Xác nhận mật khẩu không khớp'
         )
       }
 
-      // Email duplicate check already done in authService
-
-      // Check phone number format
+      // Kiểm tra số điện thoại
       const phoneRegex = /^[0-9]{10,11}$/
       if (!phoneRegex.test(userData.phoneNumber.trim())) {
         throw new ApiError(
           httpStatus.status.BAD_REQUEST,
-          'Invalid phone number'
+          'Số điện thoại không hợp lệ'
         )
       }
 
+      // Chuẩn bị dữ liệu user
       const sanitizedData = {
         fullName: userData.fullName.trim(),
         email: userData.email.trim().toLowerCase(),
@@ -90,14 +89,13 @@ const userModel = {
         updatedAt: Date.now()
       }
 
+      // Tạo user trong database
       const userRef = db.getRef('users')
       let newUserRef
 
       if (userId) {
-        // Use custom ID (number)
         newUserRef = userRef.child(userId)
       } else {
-        // Generate automatic numeric ID
         const newCustomId = await generateCustomId()
         userId = parseInt(newCustomId)
         newUserRef = userRef.child(userId)
@@ -107,38 +105,41 @@ const userModel = {
 
       return {
         userId,
-        message: 'User created successfully, please verify OTP'
+        message: 'Người dùng đã được tạo thành công, vui lòng xác thực OTP'
       }
     } catch (error) {
       throw error instanceof ApiError
         ? error
         : new ApiError(
           httpStatus.status.INTERNAL_SERVER_ERROR,
-          `Failed to create user: ${error.message}`
+          `Tạo người dùng thất bại: ${error.message}`
         )
     }
   },
 
   /**
-   * Find user by ID
-   * @param {string} userId - User ID
-   * @returns {Promise<Object>} - User object
-   * @throws {ApiError} - If user not found or inactive
+   * Tìm người dùng theo ID
+   * @param {string} userId - ID người dùng
+   * @returns {Promise<Object>} - Đối tượng người dùng
+   * @throws {ApiError} - Nếu không tìm thấy hoặc chưa kích hoạt
    */
   findById: async (userId) => {
     try {
+      // Kiểm tra userId
       if (!userId) {
         throw new ApiError(
           httpStatus.status.BAD_REQUEST,
-          'User ID is required'
+          'ID người dùng là bắt buộc'
         )
       }
+
+      // Tìm user theo ID
       const snapshot = await db.getRef(`users/${userId}`).once('value')
       const user = snapshot.val()
       if (!user || !user.isActive) {
         throw new ApiError(
           httpStatus.status.NOT_FOUND,
-          'User not found or not activated'
+          'Không tìm thấy người dùng hoặc chưa được kích hoạt'
         )
       }
       return { _id: userId, ...user }
@@ -147,22 +148,25 @@ const userModel = {
         ? error
         : new ApiError(
           httpStatus.status.INTERNAL_SERVER_ERROR,
-          `Failed to get user information: ${error.message}`
+          `Lấy thông tin người dùng thất bại: ${error.message}`
         )
     }
   },
 
   /**
-   * Find user by email
-   * @param {string} email - User email
-   * @returns {Promise<Object>} - User object
-   * @throws {ApiError} - If user not found or inactive
+   * Tìm người dùng theo email
+   * @param {string} email - Email người dùng
+   * @returns {Promise<Object>} - Đối tượng người dùng
+   * @throws {ApiError} - Nếu không tìm thấy hoặc chưa kích hoạt
    */
   findByEmail: async (email) => {
     try {
-      if (!email) {
-        throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email is required')
+      // Kiểm tra email
+      if (!email || typeof email !== 'string') {
+        throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email là bắt buộc')
       }
+
+      // Tìm user theo email
       const snapshot = await db
         .getRef('users')
         .orderByChild('email')
@@ -170,14 +174,15 @@ const userModel = {
         .once('value')
       const users = snapshot.val()
       if (!users) {
-        throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found')
+        throw new ApiError(httpStatus.status.NOT_FOUND, 'Không tìm thấy người dùng')
       }
+
       const userId = Object.keys(users)[0]
       const user = users[userId]
       if (!user.isActive) {
         throw new ApiError(
           httpStatus.status.NOT_FOUND,
-          'User not found or not activated'
+          'Không tìm thấy người dùng hoặc chưa được kích hoạt'
         )
       }
       return { _id: userId, ...user }
@@ -186,22 +191,25 @@ const userModel = {
         ? error
         : new ApiError(
           httpStatus.status.INTERNAL_SERVER_ERROR,
-          `Failed to get user information: ${error.message}`
+          `Lấy thông tin người dùng thất bại: ${error.message}`
         )
     }
   },
 
   /**
-   * Find user by email (without checking isActive)
-   * @param {string} email - User email
-   * @returns {Promise<Object>} - User object
-   * @throws {ApiError} 404 - User not found
+   * Tìm người dùng theo email (không kiểm tra isActive)
+   * @param {string} email - Email người dùng
+   * @returns {Promise<Object>} - Đối tượng người dùng
+   * @throws {ApiError} 404 - Không tìm thấy người dùng
    */
   findByEmailForActivation: async (email) => {
     try {
-      if (!email) {
-        throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email is required')
+      // Kiểm tra email
+      if (!email || typeof email !== 'string') {
+        throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email là bắt buộc')
       }
+
+      // Tìm user theo email (không kiểm tra isActive)
       const snapshot = await db
         .getRef('users')
         .orderByChild('email')
@@ -209,8 +217,9 @@ const userModel = {
         .once('value')
       const users = snapshot.val()
       if (!users) {
-        throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found')
+        throw new ApiError(httpStatus.status.NOT_FOUND, 'Không tìm thấy người dùng')
       }
+
       const userId = Object.keys(users)[0]
       const user = users[userId]
       return { _id: userId, ...user }
@@ -219,31 +228,34 @@ const userModel = {
         ? error
         : new ApiError(
           httpStatus.status.INTERNAL_SERVER_ERROR,
-          `Failed to get user information: ${error.message}`
+          `Lấy thông tin người dùng thất bại: ${error.message}`
         )
     }
   },
 
   /**
-   * Update user information
-   * @param {string} userId - User ID
-   * @param {Object} updateData - Update data
-   * @returns {Promise<boolean>} - Update status
-   * @throws {ApiError} - If update fails
+   * Cập nhật thông tin người dùng
+   * @param {string} userId - ID người dùng
+   * @param {Object} updateData - Dữ liệu cập nhật
+   * @returns {Promise<boolean>} - Trạng thái cập nhật
+   * @throws {ApiError} - Nếu cập nhật thất bại
    */
   update: async (userId, updateData) => {
     try {
+      // Kiểm tra userId
       if (!userId) {
         throw new ApiError(
           httpStatus.status.BAD_REQUEST,
-          'User ID is required'
+          'ID người dùng là bắt buộc'
         )
       }
+
+      // Chuẩn bị dữ liệu cập nhật
       const sanitizedUpdateData = {
         updatedAt: Date.now()
       }
 
-      // Only add fields that have values
+      // Xử lý các trường cập nhật
       if (updateData.email) {
         sanitizedUpdateData.email = updateData.email.trim().toLowerCase()
       }
@@ -265,16 +277,19 @@ const userModel = {
       if (updateData.lastLogin) {
         sanitizedUpdateData.lastLogin = updateData.lastLogin
       }
-      // Check phone number format if being updated
+
+      // Kiểm tra số điện thoại nếu có
       if (sanitizedUpdateData.phoneNumber) {
         const phoneRegex = /^[0-9]{10,11}$/
         if (!phoneRegex.test(sanitizedUpdateData.phoneNumber)) {
           throw new ApiError(
             httpStatus.status.BAD_REQUEST,
-            'Invalid phone number'
+            'Số điện thoại không hợp lệ'
           )
         }
       }
+
+      // Cập nhật user trong database
       await db.getRef(`users/${userId}`).update(sanitizedUpdateData)
       return true
     } catch (error) {
@@ -282,25 +297,67 @@ const userModel = {
         ? error
         : new ApiError(
           httpStatus.status.INTERNAL_SERVER_ERROR,
-          `Failed to update user: ${error.message}`
+          `Cập nhật người dùng thất bại: ${error.message}`
         )
     }
   },
 
   /**
-   * Activate user after OTP verification
-   * @param {string} userId - User ID
-   * @returns {Promise<boolean>} - Activation status
-   * @throws {ApiError} - If activation fails
+   * Cập nhật mật khẩu người dùng
+   * @param {string} email - Email người dùng
+   * @param {string} newPassword - Mật khẩu mới
+   * @returns {Promise<boolean>} - Trạng thái cập nhật
+   * @throws {ApiError} - Nếu cập nhật thất bại
+   */
+  updatePassword: async (email, newPassword) => {
+    try {
+      // Kiểm tra dữ liệu đầu vào
+      if (!email || !newPassword) {
+        throw new ApiError(
+          httpStatus.status.BAD_REQUEST,
+          'Email và mật khẩu mới là bắt buộc'
+        )
+      }
+
+      // Tìm user và hash password mới
+      const user = await userModel.findByEmail(email)
+      const userId = user._id
+      const hashedPassword = await hashPassword(newPassword)
+
+      // Cập nhật password trong database
+      await db.getRef(`users/${userId}`).update({
+        password: hashedPassword,
+        updatedAt: Date.now()
+      })
+
+      return true
+    } catch (error) {
+      throw error instanceof ApiError
+        ? error
+        : new ApiError(
+          httpStatus.status.INTERNAL_SERVER_ERROR,
+          `Cập nhật mật khẩu thất bại: ${error.message}`
+        )
+    }
+  },
+
+  /**
+   * Kích hoạt người dùng sau khi xác thực OTP
+   * @param {string} userId - ID người dùng
+   * @returns {Promise<boolean>} - Trạng thái kích hoạt
+   * @throws {ApiError} - Nếu kích hoạt thất bại
    */
   activateUser: async (userId) => {
     try {
+      // Kiểm tra userId
       if (!userId) {
         throw new ApiError(
           httpStatus.status.BAD_REQUEST,
-          'User ID is required'
+          'ID người dùng là bắt buộc'
         )
       }
+
+      // Kích hoạt user
       await db.getRef(`users/${userId}`).update({
         isActive: true,
         updatedAt: Date.now()
@@ -311,7 +368,7 @@ const userModel = {
         ? error
         : new ApiError(
           httpStatus.status.INTERNAL_SERVER_ERROR,
-          `Failed to activate user: ${error.message}`
+          `Kích hoạt người dùng thất bại: ${error.message}`
         )
     }
   }
@@ -323,5 +380,6 @@ module.exports = {
   findByEmail: userModel.findByEmail,
   findByEmailForActivation: userModel.findByEmailForActivation,
   update: userModel.update,
+  updatePassword: userModel.updatePassword,
   activateUser: userModel.activateUser
 }

@@ -1,5 +1,3 @@
-const Joi = require('joi')
-
 const validate = (schema) => {
   return (req, res, next) => {
     const { error } = schema.body
@@ -13,7 +11,7 @@ const validate = (schema) => {
     if (error) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid data',
+        message: 'Dữ liệu không hợp lệ',
         errors: error.details.map((detail) => ({
           message: detail.message,
           path: detail.path,

@@ -26,27 +26,54 @@ async function createAuthUser(email, password) {
     if (error.code === 'auth/email-already-exists') {
       throw new ApiError(
         httpStatus.status.BAD_REQUEST,
-        'Email already in use'
+        'Email đã được sử dụng'
       )
     } else if (error.code === 'auth/invalid-email') {
       throw new ApiError(
         httpStatus.status.BAD_REQUEST,
-        'Invalid email'
+        'Email không hợp lệ'
       )
     } else if (error.code === 'auth/weak-password') {
       throw new ApiError(
         httpStatus.status.BAD_REQUEST,
-        'Password too weak'
+        'Mật khẩu quá yếu'
       )
     } else {
       throw new ApiError(
         httpStatus.status.INTERNAL_SERVER_ERROR,
-        'Unable to create user'
+        'Không thể tạo người dùng'
       )
     }
   }
 }
 
+/**
+ * Update Firebase Auth user password
+ * @param {string} email
+ * @param {string} newPassword
+ * @returns {Promise<admin.auth.UserRecord>}
+ */
+async function updateAuthUserPassword (email, newPassword) {
+  try {
+    // Tìm user trong Firebase Auth bằng email
+    const userRecord = await auth.getUserByEmail(email)
+
+    // Cập nhật password trong Firebase Auth
+    await auth.updateUser(userRecord.uid, { password: newPassword })
+
+    return true
+  } catch (error) {
+    logger.error(`Error updating Firebase Auth user password for ${email}: ${error.stack}`)
+    throw error instanceof ApiError
+      ? error
+      : new ApiError(
+        httpStatus.status.INTERNAL_SERVER_ERROR,
+        `Cập nhật mật khẩu Firebase Auth thất bại: ${error.message}`
+      )
+  }
+}
+
 module.exports = {
-  createAuthUser
+  createAuthUser,
+  updateAuthUserPassword
 }

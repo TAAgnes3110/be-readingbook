@@ -3,7 +3,7 @@ const { catchAsync } = require('../utils/index')
 const { authService } = require('../services/index')
 
 /**
- * Register new user
+ * Đăng ký người dùng mới
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
  */
@@ -17,13 +17,13 @@ const register = catchAsync(async (req, res) => {
 })
 
 /**
- * Verify OTP and activate account
+ * Xác thực OTP (tự động phát hiện loại dựa trên trạng thái user)
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
  */
 const verifyOTP = catchAsync(async (req, res) => {
   const { email, otp } = req.body
-  const result = await authService.verifyAndActivateUser(email, otp)
+  const result = await authService.verifyOTP(email, otp)
   res.json({
     success: true,
     message: result.message
@@ -31,7 +31,7 @@ const verifyOTP = catchAsync(async (req, res) => {
 })
 
 /**
- * Resend OTP
+ * Gửi lại OTP
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
  */
@@ -39,13 +39,14 @@ const resendOTP = catchAsync(async (req, res) => {
   const { email } = req.body
   const result = await authService.resendOTP(email)
   res.json({
-    success: true,
+    success: result.success,
     message: result.message
   })
 })
 
+
 /**
- * Login user
+ * Đăng nhập người dùng
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
  */
@@ -63,9 +64,40 @@ const login = catchAsync(async (req, res) => {
   })
 })
 
+/**
+ * Quên mật khẩu - Bước 1: Gửi OTP đến email
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
+ */
+const forgotPassword = catchAsync(async (req, res) => {
+  const { email } = req.body
+  const result = await authService.forgotPassword(email)
+  res.json({
+    success: result.success,
+    message: result.message
+  })
+})
+
+/**
+ * Đặt lại mật khẩu
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
+ */
+const resetPassword = catchAsync(async (req, res) => {
+  const { email, newPassword, confirmPassword } = req.body
+  const result = await authService.resetPassword(email, newPassword, confirmPassword)
+  res.json({
+    success: result.success,
+    message: result.message
+  })
+})
+
+
 module.exports = {
   register,
   verifyOTP,
   resendOTP,
-  login
+  login,
+  forgotPassword,
+  resetPassword
 }
