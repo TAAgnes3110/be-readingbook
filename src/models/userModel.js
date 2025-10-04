@@ -13,7 +13,6 @@ const userModel = {
    */
   create: async (userData) => {
     try {
-      // Kiểm tra dữ liệu đầu vào
       if (
         !userData.email ||
         !userData.password ||
@@ -27,7 +26,6 @@ const userModel = {
         )
       }
 
-      // Xử lý userId
       let userId = userData._id || userData.userId
       if (userId) {
         // Kiểm tra userId đã tồn tại chưa
@@ -39,7 +37,6 @@ const userModel = {
           )
         }
 
-        // Kiểm tra userId hợp lệ
         if (isNaN(userId) || userId <= 0) {
           throw new ApiError(
             httpStatus.status.BAD_REQUEST,
@@ -50,7 +47,6 @@ const userModel = {
         userId = parseInt(userId)
       }
 
-      // Kiểm tra mật khẩu và xác nhận mật khẩu
       if (userData.password !== userData.confirmPassword) {
         throw new ApiError(
           httpStatus.status.BAD_REQUEST,
@@ -58,7 +54,6 @@ const userModel = {
         )
       }
 
-      // Kiểm tra số điện thoại
       const phoneRegex = /^[0-9]{10,11}$/
       if (!phoneRegex.test(userData.phoneNumber.trim())) {
         throw new ApiError(
@@ -67,7 +62,6 @@ const userModel = {
         )
       }
 
-      // Chuẩn bị dữ liệu user
       const sanitizedData = {
         fullName: userData.fullName.trim(),
         email: userData.email.trim().toLowerCase(),
@@ -89,7 +83,6 @@ const userModel = {
         updatedAt: Date.now()
       }
 
-      // Tạo user trong database
       const userRef = db.getRef('users')
       let newUserRef
 

@@ -27,9 +27,9 @@ module.exports = {
     from: process.env.EMAIL_FROM
   },
   upload: {
-    limit: process.env.UPLOAD_LIMIT,
-    allowedFormats: process.env.ALLOWED_FORMATS.split(','),
-    storagePath: process.env.STORAGE_PATH
+    limit: process.env.UPLOAD_LIMIT || '10mb',
+    allowedFormats: process.env.ALLOWED_FORMATS ? process.env.ALLOWED_FORMATS.split(',') : ['jpg', 'jpeg', 'png', 'gif', 'pdf'],
+    storagePath: process.env.STORAGE_PATH || 'uploads'
   },
   rateLimit: {
     max: parseInt(process.env.RATE_LIMIT, 10),
@@ -40,8 +40,8 @@ module.exports = {
     format: process.env.LOG_FORMAT
   },
   cors: {
-    origin: process.env.CORS_ORIGIN,
-    methods: process.env.CORS_METHODS.split(','),
+    origin: process.env.CORS_ORIGIN || '*',
+    methods: process.env.CORS_METHODS ? process.env.CORS_METHODS.split(',') : ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: process.env.CORS_CREDENTIALS === 'true'
   },
   otp: {
