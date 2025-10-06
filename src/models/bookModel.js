@@ -352,7 +352,9 @@ const bookModel = {
           `Xóa sách thất bại: ${error.message}`
         )
     }
-  }
+  },
+
+  //get new book
 }
 
 module.exports = { bookModel }

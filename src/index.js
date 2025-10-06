@@ -3,8 +3,8 @@ const config = require('./config/config')
 const logger = require('./config/logger')
 
 // SERVER CONFIGURATION
-const host = config.app.host || 'localhost'
-const port = config.app.port || 3000
+const host = config.render.isRender ? '0.0.0.0' : (config.app.host || 'localhost')
+const port = config.render.port || config.app.port || 3000
 const prefix = config.app.prefix || ''
 
 let server = null
@@ -13,8 +13,13 @@ let server = null
 const startServer = () => {
   try {
     server = app.listen(port, host, () => {
-      logger.info(`Server running at http://${host}:${port}${prefix}`)
+      const serverUrl = config.render.isRender 
+        ? `https://${config.render.host}` 
+        : `http://${host}:${port}${prefix}`
+      
+      logger.info(`Server running at ${serverUrl}`)
       logger.info(`Environment: ${config.env}`)
+      logger.info(`Deployment: ${config.render.isRender ? 'Render' : 'Local'}`)
       logger.info(`Started at: ${new Date().toISOString()}`)
     })
 
