@@ -37,7 +37,6 @@ services:
       - .:/app
       - /app/node_modules
       - ./uploads:/app/uploads
-      - ./serviceAccountKey.json:/app/serviceAccountKey.json:ro
     networks:
       - reading-book-network
     command: npm run dev

@@ -13,7 +13,12 @@ module.exports = {
   firebase: {
     projectId: process.env.FIREBASE_PROJECT_ID,
     projectNumber: process.env.FIREBASE_PROJECT_NUMBER,
-    databaseURL: process.env.FIREBASE_DATABASE_URL
+    databaseURL: process.env.FIREBASE_DATABASE_URL,
+    webApiKey: process.env.FIREBASE_WEB_API_KEY,
+    privateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    clientId: process.env.FIREBASE_CLIENT_ID
   },
   email: {
     smtp: {

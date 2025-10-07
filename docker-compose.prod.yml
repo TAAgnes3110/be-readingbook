@@ -34,7 +34,6 @@ services:
       - .env
     volumes:
       - ./uploads:/app/uploads
-      - ./serviceAccountKey.json:/app/serviceAccountKey.json:ro
     networks:
       - reading-book-network
     healthcheck:
