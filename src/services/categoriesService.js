@@ -13,7 +13,7 @@ const createCategory = async (categoryBody) => {
 
     if (!name || !image_url) {
       throw new ApiError(
-        httpStatus.status.BAD_REQUEST,
+        httpStatus.BAD_REQUEST,
         'Tên thể loại và ảnh là bắt buộc'
       )
     }
@@ -21,7 +21,7 @@ const createCategory = async (categoryBody) => {
     const existedCategory = await categoryModel.findByName(name)
     if (existedCategory) {
       throw new ApiError(
-        httpStatus.status.BAD_REQUEST,
+        httpStatus.BAD_REQUEST,
         'Tên thể loại đã tồn tại'
       )
     }
@@ -48,7 +48,7 @@ const createCategory = async (categoryBody) => {
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.status.INTERNAL_SERVER_ERROR,
+      httpStatus.INTERNAL_SERVER_ERROR,
       `Tạo thể loại thất bại: ${error.message}`
     )
   }
@@ -68,7 +68,7 @@ const getAllCategories = async () => {
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.status.INTERNAL_SERVER_ERROR,
+      httpStatus.INTERNAL_SERVER_ERROR,
       `Lấy danh sách thể loại thất bại: ${error.message}`
     )
   }
@@ -89,7 +89,7 @@ const getCategoryById = async (categoryId) => {
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.status.INTERNAL_SERVER_ERROR,
+      httpStatus.INTERNAL_SERVER_ERROR,
       `Lấy thể loại thất bại: ${error.message}`
     )
   }
@@ -113,7 +113,7 @@ const updateCategory = async (categoryId, updateData) => {
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.status.INTERNAL_SERVER_ERROR,
+      httpStatus.INTERNAL_SERVER_ERROR,
       `Cập nhật thể loại thất bại: ${error.message}`
     )
   }
@@ -134,7 +134,7 @@ const deleteCategory = async (categoryId) => {
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.status.INTERNAL_SERVER_ERROR,
+      httpStatus.INTERNAL_SERVER_ERROR,
       `Xóa thể loại thất bại: ${error.message}`
     )
   }
@@ -154,7 +154,7 @@ const getCurrentMaxCategoryId = async () => {
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.status.INTERNAL_SERVER_ERROR,
+      httpStatus.INTERNAL_SERVER_ERROR,
       `Lấy ID hiện tại thất bại: ${error.message}`
     )
   }

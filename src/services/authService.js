@@ -38,11 +38,11 @@ async function SignUp(userBody) {
     try {
       await userModel.findByEmailForActivation(userData.email)
       throw new ApiError(
-        httpStatus.status.BAD_REQUEST,
+        httpStatus.BAD_REQUEST,
         'Email đã được sử dụng'
       )
     } catch (error) {
-      if (error instanceof ApiError && error.statusCode === httpStatus.status.NOT_FOUND) {
+      if (error instanceof ApiError && error.statusCode === httpStatus.NOT_FOUND) {
         // Email không tồn tại, tiếp tục
       } else {
         throw error
@@ -60,7 +60,7 @@ async function SignUp(userBody) {
     throw error instanceof ApiError
       ? error
       : new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
+        httpStatus.INTERNAL_SERVER_ERROR,
         `Đăng ký thất bại: ${error.message}`
       )
   }
@@ -78,14 +78,14 @@ async function verifyOTP(email, otp) {
     // Xác thực OTP
     const otpResult = await otpService.verifyOTP(email, otp)
     if (!otpResult.success) {
-      throw new ApiError(httpStatus.status.BAD_REQUEST, otpResult.message)
+      throw new ApiError(httpStatus.BAD_REQUEST, otpResult.message)
     }
 
     try {
       await userModel.findByEmail(email)
       return { success: true, message: 'Xác thực OTP thành công, bạn có thể đặt mật khẩu mới' }
     } catch (error) {
-      if (error.statusCode === httpStatus.status.NOT_FOUND) {
+      if (error.statusCode === httpStatus.NOT_FOUND) {
         // User chưa active, kích hoạt tài khoản
         try {
           const inactiveUser = await userModel.findByEmailForActivation(email)
@@ -95,7 +95,7 @@ async function verifyOTP(email, otp) {
           return { success: true, message: 'Tài khoản đã được kích hoạt thành công' }
         } catch (inactiveError) {
           throw new ApiError(
-            httpStatus.status.NOT_FOUND,
+            httpStatus.NOT_FOUND,
             'Không tìm thấy tài khoản nào liên quan đến email này'
           )
         }
@@ -107,7 +107,7 @@ async function verifyOTP(email, otp) {
     throw error instanceof ApiError
       ? error
       : new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
+        httpStatus.INTERNAL_SERVER_ERROR,
         `Xác thực OTP thất bại: ${error.message}`
       )
   }
@@ -131,7 +131,7 @@ async function resendOTP(email) {
     throw error instanceof ApiError
       ? error
       : new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
+        httpStatus.INTERNAL_SERVER_ERROR,
         `Gửi lại OTP thất bại: ${error.message}`
       )
   }
@@ -151,15 +151,15 @@ async function login(email, password) {
     try {
       user = await userModel.findByEmail(email)
     } catch (error) {
-      if (error.statusCode === httpStatus.status.NOT_FOUND) {
+      if (error.statusCode === httpStatus.NOT_FOUND) {
         if (error.message === 'User not found or not activated') {
           throw new ApiError(
-            httpStatus.status.UNAUTHORIZED,
+            httpStatus.UNAUTHORIZED,
             'Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email để kích hoạt tài khoản.'
           )
         } else {
           throw new ApiError(
-            httpStatus.status.UNAUTHORIZED,
+            httpStatus.UNAUTHORIZED,
             'Email hoặc mật khẩu không đúng'
           )
         }
@@ -170,7 +170,7 @@ async function login(email, password) {
     const isPasswordValid = await comparePassword(password, user.password)
     if (!isPasswordValid) {
       throw new ApiError(
-        httpStatus.status.UNAUTHORIZED,
+        httpStatus.UNAUTHORIZED,
         'Email hoặc mật khẩu không đúng'
       )
     }
@@ -200,7 +200,7 @@ async function login(email, password) {
     throw error instanceof ApiError
       ? error
       : new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
+        httpStatus.INTERNAL_SERVER_ERROR,
         `Đăng nhập thất bại: ${error.message}`
       )
   }
@@ -218,9 +218,9 @@ async function forgotPassword(email) {
     try {
       await userModel.findByEmail(email)
     } catch (error) {
-      if (error.statusCode === httpStatus.status.NOT_FOUND) {
+      if (error.statusCode === httpStatus.NOT_FOUND) {
         throw new ApiError(
-          httpStatus.status.NOT_FOUND,
+          httpStatus.NOT_FOUND,
           'Email không tồn tại trong hệ thống'
         )
       }
@@ -238,7 +238,7 @@ async function forgotPassword(email) {
     throw error instanceof ApiError
       ? error
       : new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
+        httpStatus.INTERNAL_SERVER_ERROR,
         `Quên mật khẩu thất bại: ${error.message}`
       )
   }
@@ -257,7 +257,7 @@ async function resetPassword(email, newPassword, confirmPassword) {
   try {
     if (newPassword !== confirmPassword) {
       throw new ApiError(
-        httpStatus.status.BAD_REQUEST,
+        httpStatus.BAD_REQUEST,
         'Mật khẩu mới và xác nhận mật khẩu không khớp'
       )
     }
@@ -277,7 +277,7 @@ async function resetPassword(email, newPassword, confirmPassword) {
     throw error instanceof ApiError
       ? error
       : new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
+        httpStatus.INTERNAL_SERVER_ERROR,
         `Đặt lại mật khẩu thất bại: ${error.message}`
       )
   }

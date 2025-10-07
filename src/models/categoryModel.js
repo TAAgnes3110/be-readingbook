@@ -9,7 +9,6 @@ const categoryModel = {
    */
   getNextCategoryId: async () => {
     try {
-      // Lấy tất cả categories để tìm ID lớn nhất
       const snapshot = await db.getRef('categories').once('value')
       const categories = snapshot.val()
 
@@ -27,11 +26,10 @@ const categoryModel = {
         }
       })
 
-      // Trả về ID tiếp theo
       return maxId + 1
     } catch (error) {
       throw new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
+        httpStatus.INTERNAL_SERVER_ERROR,
         `Lỗi khi tạo ID mới: ${error.message}`
       )
     }
@@ -48,11 +46,9 @@ const categoryModel = {
       const categories = snapshot.val()
 
       if (!categories || Object.keys(categories).length === 0) {
-        // Nếu chưa có category nào, trả về 0
         return 0
       }
 
-      // Tìm ID lớn nhất
       let maxId = 0
       Object.keys(categories).forEach(key => {
         const id = parseInt(key, 10)
@@ -64,7 +60,7 @@ const categoryModel = {
       return maxId
     } catch (error) {
       throw new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
+        httpStatus.INTERNAL_SERVER_ERROR,
         `Lỗi khi lấy ID hiện tại: ${error.message}`
       )
     }
@@ -79,12 +75,11 @@ const categoryModel = {
     try {
       if (!categoryData.name || !categoryData.image_url) {
         throw new ApiError(
-          httpStatus.status.BAD_REQUEST,
+          httpStatus.BAD_REQUEST,
           'Tên thể loại và ảnh là bắt buộc'
         )
       }
 
-      // Tạo ID mới cho category
       const categoryId = await categoryModel.getNextCategoryId()
 
       const newCategory = {
@@ -96,7 +91,6 @@ const categoryModel = {
         updatedAt: new Date().toISOString()
       }
 
-      // Lưu vào Firebase
       await db.getRef(`categories/${categoryId}`).set(newCategory)
 
       return {
@@ -107,7 +101,7 @@ const categoryModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.status.INTERNAL_SERVER_ERROR,
+          httpStatus.INTERNAL_SERVER_ERROR,
           `Tạo thể loại thất bại: ${error.message}`
         )
     }
@@ -124,7 +118,7 @@ const categoryModel = {
       return categories || {}
     } catch (error) {
       throw new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
+        httpStatus.INTERNAL_SERVER_ERROR,
         `Lấy tất cả thể loại thất bại: ${error.message}`
       )
     }
@@ -139,7 +133,7 @@ const categoryModel = {
     try {
       if (!categoryId) {
         throw new ApiError(
-          httpStatus.status.BAD_REQUEST,
+          httpStatus.BAD_REQUEST,
           'ID thể loại là bắt buộc'
         )
       }
@@ -149,7 +143,7 @@ const categoryModel = {
 
       if (!category) {
         throw new ApiError(
-          httpStatus.status.NOT_FOUND,
+          httpStatus.NOT_FOUND,
           'Không tìm thấy thể loại'
         )
       }
@@ -159,7 +153,7 @@ const categoryModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.status.INTERNAL_SERVER_ERROR,
+          httpStatus.INTERNAL_SERVER_ERROR,
           `Lấy thể loại thất bại: ${error.message}`
         )
     }
@@ -174,7 +168,7 @@ const categoryModel = {
     try {
       if (!name) {
         throw new ApiError(
-          httpStatus.status.BAD_REQUEST,
+          httpStatus.BAD_REQUEST,
           'Tên thể loại là bắt buộc'
         )
       }
@@ -186,7 +180,6 @@ const categoryModel = {
         return null
       }
 
-      // Tìm category theo tên (case insensitive)
       for (const [id, category] of Object.entries(categories)) {
         if (category.name && category.name.toLowerCase() === name.trim().toLowerCase()) {
           return { _id: parseInt(id), ...category }
@@ -198,7 +191,7 @@ const categoryModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.status.INTERNAL_SERVER_ERROR,
+          httpStatus.INTERNAL_SERVER_ERROR,
           `Lấy thể loại theo tên thất bại: ${error.message}`
         )
     }
@@ -214,7 +207,7 @@ const categoryModel = {
     try {
       if (!categoryId) {
         throw new ApiError(
-          httpStatus.status.BAD_REQUEST,
+          httpStatus.BAD_REQUEST,
           'ID thể loại là bắt buộc'
         )
       }
@@ -239,7 +232,7 @@ const categoryModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.status.INTERNAL_SERVER_ERROR,
+          httpStatus.INTERNAL_SERVER_ERROR,
           `Cập nhật thể loại thất bại: ${error.message}`
         )
     }
@@ -254,7 +247,7 @@ const categoryModel = {
     try {
       if (!categoryId) {
         throw new ApiError(
-          httpStatus.status.BAD_REQUEST,
+          httpStatus.BAD_REQUEST,
           'ID thể loại là bắt buộc'
         )
       }
@@ -265,7 +258,7 @@ const categoryModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.status.INTERNAL_SERVER_ERROR,
+          httpStatus.INTERNAL_SERVER_ERROR,
           `Xóa thể loại thất bại: ${error.message}`
         )
     }

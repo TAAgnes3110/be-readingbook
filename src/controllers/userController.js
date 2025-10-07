@@ -9,7 +9,7 @@ const { userService, authService } = require('../services/index')
  */
 const createUser = catchAsync(async (req, res) => {
   const result = await userService.createUser(req.body)
-  res.status(httpStatus.status.CREATED).json({
+  res.status(httpStatus.CREATED).json({
     success: true,
     data: { userId: result.userId },
     message: result.message
@@ -130,7 +130,7 @@ const updateUser = catchAsync(async (req, res) => {
 const deleteUser = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])
   await userService.deleteUserById(userId)
-  res.status(httpStatus.status.NO_CONTENT).json({
+  res.status(httpStatus.NO_CONTENT).json({
     success: true,
     message: 'User deleted successfully'
   })

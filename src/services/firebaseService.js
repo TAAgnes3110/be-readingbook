@@ -25,22 +25,22 @@ async function createAuthUser(email, password) {
     // Handle specific errors
     if (error.code === 'auth/email-already-exists') {
       throw new ApiError(
-        httpStatus.status.BAD_REQUEST,
+        httpStatus.BAD_REQUEST,
         'Email đã được sử dụng'
       )
     } else if (error.code === 'auth/invalid-email') {
       throw new ApiError(
-        httpStatus.status.BAD_REQUEST,
+        httpStatus.BAD_REQUEST,
         'Email không hợp lệ'
       )
     } else if (error.code === 'auth/weak-password') {
       throw new ApiError(
-        httpStatus.status.BAD_REQUEST,
+        httpStatus.BAD_REQUEST,
         'Mật khẩu quá yếu'
       )
     } else {
       throw new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
+        httpStatus.INTERNAL_SERVER_ERROR,
         'Không thể tạo người dùng'
       )
     }
@@ -67,7 +67,7 @@ async function updateAuthUserPassword (email, newPassword) {
     throw error instanceof ApiError
       ? error
       : new ApiError(
-        httpStatus.status.INTERNAL_SERVER_ERROR,
+        httpStatus.INTERNAL_SERVER_ERROR,
         `Cập nhật mật khẩu Firebase Auth thất bại: ${error.message}`
       )
   }

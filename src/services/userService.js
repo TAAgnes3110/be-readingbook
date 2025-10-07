@@ -14,18 +14,18 @@ const getUserById = async (id) => {
   try {
     if (!id)
       throw new ApiError(
-        httpStatus.status.BAD_REQUEST,
+        httpStatus.BAD_REQUEST,
         'User ID is required'
       )
     const user = await userModel.findById(id)
     if (!user || !user.isActive) {
-      throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found')
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
     }
     return { _id: id, ...user }
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.status.INTERNAL_SERVER_ERROR,
+      httpStatus.INTERNAL_SERVER_ERROR,
       `Failed to get user information: ${error.message}`
     )
   }
@@ -40,21 +40,21 @@ const getUserById = async (id) => {
 const getUserByEmail = async (email) => {
   try {
     if (!email)
-      throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email is required')
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Email is required')
     const users = await userModel.findByEmail(email.trim().toLowerCase())
     if (!users) {
-      throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found')
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
     }
     const userId = Object.keys(users)[0]
     const user = users[userId]
     if (!user.isActive) {
-      throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found')
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
     }
     return { _id: userId, ...user }
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.status.INTERNAL_SERVER_ERROR,
+      httpStatus.INTERNAL_SERVER_ERROR,
       `Failed to get user information: ${error.message}`
     )
   }
@@ -80,7 +80,7 @@ const updateUserById = async (userId, updateBody) => {
         updateBody.email.trim().toLowerCase()
       )
       if (users && Object.keys(users).some((id) => id !== userId)) {
-        throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email already in use')
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Email already in use')
       }
 
       await admin
@@ -120,7 +120,7 @@ const updateUserById = async (userId, updateBody) => {
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.status.INTERNAL_SERVER_ERROR,
+      httpStatus.INTERNAL_SERVER_ERROR,
       `Failed to update user: ${error.message}`
     )
   }
@@ -144,7 +144,7 @@ const deleteUserById = async (userId) => {
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.status.INTERNAL_SERVER_ERROR,
+      httpStatus.INTERNAL_SERVER_ERROR,
       `Failed to delete user: ${error.message}`
     )
   }

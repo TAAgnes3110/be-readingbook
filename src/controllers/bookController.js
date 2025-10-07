@@ -1,71 +1,150 @@
-const httpStatus = require('http-status')
 const bookService = require('../services/bookService')
-const catchAsync = require('../utils/catchAsync')
 
-/**
- * Lấy danh sách sách với tìm kiếm và phân trang
- */
-const getList = catchAsync(async (req, res) => {
-  const result = await bookService.getBooksList(req.query)
-  res.status(httpStatus.OK).json(result)
-})
+const bookController = {
+  /**
+   * Lấy danh sách sách với tìm kiếm và phân trang
+   */
+  getList: async (req, res) => {
+    try {
+      const result = await bookService.getBooksList(req.query)
 
-/**
- * Lấy sách theo ID
- */
-const getById = catchAsync(async (req, res) => {
-  const result = await bookService.getBookById(req.params.id)
-  res.status(httpStatus.OK).json(result)
-})
+      if (result.success) {
+        res.status(200).json(result)
+      } else {
+        res.status(400).json(result)
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Lỗi server: ${error.message}`
+      })
+    }
+  },
 
-/**
- * Tạo sách mới
- */
-const create = catchAsync(async (req, res) => {
-  const result = await bookService.createBook(req.body)
-  res.status(httpStatus.CREATED).json(result)
-})
+  /**
+   * Lấy sách theo ID
+   */
+  getById: async (req, res) => {
+    try {
+      const { id } = req.params
+      const result = await bookService.getBookById(id)
 
-/**
- * Cập nhật sách
- */
-const update = catchAsync(async (req, res) => {
-  const result = await bookService.updateBookById(req.params.id, req.body)
-  res.status(httpStatus.OK).json(result)
-})
+      if (result.success) {
+        res.status(200).json(result)
+      } else {
+        res.status(404).json(result)
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Lỗi server: ${error.message}`
+      })
+    }
+  },
 
-/**
- * Xóa sách
- */
-const deleteBook = catchAsync(async (req, res) => {
-  const result = await bookService.deleteBookById(req.params.id)
-  res.status(httpStatus.OK).json(result)
-})
+  /**
+   * Tạo sách mới
+   */
+  create: async (req, res) => {
+    try {
+      const result = await bookService.createBook(req.body)
 
-/**
- * Lấy sách mới nhất
- */
-const getLatest = catchAsync(async (req, res) => {
-  const { limit } = req.query
-  const parsedLimit = limit ? parseInt(limit) : 10
-  const result = await bookService.getLatestBooks(parsedLimit)
-  res.status(httpStatus.OK).json(result)
-})
+      if (result.success) {
+        res.status(201).json(result)
+      } else {
+        res.status(400).json(result)
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Lỗi server: ${error.message}`
+      })
+    }
+  },
 
-/**
- * Lấy ID hiện tại lớn nhất của book
- */
-const getCurrentMaxId = catchAsync(async (req, res) => {
-  const result = await bookService.getCurrentMaxBookId()
-  res.status(httpStatus.OK).json(result)
-})
+  /**
+   * Cập nhật sách
+   */
+  update: async (req, res) => {
+    try {
+      const { id } = req.params
+      const result = await bookService.updateBookById(id, req.body)
 
-module.exports = {
-  getList,
-  getById,
-  create,
-  update,
-  delete: deleteBook,
-  getLatest,
-  getCurrentMaxId
+      if (result.success) {
+        res.status(200).json(result)
+      } else {
+        res.status(400).json(result)
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Lỗi server: ${error.message}`
+      })
+    }
+  },
+
+  /**
+   * Xóa sách
+   */
+  delete: async (req, res) => {
+    try {
+      const { id } = req.params
+      const result = await bookService.deleteBookById(id)
+
+      if (result.success) {
+        res.status(200).json(result)
+      } else {
+        res.status(400).json(result)
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Lỗi server: ${error.message}`
+      })
+    }
+  },
+
+  /**
+   * Lấy sách mới nhất
+   */
+  getLatest: async (req, res) => {
+    try {
+      const { limit } = req.query
+      const parsedLimit = limit ? parseInt(limit) : 10
+      const result = await bookService.getLatestBooks(parsedLimit)
+
+      if (result.success) {
+        res.status(200).json(result)
+      } else {
+        res.status(400).json(result)
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Lỗi server: ${error.message}`
+      })
+    }
+  },
+
+  /**
+   * Lấy ID lớn nhất
+   */
+  getCurrentMaxId: async (req, res) => {
+    try {
+      const result = await bookService.getCurrentMaxBookId()
+
+      if (result.success) {
+        res.status(200).json(result)
+      } else {
+        res.status(400).json(result)
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Lỗi server: ${error.message}`
+      })
+    }
+  }
 }
+
+module.exports = bookController

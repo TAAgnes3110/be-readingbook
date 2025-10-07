@@ -9,7 +9,7 @@ const { authService } = require('../services/index')
  */
 const register = catchAsync(async (req, res) => {
   const result = await authService.SignUp(req.body)
-  res.status(httpStatus.status.CREATED).json({
+  res.status(httpStatus.CREATED).json({
     success: true,
     data: { userId: result.userId },
     message: result.message

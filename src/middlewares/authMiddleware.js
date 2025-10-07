@@ -8,7 +8,7 @@ const authMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new ApiError(
-        httpStatus.status.UNAUTHORIZED,
+        httpStatus.UNAUTHORIZED,
         'Valid token is required'
       )
     }
@@ -21,7 +21,7 @@ const authMiddleware = async (req, res, next) => {
     next(
       error instanceof ApiError
         ? error
-        : new ApiError(httpStatus.status.UNAUTHORIZED, 'Invalid token')
+        : new ApiError(httpStatus.UNAUTHORIZED, 'Invalid token')
     )
   }
 }
