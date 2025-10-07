@@ -11,6 +11,7 @@ const config = require('./config/config')
 const logger = require('./config/logger')
 const auth = require('./routes/authRoute')
 const user = require('./routes/userRoute')
+const categories = require('./routes/categoriesRoute')
 const book = require('./routes/bookRoute')
 
 const app = express()
@@ -69,10 +70,12 @@ app.get('/health', (req, res) => {
 // API ROUTES
 app.use('/api/auth', auth)
 app.use('/api/users', user)
+app.use('/api/categories', categories)
 app.use('/api/books', book)
 
+
 // ERROR HANDLER
-app.use((error, req, res) => {
+app.use((error, req, res, next) => {
   logger.error('Unhandled error:', error)
 
   let statusCode = error.status || error.statusCode || httpStatus.status.INTERNAL_SERVER_ERROR

@@ -1,0 +1,33 @@
+# Dockerfile cho development với hot reload
+FROM node:18-alpine
+
+# Thiết lập thư mục làm việc
+WORKDIR /app
+
+# Cài đặt các dependencies cần thiết
+RUN apk add --no-cache python3 make g++
+
+# Copy package files
+COPY package*.json ./
+
+# Cài đặt tất cả dependencies (bao gồm dev dependencies)
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Tạo user không phải root
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodejs -u 1001
+
+# Tạo thư mục uploads và cấp quyền
+RUN mkdir -p uploads && chown -R nodejs:nodejs /app
+
+# Chuyển sang user nodejs
+USER nodejs
+
+# Expose port
+EXPOSE 9000
+
+# Start ứng dụng với nodemon cho hot reload
+CMD ["npm", "run", "dev"]

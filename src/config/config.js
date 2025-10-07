@@ -16,10 +16,6 @@ module.exports = {
     databaseURL: process.env.FIREBASE_DATABASE_URL
   },
   email: {
-    provider: process.env.EMAIL_PROVIDER || 'resend',
-    resend: {
-      apiKey: process.env.RESEND_API_KEY
-    },
     smtp: {
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
@@ -31,9 +27,9 @@ module.exports = {
     from: process.env.EMAIL_FROM
   },
   upload: {
-    limit: process.env.UPLOAD_LIMIT || '10mb',
-    allowedFormats: process.env.ALLOWED_FORMATS ? process.env.ALLOWED_FORMATS.split(',') : ['jpg', 'jpeg', 'png', 'gif', 'pdf'],
-    storagePath: process.env.STORAGE_PATH || 'uploads'
+    limit: process.env.UPLOAD_LIMIT,
+    allowedFormats: process.env.ALLOWED_FORMATS.split(','),
+    storagePath: process.env.STORAGE_PATH
   },
   rateLimit: {
     max: parseInt(process.env.RATE_LIMIT, 10),
@@ -44,8 +40,8 @@ module.exports = {
     format: process.env.LOG_FORMAT
   },
   cors: {
-    origin: process.env.CORS_ORIGIN || '*',
-    methods: process.env.CORS_METHODS ? process.env.CORS_METHODS.split(',') : ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    origin: process.env.CORS_ORIGIN,
+    methods: process.env.CORS_METHODS.split(','),
     credentials: process.env.CORS_CREDENTIALS === 'true'
   },
   otp: {
@@ -65,12 +61,5 @@ module.exports = {
   jwt: {
     secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production',
     expiry: process.env.JWT_EXPIRY || '24h'
-  },
-
-  // Render deployment configuration
-  render: {
-    isRender: process.env.RENDER === 'true',
-    port: process.env.PORT || process.env.APP_PORT || 9000,
-    host: process.env.RENDER_EXTERNAL_HOSTNAME || process.env.APP_HOST || 'localhost'
   }
 }

@@ -193,10 +193,22 @@ const deleteBook = {
   })
 }
 
+const getLatest = {
+  query: Joi.object().keys({
+    limit: Joi.number().integer().min(1).max(50).default(10).messages({
+      'number.base': 'Limit phải là số',
+      'number.integer': 'Limit phải là số nguyên',
+      'number.min': 'Limit phải lớn hơn 0',
+      'number.max': 'Limit không được vượt quá 50'
+    })
+  })
+}
+
 module.exports = {
   getList,
   getById,
   create,
   update,
-  delete: deleteBook
+  delete: deleteBook,
+  getLatest
 }

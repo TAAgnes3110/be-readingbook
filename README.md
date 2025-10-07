@@ -8,6 +8,7 @@
 - [Cài đặt](#cài-đặt)
 - [Cấu hình](#cấu-hình)
 - [Chạy ứng dụng](#chạy-ứng-dụng)
+- [🐳 Docker](#docker)
 - [API Documentation](#api-documentation)
 - [Cấu trúc dự án](#cấu-trúc-dự-án)
 - [Troubleshooting](#troubleshooting)
@@ -99,7 +100,7 @@ JWT_SECRET=your-super-secret-jwt-key-here
 JWT_EXPIRY=1h
 
 # CORS
-CORS_ORIGIN=http://localhost:3000
+CORS_ORIGIN=http://localhost:9000
 ```
 
 ## 🏃‍♂️ Chạy ứng dụng
@@ -110,7 +111,7 @@ CORS_ORIGIN=http://localhost:3000
 npm run dev
 ```
 
-Server sẽ chạy tại: `http://localhost:3000`
+Server sẽ chạy tại: `http://localhost:9000`
 
 ### Production Mode
 
@@ -135,12 +136,45 @@ npm run lint:fix
 npm run build
 ```
 
+## 🐳 Docker
+
+Dự án đã được cấu hình để chạy với Docker. Xem [DOCKER_GUIDE.md](./DOCKER_GUIDE.md) để biết hướng dẫn chi tiết.
+
+### Chạy nhanh với Docker
+
+```bash
+# Development mode
+npm run docker:dev
+
+# Production mode
+npm run docker:prod
+
+# Xem logs
+npm run docker:logs
+
+# Dừng ứng dụng
+npm run docker:down
+```
+
+### Các lệnh Docker
+
+```bash
+# Build image
+npm run docker:build
+
+# Chạy container đơn lẻ
+npm run docker:run
+
+# Dọn dẹp Docker
+npm run docker:clean
+```
+
 ## 📖 API Documentation
 
 ### Base URL
 
 ```
-http://localhost:3000/api
+http://localhost:9000/api
 ```
 
 ### Health Check
@@ -333,7 +367,7 @@ Logs được lưu trong thư mục `logs/` với các mức độ:
 ```env
 NODE_ENV=production
 APP_HOST=0.0.0.0
-APP_PORT=3000
+APP_PORT=9000
 LOG_LEVEL=warn
 ```
 

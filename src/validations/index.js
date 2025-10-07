@@ -1,3 +1,5 @@
 module.exports.authValidation = require('./authValidation')
 module.exports.userValidation = require('./userValidation')
+module.exports.bookValidation = require('./bookValidation')
+module.exports.categoriesValidation = require('./categoriesValidation')
 module.exports.custom = require('./custom')

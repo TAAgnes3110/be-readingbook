@@ -9,14 +9,17 @@ const { categoryModel } = require('../models/categoryModel')
  * @returns {Promise<Object>} - Danh sách sách với thông tin phân trang
  * @throws {ApiError} 500 - Lỗi máy chủ nội bộ
  */
-const getBooksList = async (options = {}) => {
+const getBooksList = async () => {
   try {
-    const result = await bookModel.getList(options)
-    return result
+    const books = await bookModel.findAll()
+    return {
+      success: true,
+      data: { books }
+    }
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
+      httpStatus.status.INTERNAL_SERVER_ERROR,
       `Lấy danh sách sách thất bại: ${error.message}`
     )
   }
@@ -37,8 +40,11 @@ const getBookById = async (bookId) => {
       )
     }
 
-    const result = await bookModel.getById(bookId)
-    return result
+    const book = await bookModel.findById(bookId)
+    return {
+      success: true,
+      data: { book }
+    }
   } catch (error) {
     if (error instanceof ApiError) throw error
     throw new ApiError(
@@ -215,6 +221,44 @@ const getBooksByCategory = async (categoryId, options = {}) => {
   }
 }
 
+/**
+ * Lấy sách mới nhất
+ * @param {number} limit - số lượng sách muốn lấy
+ * @returns {Promise<Object>} - Danh sách sách mới nhất
+ */
+const getLatestBooks = async (limit = 10) => {
+  try {
+    const result = await bookModel.getLatest(limit)
+    return result
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      `Lấy sách mới nhất thất bại: ${error.message}`
+    )
+  }
+}
+
+/**
+ * Lấy ID hiện tại lớn nhất của book
+ * @returns {Promise<Object>} - ID hiện tại
+ */
+const getCurrentMaxBookId = async () => {
+  try {
+    const maxId = await bookModel.getCurrentMaxBookId()
+    return {
+      success: true,
+      data: { currentMaxId: maxId }
+    }
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    throw new ApiError(
+      httpStatus.status.INTERNAL_SERVER_ERROR,
+      `Lấy ID hiện tại thất bại: ${error.message}`
+    )
+  }
+}
+
 module.exports = {
   getBooksList,
   getBookById,
@@ -222,5 +266,7 @@ module.exports = {
   updateBookById,
   deleteBookById,
   searchBooksByTitle,
-  getBooksByCategory
+  getBooksByCategory,
+  getCurrentMaxBookId,
+  getLatestBooks
 }

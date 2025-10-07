@@ -42,10 +42,30 @@ const deleteBook = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).json(result)
 })
 
+/**
+ * Lấy sách mới nhất
+ */
+const getLatest = catchAsync(async (req, res) => {
+  const { limit } = req.query
+  const parsedLimit = limit ? parseInt(limit) : 10
+  const result = await bookService.getLatestBooks(parsedLimit)
+  res.status(httpStatus.OK).json(result)
+})
+
+/**
+ * Lấy ID hiện tại lớn nhất của book
+ */
+const getCurrentMaxId = catchAsync(async (req, res) => {
+  const result = await bookService.getCurrentMaxBookId()
+  res.status(httpStatus.OK).json(result)
+})
+
 module.exports = {
   getList,
   getById,
   create,
   update,
-  delete: deleteBook
+  delete: deleteBook,
+  getLatest,
+  getCurrentMaxId
 }

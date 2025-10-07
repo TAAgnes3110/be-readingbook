@@ -2,61 +2,97 @@
   {
     "_id": 1,
     "name": "Fiction",
-    "image_url": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Fiction",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.068Z",
+    "updatedAt": "2025-10-06T14:29:32.068Z"
   },
   {
     "_id": 2,
     "name": "Drama",
-    "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Drama",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.067Z",
+    "updatedAt": "2025-10-06T14:29:32.067Z"
   },
   {
     "_id": 3,
     "name": "History",
-    "image_url": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=History",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.068Z",
+    "updatedAt": "2025-10-06T14:29:32.068Z"
   },
   {
     "_id": 4,
     "name": "Poetry",
-    "image_url": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Poetry",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.068Z",
+    "updatedAt": "2025-10-06T14:29:32.068Z"
   },
   {
     "_id": 5,
     "name": "Romance",
-    "image_url": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Romance",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.068Z",
+    "updatedAt": "2025-10-06T14:29:32.068Z"
   },
   {
     "_id": 6,
     "name": "Travel",
-    "image_url": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Travel",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.068Z",
+    "updatedAt": "2025-10-06T14:29:32.068Z"
   },
   {
     "_id": 7,
     "name": "Philosophy",
-    "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Philosophy",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.068Z",
+    "updatedAt": "2025-10-06T14:29:32.068Z"
   },
   {
     "_id": 8,
     "name": "Humor",
-    "image_url": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Humor",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.068Z",
+    "updatedAt": "2025-10-06T14:29:32.068Z"
   },
   {
     "_id": 9,
     "name": "Biography",
-    "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Biography",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.068Z",
+    "updatedAt": "2025-10-06T14:29:32.068Z"
   },
   {
     "_id": 10,
     "name": "Health",
-    "image_url": "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Health",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.067Z",
+    "updatedAt": "2025-10-06T14:29:32.067Z"
   },
   {
     "_id": 11,
     "name": "Education",
-    "image_url": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Education",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.067Z",
+    "updatedAt": "2025-10-06T14:29:32.067Z"
   },
   {
     "_id": 12,
     "name": "Religion",
-    "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center"
+    "image_url": "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Religion",
+    "status": "active",
+    "createdAt": "2025-10-06T14:29:32.068Z",
+    "updatedAt": "2025-10-06T14:29:32.068Z"
   }
 ]

@@ -16,7 +16,14 @@
     "clean": "rimraf build && mkdir build",
     "build-babel": "babel ./src -d ./build/src",
     "build": "npm run clean && npm run build-babel",
-    "production": "npm run build && npm run start"
+    "production": "npm run build && npm run start",
+    "docker:build": "docker build -t reading-book-api .",
+    "docker:run": "docker run -p 9000:9000 --env-file .env reading-book-api",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up --build -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f app",
+    "docker:clean": "docker system prune -f && docker volume prune -f"
   },
   "dependencies": {
     "@babel/runtime": "^7.23.9",
@@ -41,7 +48,6 @@
     "passport": "^0.7.0",
     "passport-custom": "^1.1.1",
     "passport-jwt": "^4.0.1",
-    "resend": "^6.1.2",
     "socket.io": "^4.7.4",
     "twilio": "^4.19.0",
     "winston": "^3.11.0"

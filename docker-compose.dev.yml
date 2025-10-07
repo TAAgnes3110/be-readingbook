@@ -1,0 +1,63 @@
+services:
+  # Ứng dụng chính cho development
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: reading-book-api-dev
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    environment:
+      - NODE_ENV=development
+      - APP_NAME=ReadingBook (Dev)
+      - APP_HOST=0.0.0.0
+      - APP_PORT=9000
+      - API_VERSION=v1
+      - API_PREFIX=/api
+      - LOG_LEVEL=debug
+      - LOG_FORMAT=combined
+      - RATE_LIMIT=100
+      - RATE_LIMIT_WINDOW=15
+      - CORS_ORIGIN=*
+      - CORS_METHODS=GET,HEAD,PUT,PATCH,POST,DELETE
+      - CORS_CREDENTIALS=true
+      - OTP_LENGTH=6
+      - OTP_EXPIRY=300
+      - OTP_PROVIDER=email
+      - CACHE_TTL=300
+      - CACHE_CHECKPERIOD=120
+      - UPLOAD_LIMIT=5mb
+      - ALLOWED_FORMATS=jpg,jpeg,png,pdf,epub
+      - STORAGE_PATH=uploads/
+    env_file:
+      - .env
+    volumes:
+      # Mount source code để hot reload
+      - .:/app
+      - /app/node_modules
+      - ./uploads:/app/uploads
+      - ./serviceAccountKey.json:/app/serviceAccountKey.json:ro
+    networks:
+      - reading-book-network
+    command: npm run dev
+
+  # Redis cho development
+  redis:
+    image: redis:7-alpine
+    container_name: reading-book-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - reading-book-network
+    command: redis-server --appendonly yes
+
+networks:
+  reading-book-network:
+    driver: bridge
+
+volumes:
+  redis_dev_data:

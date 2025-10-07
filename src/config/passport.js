@@ -1,5 +1,5 @@
 const { Strategy } = require('passport-custom')
-const { auth } = require('./db')
+const { verifyIdToken } = require('./db')
 const { getUserById } = require('../services/userService')
 const logger = require('./logger')
 
@@ -12,7 +12,7 @@ const firebaseVerify = async (req, done) => {
 
     const idToken = authHeader.substring(7)
 
-    const decodedToken = await auth.verifyIdToken(idToken)
+    const decodedToken = await verifyIdToken(idToken)
 
     const user = await getUserById(decodedToken.uid)
     if (!user) {
@@ -21,10 +21,10 @@ const firebaseVerify = async (req, done) => {
 
     user.firebase = {
       uid: decodedToken.uid,
-      emailVerified: decodedToken.email_verified,
-      phoneVerified: decodedToken.phone_number_verified,
-      customClaims: decodedToken.custom_claims,
-      authTime: decodedToken.auth_time
+      emailVerified: decodedToken.emailVerified,
+      phoneVerified: decodedToken.phoneVerified,
+      customClaims: decodedToken.customClaims,
+      authTime: decodedToken.authTime
     }
 
     done(null, user)

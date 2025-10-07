@@ -12,6 +12,17 @@ router.get(
 )
 
 router.get(
+  '/latest',
+  validate(bookValidation.getLatest),
+  bookController.getLatest
+)
+
+router.get(
+  '/current-max-id',
+  bookController.getCurrentMaxId
+)
+
+router.get(
   '/:id',
   validate(bookValidation.getById),
   bookController.getById
