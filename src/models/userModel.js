@@ -22,7 +22,7 @@ const userModel = {
         !userData.confirmPassword
       ) {
         throw new ApiError(
-          httpStatus.BAD_REQUEST,
+          httpStatus.status.BAD_REQUEST,
           'Email, mật khẩu, xác nhận mật khẩu, họ tên và số điện thoại là bắt buộc'
         )
       }
@@ -34,7 +34,7 @@ const userModel = {
         const existingUser = await db.getRef(`users/${userId}`).once('value')
         if (existingUser.val()) {
           throw new ApiError(
-            httpStatus.BAD_REQUEST,
+            httpStatus.status.BAD_REQUEST,
             'ID người dùng đã tồn tại'
           )
         }
@@ -42,7 +42,7 @@ const userModel = {
         // Kiểm tra userId hợp lệ
         if (isNaN(userId) || userId <= 0) {
           throw new ApiError(
-            httpStatus.BAD_REQUEST,
+            httpStatus.status.BAD_REQUEST,
             'ID người dùng phải là số nguyên dương'
           )
         }
@@ -53,7 +53,7 @@ const userModel = {
       // Kiểm tra mật khẩu và xác nhận mật khẩu
       if (userData.password !== userData.confirmPassword) {
         throw new ApiError(
-          httpStatus.BAD_REQUEST,
+          httpStatus.status.BAD_REQUEST,
           'Xác nhận mật khẩu không khớp'
         )
       }
@@ -62,7 +62,7 @@ const userModel = {
       const phoneRegex = /^[0-9]{10,11}$/
       if (!phoneRegex.test(userData.phoneNumber.trim())) {
         throw new ApiError(
-          httpStatus.BAD_REQUEST,
+          httpStatus.status.BAD_REQUEST,
           'Số điện thoại không hợp lệ'
         )
       }
@@ -111,7 +111,7 @@ const userModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.INTERNAL_SERVER_ERROR,
+          httpStatus.status.INTERNAL_SERVER_ERROR,
           `Tạo người dùng thất bại: ${error.message}`
         )
     }
@@ -128,7 +128,7 @@ const userModel = {
       // Kiểm tra userId
       if (!userId) {
         throw new ApiError(
-          httpStatus.BAD_REQUEST,
+          httpStatus.status.BAD_REQUEST,
           'ID người dùng là bắt buộc'
         )
       }
@@ -138,7 +138,7 @@ const userModel = {
       const user = snapshot.val()
       if (!user || !user.isActive) {
         throw new ApiError(
-          httpStatus.NOT_FOUND,
+          httpStatus.status.NOT_FOUND,
           'Không tìm thấy người dùng hoặc chưa được kích hoạt'
         )
       }
@@ -147,7 +147,7 @@ const userModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.INTERNAL_SERVER_ERROR,
+          httpStatus.status.INTERNAL_SERVER_ERROR,
           `Lấy thông tin người dùng thất bại: ${error.message}`
         )
     }
@@ -163,7 +163,7 @@ const userModel = {
     try {
       // Kiểm tra email
       if (!email || typeof email !== 'string') {
-        throw new ApiError(httpStatus.BAD_REQUEST, 'Email là bắt buộc')
+        throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email là bắt buộc')
       }
 
       // Tìm user theo email
@@ -174,14 +174,14 @@ const userModel = {
         .once('value')
       const users = snapshot.val()
       if (!users) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Không tìm thấy người dùng')
+        throw new ApiError(httpStatus.status.NOT_FOUND, 'Không tìm thấy người dùng')
       }
 
       const userId = Object.keys(users)[0]
       const user = users[userId]
       if (!user.isActive) {
         throw new ApiError(
-          httpStatus.NOT_FOUND,
+          httpStatus.status.NOT_FOUND,
           'Không tìm thấy người dùng hoặc chưa được kích hoạt'
         )
       }
@@ -190,7 +190,7 @@ const userModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.INTERNAL_SERVER_ERROR,
+          httpStatus.status.INTERNAL_SERVER_ERROR,
           `Lấy thông tin người dùng thất bại: ${error.message}`
         )
     }
@@ -206,7 +206,7 @@ const userModel = {
     try {
       // Kiểm tra email
       if (!email || typeof email !== 'string') {
-        throw new ApiError(httpStatus.BAD_REQUEST, 'Email là bắt buộc')
+        throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email là bắt buộc')
       }
 
       // Tìm user theo email (không kiểm tra isActive)
@@ -217,7 +217,7 @@ const userModel = {
         .once('value')
       const users = snapshot.val()
       if (!users) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Không tìm thấy người dùng')
+        throw new ApiError(httpStatus.status.NOT_FOUND, 'Không tìm thấy người dùng')
       }
 
       const userId = Object.keys(users)[0]
@@ -227,7 +227,7 @@ const userModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.INTERNAL_SERVER_ERROR,
+          httpStatus.status.INTERNAL_SERVER_ERROR,
           `Lấy thông tin người dùng thất bại: ${error.message}`
         )
     }
@@ -245,7 +245,7 @@ const userModel = {
       // Kiểm tra userId
       if (!userId) {
         throw new ApiError(
-          httpStatus.BAD_REQUEST,
+          httpStatus.status.BAD_REQUEST,
           'ID người dùng là bắt buộc'
         )
       }
@@ -283,7 +283,7 @@ const userModel = {
         const phoneRegex = /^[0-9]{10,11}$/
         if (!phoneRegex.test(sanitizedUpdateData.phoneNumber)) {
           throw new ApiError(
-            httpStatus.BAD_REQUEST,
+            httpStatus.status.BAD_REQUEST,
             'Số điện thoại không hợp lệ'
           )
         }
@@ -296,7 +296,7 @@ const userModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.INTERNAL_SERVER_ERROR,
+          httpStatus.status.INTERNAL_SERVER_ERROR,
           `Cập nhật người dùng thất bại: ${error.message}`
         )
     }
@@ -314,7 +314,7 @@ const userModel = {
       // Kiểm tra dữ liệu đầu vào
       if (!email || !newPassword) {
         throw new ApiError(
-          httpStatus.BAD_REQUEST,
+          httpStatus.status.BAD_REQUEST,
           'Email và mật khẩu mới là bắt buộc'
         )
       }
@@ -335,7 +335,7 @@ const userModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.INTERNAL_SERVER_ERROR,
+          httpStatus.status.INTERNAL_SERVER_ERROR,
           `Cập nhật mật khẩu thất bại: ${error.message}`
         )
     }
@@ -352,7 +352,7 @@ const userModel = {
       // Kiểm tra userId
       if (!userId) {
         throw new ApiError(
-          httpStatus.BAD_REQUEST,
+          httpStatus.status.BAD_REQUEST,
           'ID người dùng là bắt buộc'
         )
       }
@@ -367,7 +367,7 @@ const userModel = {
       throw error instanceof ApiError
         ? error
         : new ApiError(
-          httpStatus.INTERNAL_SERVER_ERROR,
+          httpStatus.status.INTERNAL_SERVER_ERROR,
           `Kích hoạt người dùng thất bại: ${error.message}`
         )
     }

@@ -75,10 +75,10 @@ app.use('/api/books', book)
 
 
 // ERROR HANDLER
-app.use((error, req, res, next) => {
+app.use((error, req, res) => {
   logger.error('Unhandled error:', error)
 
-  let statusCode = error.status || error.statusCode || httpStatus.INTERNAL_SERVER_ERROR
+  let statusCode = error.status || error.statusCode || httpStatus.status.INTERNAL_SERVER_ERROR
   if (!statusCode || typeof statusCode !== 'number') {
     statusCode = 500
   }
