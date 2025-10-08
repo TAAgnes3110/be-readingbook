@@ -73,7 +73,7 @@ app.use('/api/epub', epubRoute)
 
 
 // ERROR HANDLER
-app.use((error, req, res) => {
+app.use((error, req, res, next) => {
   logger.error('Unhandled error:', error)
 
   let statusCode = error.status || error.statusCode || httpStatus.status.INTERNAL_SERVER_ERROR
