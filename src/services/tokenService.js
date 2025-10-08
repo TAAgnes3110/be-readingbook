@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken')
 const NodeCache = require('node-cache')
-const config = require('../config/config')
-const logger = require('../config/logger')
+const { config, logger } = require('../config/index')
 const { auth } = require('../config/db')
 
 const refreshTokenCache = new NodeCache({ stdTTL: config.cache.ttl })
@@ -12,7 +11,8 @@ const refreshTokenCache = new NodeCache({ stdTTL: config.cache.ttl })
  * @param {string} role
  * @returns {string}
  */
-function generateAccessToken(userId, role) {
+const generateAccessToken = (data) => {
+  const { userId, role } = data;
   try {
     const token = jwt.sign({ sub: userId, role }, config.jwt.secret, {
       expiresIn: config.jwt.expiry
@@ -32,7 +32,8 @@ function generateAccessToken(userId, role) {
  * @param {string} userId
  * @returns {string}
  */
-function generateRefreshToken(userId) {
+const generateRefreshToken = (data) => {
+  const { userId } = data;
   try {
     const refreshToken = jwt.sign({ sub: userId }, config.jwt.secret, {
       expiresIn: '30d'
@@ -54,7 +55,8 @@ function generateRefreshToken(userId) {
  * @param {object} additionalClaims
  * @returns {Promise<string>}
  */
-async function generateFirebaseCustomToken(userId, additionalClaims = {}) {
+const generateFirebaseCustomToken = async (data) => {
+  const { userId, additionalClaims = {} } = data;
   try {
     const token = await auth
       .createCustomToken(userId, additionalClaims)
@@ -73,7 +75,8 @@ async function generateFirebaseCustomToken(userId, additionalClaims = {}) {
  * @param {string} token
  * @returns {object|null}
  */
-function verifyToken(token) {
+const verifyToken = (data) => {
+  const { token } = data;
   try {
     const decoded = jwt.verify(token, config.jwt.secret)
     logger.info(`Verified token for user ${decoded.sub}`)
@@ -89,9 +92,10 @@ function verifyToken(token) {
  * @param {string} refreshToken
  * @returns {Promise<{ accessToken: string, refreshToken: string }>}
  */
-async function refresh(refreshToken) {
+const refresh = async (data) => {
+  const { refreshToken } = data;
   try {
-    const decoded = verifyToken(refreshToken)
+    const decoded = verifyToken({ token: refreshToken })
     if (!decoded) {
       logger.warn('Invalid refresh token')
       throw new Error('Invalid refresh token')
@@ -101,7 +105,7 @@ async function refresh(refreshToken) {
       logger.warn(`Refresh token mismatch for user ${decoded.sub}`)
       throw new Error('Invalid refresh token')
     }
-    const newAccessToken = generateAccessToken(decoded.sub, 'user')
+    const newAccessToken = generateAccessToken({ userId: decoded.sub, role: 'user' })
     logger.info(`Refreshed tokens for user ${decoded.sub}`)
     return { accessToken: newAccessToken, refreshToken }
   } catch (error) {
@@ -114,7 +118,8 @@ async function refresh(refreshToken) {
  * Revoke refresh token
  * @param {string} userId
  */
-function revoke(userId) {
+const revoke = (data) => {
+  const { userId } = data;
   try {
     refreshTokenCache.del(`refresh:${userId}`)
     logger.info(`Revoked refresh token for user ${userId}`)

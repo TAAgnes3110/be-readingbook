@@ -1,9 +1,10 @@
 const httpStatus = require('http-status')
-const logger = require('../config/logger')
-const { ApiError } = require('../utils/index')
-const { otpService, firebaseService, tokenService } = require('../services/index')
-const { comparePassword } = require('../utils/passwordUtils')
-const userModel = require('../models/userModel')
+const { logger } = require('../config/index')
+const { ApiError, comparePassword } = require('../utils/index')
+const { userModel } = require('../models/index')
+const getOtpService = () => require('./otpService')
+const getFirebaseService = () => require('./firebaseService')
+const getTokenService = () => require('./tokenService')
 
 /**
  * Đăng ký người dùng mới
@@ -11,7 +12,7 @@ const userModel = require('../models/userModel')
  * @returns {Promise<Object>} - ID người dùng và thông báo
  * @throws {ApiError} - Nếu đăng ký thất bại
  */
-async function SignUp(userBody) {
+const SignUp = async (userBody) => {
   try {
     const {
       email,
@@ -50,9 +51,9 @@ async function SignUp(userBody) {
     }
 
     // Tạo user trong Firebase Auth và database
-    await firebaseService.createAuthUser(userData.email, userData.password)
+    await getFirebaseService().createAuthUser({ email: userData.email, password: userData.password })
     const { userId: createdUserId, message } = await userModel.create(userData)
-    await otpService.sendOTP(userData.email, 'register')
+    await getOtpService().sendOTP({ email: userData.email, type: 'register' })
 
     return { userId: createdUserId, message }
   } catch (error) {
@@ -73,10 +74,10 @@ async function SignUp(userBody) {
  * @returns {Promise<Object>} - Kết quả xác thực
  * @throws {ApiError} - Nếu xác thực thất bại
  */
-async function verifyOTP(email, otp) {
+const verifyOTP = async (email, otp) => {
   try {
     // Xác thực OTP
-    const otpResult = await otpService.verifyOTP(email, otp)
+    const otpResult = await getOtpService().verifyOTP({ email, otp })
     if (!otpResult.success) {
       throw new ApiError(httpStatus.status.BAD_REQUEST, otpResult.message)
     }
@@ -91,7 +92,7 @@ async function verifyOTP(email, otp) {
           const inactiveUser = await userModel.findByEmailForActivation(email)
           const userId = inactiveUser._id
           await userModel.activateUser(userId)
-          await otpService.clearOTP(email)
+          await getOtpService().clearOTP({ email })
           return { success: true, message: 'Tài khoản đã được kích hoạt thành công' }
         } catch (inactiveError) {
           throw new ApiError(
@@ -119,9 +120,9 @@ async function verifyOTP(email, otp) {
  * @returns {Promise<Object>} - Kết quả gửi OTP
  * @throws {ApiError} - Nếu gửi thất bại
  */
-async function resendOTP(email) {
+const resendOTP = async (email) => {
   try {
-    await otpService.sendOTP(email, 'register')
+    await getOtpService().sendOTP({ email, type: 'register' })
     return {
       success: true,
       message: 'Mã OTP đã được gửi lại đến email của bạn'
@@ -145,7 +146,7 @@ async function resendOTP(email) {
  * @returns {Promise<Object>} - Kết quả đăng nhập với dữ liệu người dùng và token
  * @throws {ApiError} - Nếu đăng nhập thất bại
  */
-async function login(email, password) {
+const login = async (email, password) => {
   try {
     let user
     try {
@@ -175,8 +176,8 @@ async function login(email, password) {
       )
     }
 
-    const accessToken = tokenService.generateAccessToken(user._id, user.role)
-    const refreshToken = tokenService.generateRefreshToken(user._id)
+    const accessToken = getTokenService().generateAccessToken({ userId: user._id, role: user.role })
+    const refreshToken = getTokenService().generateRefreshToken({ userId: user._id })
 
     await userModel.update(user._id, {
       isOnline: true,
@@ -212,7 +213,7 @@ async function login(email, password) {
  * @returns {Promise<Object>} - Kết quả quên mật khẩu
  * @throws {ApiError} - Nếu quên mật khẩu thất bại
  */
-async function forgotPassword(email) {
+const forgotPassword = async (email) => {
   try {
     // Kiểm tra email có tồn tại không
     try {
@@ -227,7 +228,7 @@ async function forgotPassword(email) {
       throw error
     }
 
-    await otpService.sendOTP(email, 'reset')
+    await getOtpService().sendOTP({ email, type: 'reset' })
 
     return {
       success: true,
@@ -253,7 +254,7 @@ async function forgotPassword(email) {
  * @returns {Promise<Object>} - Kết quả đặt lại mật khẩu
  * @throws {ApiError} - Nếu đặt lại mật khẩu thất bại
  */
-async function resetPassword(email, newPassword, confirmPassword) {
+const resetPassword = async (email, newPassword, confirmPassword) => {
   try {
     if (newPassword !== confirmPassword) {
       throw new ApiError(
@@ -264,9 +265,9 @@ async function resetPassword(email, newPassword, confirmPassword) {
 
     await userModel.findByEmail(email)
 
-    await firebaseService.updateAuthUserPassword(email, newPassword)
+    await getFirebaseService().updateAuthUserPassword({ email, newPassword })
     await userModel.updatePassword(email, newPassword)
-    await otpService.clearOTP(email)
+    await getOtpService().clearOTP({ email })
 
     return {
       success: true,

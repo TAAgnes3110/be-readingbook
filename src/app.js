@@ -6,13 +6,9 @@ const compression = require('compression')
 const helmet = require('helmet')
 const httpStatus = require('http-status')
 
+const { config, logger } = require('./config/index')
+const { authRoute, userRoute, categoriesRoute, bookRoute, epubRoute } = require('./routes/index')
 const { firebaseStrategy } = require('./config/passport')
-const config = require('./config/config')
-const logger = require('./config/logger')
-const auth = require('./routes/authRoute')
-const user = require('./routes/userRoute')
-const categories = require('./routes/categoriesRoute')
-const book = require('./routes/bookRoute')
 
 const app = express()
 
@@ -68,10 +64,11 @@ app.get('/health', (req, res) => {
 })
 
 // API ROUTES
-app.use('/api/auth', auth)
-app.use('/api/users', user)
-app.use('/api/categories', categories)
-app.use('/api/books', book)
+app.use('/api/auth', authRoute)
+app.use('/api/users', userRoute)
+app.use('/api/categories', categoriesRoute)
+app.use('/api/books', bookRoute)
+app.use('/api/epub', epubRoute)
 
 
 // ERROR HANDLER

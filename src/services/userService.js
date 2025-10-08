@@ -1,8 +1,7 @@
 const httpStatus = require('http-status')
-const { ApiError } = require('../utils/index')
-const { hashPassword } = require('../utils/passwordUtils')
-const userModel = require('../models/userModel')
-const { admin } = require('../config/db')
+const { ApiError, hashPassword } = require('../utils/index')
+const { userModel } = require('../models/index')
+const admin = require('firebase-admin')
 
 /**
  * Get user by ID
@@ -10,7 +9,8 @@ const { admin } = require('../config/db')
  * @returns {Promise<Object>} - User object
  * @throws {ApiError} 404 - User not found
  */
-const getUserById = async (id) => {
+const getUserById = async (data) => {
+  const { id } = data
   try {
     if (!id)
       throw new ApiError(
@@ -37,7 +37,8 @@ const getUserById = async (id) => {
  * @returns {Promise<Object>} - User object
  * @throws {ApiError} 404 - User not found
  */
-const getUserByEmail = async (email) => {
+const getUserByEmail = async (data) => {
+  const { email } = data
   try {
     if (!email)
       throw new ApiError(httpStatus.BAD_REQUEST, 'Email is required')
@@ -67,9 +68,10 @@ const getUserByEmail = async (email) => {
  * @returns {Promise<Object>} - Updated user object
  * @throws {ApiError} 404 - User not found
  */
-const updateUserById = async (userId, updateBody) => {
+const updateUserById = async (data) => {
+  const { userId, updateBody } = data
   try {
-    const user = await getUserById(userId)
+    const user = await getUserById({ id: userId })
 
     // Check for duplicate email
     if (
@@ -132,9 +134,10 @@ const updateUserById = async (userId, updateBody) => {
  * @returns {Promise<Object>} - Deleted user object
  * @throws {ApiError} 404 - User not found
  */
-const deleteUserById = async (userId) => {
+const deleteUserById = async (data) => {
+  const { userId } = data
   try {
-    await getUserById(userId) // Check if exists
+    await getUserById({ id: userId }) // Check if exists
     await userModel.update(userId, {
       isActive: false,
       updatedAt: admin.database.ServerValue.TIMESTAMP

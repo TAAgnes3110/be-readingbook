@@ -1,6 +1,6 @@
 const httpStatus = require('http-status')
 const { ApiError } = require('../utils/index')
-const logger = require('../config/logger')
+const { logger } = require('../config/index')
 const { auth } = require('../config/db')
 
 /**
@@ -9,7 +9,8 @@ const { auth } = require('../config/db')
  * @param {string} password
  * @returns {Promise<admin.auth.UserRecord>}
  */
-async function createAuthUser(email, password) {
+const createAuthUser = async (data) => {
+  const { email, password } = data
   try {
     const userRecord = await auth.createUser({
       email: email.toLowerCase(),
@@ -53,7 +54,8 @@ async function createAuthUser(email, password) {
  * @param {string} newPassword
  * @returns {Promise<admin.auth.UserRecord>}
  */
-async function updateAuthUserPassword (email, newPassword) {
+const updateAuthUserPassword = async (data) => {
+  const { email, newPassword } = data
   try {
     // Tìm user trong Firebase Auth bằng email
     const userRecord = await auth.getUserByEmail(email)

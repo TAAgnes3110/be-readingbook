@@ -1,5 +1,15 @@
-module.exports.authValidation = require('./authValidation')
-module.exports.userValidation = require('./userValidation')
-module.exports.bookValidation = require('./bookValidation')
-module.exports.categoriesValidation = require('./categoriesValidation')
-module.exports.custom = require('./custom')
+const authValidation = require('./authValidation')
+const userValidation = require('./userValidation')
+const bookValidation = require('./bookValidation')
+const categoriesValidation = require('./categoriesValidation')
+const epubValidation = require('./epubValidation')
+const custom = require('./custom')
+
+module.exports = {
+  authValidation,
+  userValidation,
+  bookValidation,
+  categoriesValidation,
+  epubValidation,
+  custom
+}

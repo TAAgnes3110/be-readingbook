@@ -1,6 +1,5 @@
 const { emailProvider } = require('../providers/index')
-const config = require('../config/config')
-const logger = require('../config/logger')
+const { config, logger } = require('../config/index')
 
 const getSubject = (type) => {
   const subjects = {
@@ -54,7 +53,8 @@ const getOTPTemplate = (email, otp, type) => {
   return template
 }
 
-async function sendOTP(email, otp, type) {
+const sendOTP = async (data) => {
+  const { email, otp, type } = data
   try {
     const subject = getSubject(type)
     const html = getOTPTemplate(email, otp, type)
@@ -69,7 +69,8 @@ async function sendOTP(email, otp, type) {
   }
 }
 
-async function sendNotification(email, subject, content) {
+const sendNotification = async (data) => {
+  const { email, subject, content } = data
   try {
     const result = await emailProvider.send(email, subject, content)
     logger.info(`Sent notification email to ${email}`)

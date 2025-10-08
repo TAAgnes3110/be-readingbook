@@ -1,4 +1,12 @@
-const bookService = require('../services/bookService')
+const { 
+  getBooksList, 
+  getBookById, 
+  createBook, 
+  updateBookById, 
+  deleteBookById, 
+  getLatestBooks, 
+  getCurrentMaxBookId 
+} = require('../services/bookService')
 
 const bookController = {
   /**
@@ -6,7 +14,7 @@ const bookController = {
    */
   getList: async (req, res) => {
     try {
-      const result = await bookService.getBooksList(req.query)
+      const result = await getBooksList(req.query)
 
       if (result.success) {
         res.status(200).json(result)
@@ -27,7 +35,7 @@ const bookController = {
   getById: async (req, res) => {
     try {
       const { id } = req.params
-      const result = await bookService.getBookById(id)
+      const result = await getBookById(id)
 
       if (result.success) {
         res.status(200).json(result)
@@ -47,7 +55,7 @@ const bookController = {
    */
   create: async (req, res) => {
     try {
-      const result = await bookService.createBook(req.body)
+      const result = await createBook(req.body)
 
       if (result.success) {
         res.status(201).json(result)
@@ -68,7 +76,7 @@ const bookController = {
   update: async (req, res) => {
     try {
       const { id } = req.params
-      const result = await bookService.updateBookById(id, req.body)
+      const result = await updateBookById(id, req.body)
 
       if (result.success) {
         res.status(200).json(result)
@@ -89,7 +97,7 @@ const bookController = {
   delete: async (req, res) => {
     try {
       const { id } = req.params
-      const result = await bookService.deleteBookById(id)
+      const result = await deleteBookById(id)
 
       if (result.success) {
         res.status(200).json(result)
@@ -111,7 +119,7 @@ const bookController = {
     try {
       const { limit } = req.query
       const parsedLimit = limit ? parseInt(limit) : 10
-      const result = await bookService.getLatestBooks(parsedLimit)
+      const result = await getLatestBooks(parsedLimit)
 
       if (result.success) {
         res.status(200).json(result)
@@ -131,7 +139,7 @@ const bookController = {
    */
   getCurrentMaxId: async (req, res) => {
     try {
-      const result = await bookService.getCurrentMaxBookId()
+      const result = await getCurrentMaxBookId()
 
       if (result.success) {
         res.status(200).json(result)
