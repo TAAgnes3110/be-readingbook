@@ -91,6 +91,3 @@ temp
 
 # Uploads (sẽ được tạo trong container)
 uploads
-
-# Firebase service account key (không cần thiết nữa vì sử dụng env vars)
-serviceAccountKey.json

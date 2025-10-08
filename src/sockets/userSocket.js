@@ -1,4 +1,4 @@
-const { userProvider } = require('../services/index')
+const { userProvider } = require('../providers/index')
 const logger = require('../config/logger')
 
 const userSocket = (io) => {

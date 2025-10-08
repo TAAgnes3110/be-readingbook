@@ -1,6 +1,6 @@
 const httpStatus = require('http-status')
 const { ApiError } = require('../utils/index')
-const { logger } = require('../config/index')
+const logger = require('../config/logger')
 const { auth } = require('../config/db')
 
 /**

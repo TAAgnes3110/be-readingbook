@@ -1,5 +1,5 @@
 const httpStatus = require('http-status')
-const { logger } = require('../config/index')
+const logger = require('../config/logger')
 const { ApiError, comparePassword } = require('../utils/index')
 const { userModel } = require('../models/index')
 const getOtpService = () => require('./otpService')
@@ -148,10 +148,13 @@ const resendOTP = async (email) => {
  */
 const login = async (email, password) => {
   try {
+    logger.info(`Attempting login for email: ${email}`)
     let user
     try {
       user = await userModel.findByEmail(email)
+      logger.info(`User found: ${user._id}, isActive: ${user.isActive}`)
     } catch (error) {
+      logger.error(`Error finding user: ${error.message}`)
       if (error.statusCode === httpStatus.status.NOT_FOUND) {
         if (error.message === 'User not found or not activated') {
           throw new ApiError(
@@ -168,8 +171,11 @@ const login = async (email, password) => {
       throw error
     }
 
+    logger.info(`Comparing password for user: ${user._id}`)
     const isPasswordValid = await comparePassword(password, user.password)
+    logger.info(`Password valid: ${isPasswordValid}`)
     if (!isPasswordValid) {
+      logger.error(`Invalid password for user: ${user._id}`)
       throw new ApiError(
         httpStatus.status.UNAUTHORIZED,
         'Email hoặc mật khẩu không đúng'

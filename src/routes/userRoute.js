@@ -15,4 +15,13 @@ router
   .route('/:userId')
   .get(auth, validate(userValidation.getUsers), userController.getUserById)
 
+router
+  .route('/:userId/favorites')
+  .get(auth, validate(userValidation.getFavoriteBooks), userController.getFavoriteBooks)
+
+router
+  .route('/:userId/favorites/:bookId')
+  .post(auth, validate(userValidation.addFavoriteBook), userController.addFavoriteBook)
+  .delete(auth, validate(userValidation.removeFavoriteBook), userController.removeFavoriteBook)
+
 module.exports = router

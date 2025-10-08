@@ -1,6 +1,17 @@
 # 📚 Reading Book API
 
-> API Backend cho ứng dụng đọc sách với Firebase Authentication và Socket.io
+> API Backend cho ứng dụng đọc sách với Firebase Authentication, Socket.io và quản lý sách yêu thích
+
+## ✨ Tính năng chính
+
+- 🔐 **Authentication**: Đăng ký, đăng nhập, xác thực OTP
+- 👤 **User Management**: Quản lý thông tin người dùng
+- 📖 **Book Management**: Quản lý sách và thể loại
+- ❤️ **Favorite Books**: Hệ thống sách yêu thích
+- 📧 **Email Service**: Gửi OTP và thông báo
+- 🔄 **Real-time**: Socket.io cho real-time updates
+- 🐳 **Docker Support**: Chạy với Docker
+- 🛡️ **Security**: JWT, Rate limiting, Input validation
 
 ## 📋 Mục lục
 
@@ -9,10 +20,11 @@
 - [Cấu hình](#cấu-hình)
 - [Chạy ứng dụng](#chạy-ứng-dụng)
 - [🐳 Docker](#docker)
-- [API Documentation](#api-documentation)
-- [Cấu trúc dự án](#cấu-trúc-dự-án)
-- [Troubleshooting](#troubleshooting)
-- [Đóng góp](#đóng-góp)
+- [📖 API Documentation](#api-documentation)
+- [📁 Cấu trúc dự án](#cấu-trúc-dự-án)
+- [🔧 Troubleshooting](#troubleshooting)
+- [🛡️ Security Features](#security-features)
+- [📦 Deployment](#deployment)
 
 ## 🔧 Yêu cầu hệ thống
 
@@ -80,13 +92,19 @@ cp env.example .env
 NODE_ENV=development
 APP_NAME=Reading Book API
 APP_HOST=localhost
-APP_PORT=3000
+APP_PORT=9000
+API_VERSION=v1
+API_PREFIX=/api
 
 # Firebase (BẮT BUỘC)
 FIREBASE_PROJECT_ID=your-project-id
 FIREBASE_PROJECT_NUMBER=your-project-number
 FIREBASE_DATABASE_URL=https://your-project.firebaseio.com
 FIREBASE_WEB_API_KEY=your-web-api-key
+FIREBASE_PRIVATE_KEY_ID=your-private-key-id
+FIREBASE_PRIVATE_KEY=your-private-key
+FIREBASE_CLIENT_EMAIL=your-client-email
+FIREBASE_CLIENT_ID=your-client-id
 
 # Email (BẮT BUỘC)
 SMTP_HOST=smtp.gmail.com
@@ -99,8 +117,32 @@ EMAIL_FROM=your-email@gmail.com
 JWT_SECRET=your-super-secret-jwt-key-here
 JWT_EXPIRY=1h
 
+# OTP Configuration
+OTP_LENGTH=6
+OTP_EXPIRY=300
+OTP_PROVIDER=email
+
+# Cache Configuration
+CACHE_TTL=300
+CACHE_CHECKPERIOD=120
+
+# Upload Configuration
+UPLOAD_LIMIT=5mb
+ALLOWED_FORMATS=jpg,jpeg,png,pdf,epub
+STORAGE_PATH=uploads/
+
+# Rate Limiting
+RATE_LIMIT=100
+RATE_LIMIT_WINDOW=15
+
 # CORS
-CORS_ORIGIN=http://localhost:9000
+CORS_ORIGIN=*
+CORS_METHODS=GET,HEAD,PUT,PATCH,POST,DELETE
+CORS_CREDENTIALS=true
+
+# Logging
+LOG_LEVEL=info
+LOG_FORMAT=combined
 ```
 
 ## 🏃‍♂️ Chạy ứng dụng
@@ -177,122 +219,142 @@ npm run docker:clean
 http://localhost:9000/api
 ```
 
-### Health Check
+### 📚 Available APIs
 
-```http
-GET /health
+- **[Auth API](./SIMPLE_AUTH_API.md)** - Authentication & User Management
+- **[User API](./SIMPLE_USER_API.md)** - User Profile & Favorite Books
+- **[Book API](./SIMPLE_BOOK_API.md)** - Book Management
+- **[Category API](./SIMPLE_CATEGORY_API.md)** - Category Management
+- **[Favorite Books API](./FAVORITE_BOOKS_API.md)** - User Favorite Books
+
+### Quick Start Examples
+
+#### 1. Đăng ký tài khoản
+
+```bash
+curl -X POST http://localhost:9000/api/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "email": "user@example.com",
+    "password": "password123",
+    "fullname": "Nguyễn Văn A",
+    "username": "nguyenvana",
+    "phonenumber": "0123456789"
+  }'
 ```
 
-### Authentication Endpoints
+#### 2. Xác thực OTP
 
-#### Đăng ký
-
-```http
-POST /api/auth/register
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password123",
-  "name": "John Doe"
-}
+```bash
+curl -X POST http://localhost:9000/api/auth/verify-otp \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "email": "user@example.com",
+    "otp": "123456"
+  }'
 ```
 
-#### Đăng nhập
+#### 3. Đăng nhập
 
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
+```bash
+curl -X POST http://localhost:9000/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "email": "user@example.com",
+    "password": "password123"
+  }'
 ```
 
-#### Xác thực OTP
+#### 4. Thêm sách yêu thích
 
-```http
-POST /api/auth/verify-otp
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "otp": "123456"
-}
+```bash
+curl -X POST http://localhost:9000/api/users/123456/favorites/book789 \
+  -H 'Authorization: Bearer your_access_token_here'
 ```
 
-### User Endpoints
+#### 5. Lấy danh sách sách yêu thích
 
-#### Lấy thông tin user
-
-```http
-GET /api/users/profile
-Authorization: Bearer <jwt-token>
-```
-
-#### Cập nhật profile
-
-```http
-PUT /api/users/profile
-Authorization: Bearer <jwt-token>
-Content-Type: application/json
-
-{
-  "name": "New Name",
-  "phone": "0123456789"
-}
+```bash
+curl -X GET http://localhost:9000/api/users/123456/favorites \
+  -H 'Authorization: Bearer your_access_token_here'
 ```
 
 ## 📁 Cấu trúc dự án
 
 ```
 src/
-├── app.js                 # Express app configuration
-├── index.js              # Server entry point
-├── config/               # Configuration files
-│   ├── config.js         # Main config
-│   ├── db.js            # Database config
-│   ├── logger.js        # Winston logger
-│   ├── morgan.js        # HTTP request logger
-│   └── passport.js      # Passport strategies
-├── controllers/          # Route controllers
-│   ├── authController.js
-│   └── userController.js
-├── middlewares/          # Custom middlewares
-│   ├── authMiddleware.js
-│   └── validate.js
-├── models/              # Data models
-│   └── userModel.js
-├── providers/           # External service providers
-│   ├── emailProvider.js
-│   ├── otpProvider.js
-│   └── userProvider.js
-├── routes/              # API routes
-│   ├── authRoute.js
-│   └── userRoute.js
-├── services/            # Business logic
-│   ├── authService.js
-│   ├── emailService.js
-│   ├── firebaseService.js
-│   ├── otpService.js
-│   ├── tokenService.js
-│   └── userService.js
-├── sockets/             # Socket.io handlers
-│   ├── index.js
-│   ├── initialzationSocket.js
-│   └── userSocket.js
-├── utils/               # Utility functions
-│   ├── ApiError.js
-│   ├── catchAsync.js
-│   ├── emailUtils.js
-│   ├── idUtils.js
-│   ├── passwordUtils.js
-│   └── pick.js
-└── validations/         # Input validation
-    ├── authValidation.js
-    ├── custom.js
-    └── userValidation.js
+├── app.js                    # Express app configuration
+├── index.js                  # Server entry point
+├── config/                   # Configuration files
+│   ├── config.js            # Main config
+│   ├── db.js                # Firebase database config
+│   ├── index.js             # Config exports
+│   ├── logger.js            # Winston logger
+│   ├── morgan.js            # HTTP request logger
+│   └── passport.js          # Passport strategies
+├── controllers/              # Route controllers
+│   ├── authController.js    # Authentication endpoints
+│   ├── bookController.js    # Book management
+│   ├── categoriesController.js # Category management
+│   ├── epubController.js    # EPUB processing
+│   ├── index.js             # Controller exports
+│   └── userController.js    # User management & favorites
+├── middlewares/              # Custom middlewares
+│   ├── authMiddleware.js    # JWT authentication
+│   └── validate.js          # Request validation
+├── models/                   # Data models
+│   ├── bookModel.js         # Book data model
+│   ├── categoryModel.js     # Category data model
+│   ├── index.js             # Model exports
+│   └── userModel.js         # User data model
+├── providers/                # External service providers
+│   ├── emailProvider.js     # Email service provider
+│   ├── index.js             # Provider exports
+│   ├── otpProvider.js       # OTP service provider
+│   └── userProvider.js      # User service provider
+├── routes/                   # API routes
+│   ├── authRoute.js         # Authentication routes
+│   ├── bookRoute.js         # Book routes
+│   ├── categoriesRoute.js   # Category routes
+│   ├── epubRoute.js         # EPUB routes
+│   ├── index.js             # Route exports
+│   └── userRoute.js         # User & favorite routes
+├── services/                 # Business logic
+│   ├── authService.js       # Authentication logic
+│   ├── bookService.js       # Book management logic
+│   ├── categoriesService.js # Category logic
+│   ├── emailService.js      # Email service
+│   ├── epubService.js       # EPUB processing
+│   ├── firebaseService.js   # Firebase operations
+│   ├── index.js             # Service exports
+│   ├── otpService.js        # OTP management
+│   ├── tokenService.js      # JWT token management
+│   └── userService.js       # User & favorites logic
+├── sockets/                  # Socket.io handlers
+│   ├── index.js             # Socket exports
+│   ├── initialzationSocket.js # Socket initialization
+│   └── userSocket.js        # User socket events
+├── upload/                   # File upload utilities
+│   ├── book_firebase.json   # Firebase book data
+│   ├── categories.json      # Category data
+│   ├── createCategories.js  # Category creation script
+│   └── uploadToFirebase.js  # Firebase upload script
+├── utils/                    # Utility functions
+│   ├── ApiError.js          # Custom error class
+│   ├── catchAsync.js        # Async error handler
+│   ├── emailUtils.js        # Email utilities
+│   ├── idUtils.js           # ID generation
+│   ├── index.js             # Utility exports
+│   ├── passwordUtils.js     # Password hashing
+│   └── pick.js              # Object picking utility
+└── validations/              # Input validation
+    ├── authValidation.js    # Auth validation schemas
+    ├── bookValidation.js    # Book validation schemas
+    ├── categoriesValidation.js # Category validation
+    ├── custom.js            # Custom validation rules
+    ├── epubValidation.js    # EPUB validation
+    ├── index.js             # Validation exports
+    └── userValidation.js    # User validation schemas
 ```
 
 ## 🔧 Troubleshooting
@@ -333,6 +395,22 @@ Error: secretOrPrivateKey must have a value
 ```
 
 **Giải pháp**: Đặt `JWT_SECRET` trong file `.env`
+
+#### 5. Circular Dependency Warnings
+
+```
+Warning: Accessing non-existent property 'config' of module exports inside circular dependency
+```
+
+**Giải pháp**: Đã được sửa trong code, không ảnh hưởng đến chức năng
+
+#### 6. Cache Configuration Error
+
+```
+TypeError: Cannot read properties of undefined (reading 'cache')
+```
+
+**Giải pháp**: Đảm bảo `CACHE_TTL` được set trong file `.env` hoặc sử dụng giá trị mặc định
 
 ### Debug Mode
 

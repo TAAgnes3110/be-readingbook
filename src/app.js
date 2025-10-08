@@ -6,7 +6,8 @@ const compression = require('compression')
 const helmet = require('helmet')
 const httpStatus = require('http-status')
 
-const { config, logger } = require('./config/index')
+const config = require('./config/config')
+const logger = require('./config/logger')
 const { authRoute, userRoute, categoriesRoute, bookRoute, epubRoute } = require('./routes/index')
 const { firebaseStrategy } = require('./config/passport')
 

@@ -1,9 +1,19 @@
 const jwt = require('jsonwebtoken')
 const NodeCache = require('node-cache')
-const { config, logger } = require('../config/index')
+const config = require('../config/config')
+const logger = require('../config/logger')
 const { auth } = require('../config/db')
 
-const refreshTokenCache = new NodeCache({ stdTTL: config.cache.ttl })
+// Initialize cache with safe default
+let refreshTokenCache
+try {
+  refreshTokenCache = new NodeCache({
+    stdTTL: (config && config.cache && config.cache.ttl) || 300 // 5 minutes default
+  })
+} catch (error) {
+  // Fallback if config is not available
+  refreshTokenCache = new NodeCache({ stdTTL: 300 })
+}
 
 /**
  * Generate access token
@@ -12,7 +22,7 @@ const refreshTokenCache = new NodeCache({ stdTTL: config.cache.ttl })
  * @returns {string}
  */
 const generateAccessToken = (data) => {
-  const { userId, role } = data;
+  const { userId, role } = data
   try {
     const token = jwt.sign({ sub: userId, role }, config.jwt.secret, {
       expiresIn: config.jwt.expiry
@@ -33,7 +43,7 @@ const generateAccessToken = (data) => {
  * @returns {string}
  */
 const generateRefreshToken = (data) => {
-  const { userId } = data;
+  const { userId } = data
   try {
     const refreshToken = jwt.sign({ sub: userId }, config.jwt.secret, {
       expiresIn: '30d'
@@ -56,7 +66,7 @@ const generateRefreshToken = (data) => {
  * @returns {Promise<string>}
  */
 const generateFirebaseCustomToken = async (data) => {
-  const { userId, additionalClaims = {} } = data;
+  const { userId, additionalClaims = {} } = data
   try {
     const token = await auth
       .createCustomToken(userId, additionalClaims)
@@ -76,14 +86,14 @@ const generateFirebaseCustomToken = async (data) => {
  * @returns {object|null}
  */
 const verifyToken = (data) => {
-  const { token } = data;
+  const { token } = data
   try {
     const decoded = jwt.verify(token, config.jwt.secret)
     logger.info(`Verified token for user ${decoded.sub}`)
     return decoded
   } catch (error) {
     logger.error(`Token verification failed: ${error.stack}`)
-    return null
+    throw new Error('Invalid token')
   }
 }
 
@@ -93,7 +103,7 @@ const verifyToken = (data) => {
  * @returns {Promise<{ accessToken: string, refreshToken: string }>}
  */
 const refresh = async (data) => {
-  const { refreshToken } = data;
+  const { refreshToken } = data
   try {
     const decoded = verifyToken({ token: refreshToken })
     if (!decoded) {
@@ -119,7 +129,7 @@ const refresh = async (data) => {
  * @param {string} userId
  */
 const revoke = (data) => {
-  const { userId } = data;
+  const { userId } = data
   try {
     refreshTokenCache.del(`refresh:${userId}`)
     logger.info(`Revoked refresh token for user ${userId}`)

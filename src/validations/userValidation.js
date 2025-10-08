@@ -56,8 +56,8 @@ const getUsers = {
 }
 
 const getUser = {
-  params: Joi.object().keys({
-    userId: Joi.string().required()
+  query: Joi.object().keys({
+    email: Joi.string().required().email()
   })
 }
 
@@ -85,6 +85,26 @@ const deleteUser = {
   })
 }
 
+const addFavoriteBook = {
+  params: Joi.object().keys({
+    userId: Joi.string().required(),
+    bookId: Joi.string().required()
+  })
+}
+
+const removeFavoriteBook = {
+  params: Joi.object().keys({
+    userId: Joi.string().required(),
+    bookId: Joi.string().required()
+  })
+}
+
+const getFavoriteBooks = {
+  params: Joi.object().keys({
+    userId: Joi.string().required()
+  })
+}
+
 module.exports = {
   createUser,
   verifyUserOTP,
@@ -94,5 +114,8 @@ module.exports = {
   getUsers,
   getUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  addFavoriteBook,
+  removeFavoriteBook,
+  getFavoriteBooks
 }

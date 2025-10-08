@@ -1,6 +1,6 @@
 const { otpProvider } = require('../providers/index')
 const emailService = require('./emailService')
-const { logger } = require('../config/index')
+const logger = require('../config/logger')
 
 /**
  * Gửi OTP đến email theo loại yêu cầu
@@ -9,7 +9,7 @@ const { logger } = require('../config/index')
  * @returns {Promise<object>}
  */
 const sendOTP = async (data) => {
-  const { email, type } = data;
+  const { email, type } = data
   // Kiểm tra loại OTP hợp lệ
   if (!['register', 'reset', 'update'].includes(type)) {
     logger.error(`Invalid OTP type: ${type}`)
@@ -39,7 +39,7 @@ const sendOTP = async (data) => {
  * @returns {Promise<object>}
  */
 const verifyOTP = async (data) => {
-  const { email, otp } = data;
+  const { email, otp } = data
   try {
     // Xác thực OTP
     const result = await otpProvider.verify(email, otp)
@@ -53,7 +53,7 @@ const verifyOTP = async (data) => {
     return result
   } catch (error) {
     logger.error(`Error verifying OTP for ${email}: ${error.stack}`)
-    throw error
+    return { success: false, message: 'Lỗi xác thực OTP' }
   }
 }
 
@@ -63,7 +63,7 @@ const verifyOTP = async (data) => {
  * @returns {Promise<void>}
  */
 const clearOTP = async (data) => {
-  const { email } = data;
+  const { email } = data
   try {
     // Xóa OTP khỏi database
     await otpProvider.delete(email)

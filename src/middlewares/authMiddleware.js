@@ -13,8 +13,8 @@ const authMiddleware = async (req, res, next) => {
       )
     }
     const token = authHeader.split(' ')[1]
-    const payload = await tokenService.verifyAuthToken(token)
-    req.userId = payload.userId
+    const payload = tokenService.verifyToken({ token })
+    req.userId = payload.sub
     next()
   } catch (error) {
     logger.error(`Token authentication error: ${error.stack}`)

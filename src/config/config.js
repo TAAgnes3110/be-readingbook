@@ -64,8 +64,8 @@ module.exports = {
     phoneNumber: process.env.TWILIO_PHONE_NUMBER
   },
   cache: {
-    ttl: parseInt(process.env.CACHE_TTL, 10) || 300,
-    checkperiod: parseInt(process.env.CACHE_CHECKPERIOD, 10) || 120
+    ttl: process.env.CACHE_TTL ? parseInt(process.env.CACHE_TTL, 10) : 300,
+    checkperiod: process.env.CACHE_CHECKPERIOD ? parseInt(process.env.CACHE_CHECKPERIOD, 10) : 120
   },
   jwt: {
     secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production',

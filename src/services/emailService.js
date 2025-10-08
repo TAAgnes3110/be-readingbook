@@ -1,5 +1,6 @@
 const { emailProvider } = require('../providers/index')
-const { config, logger } = require('../config/index')
+const config = require('../config/config')
+const logger = require('../config/logger')
 
 const getSubject = (type) => {
   const subjects = {

@@ -51,7 +51,7 @@ router.post(
 
 router.post(
   '/images',
-  validate(epubValidation.getMetadata), // Sử dụng validation giống getMetadata
+  validate(epubValidation.getMetadata),
   epubController.getImages
 )
 

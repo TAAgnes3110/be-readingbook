@@ -84,7 +84,7 @@ const resetPassword = catchAsync(async (req, res) => {
  */
 const getUserById = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])
-  const user = await userService.getUserById(userId)
+  const user = await userService.getUserById({ id: userId })
   res.json({
     success: true,
     data: user,
@@ -99,7 +99,7 @@ const getUserById = catchAsync(async (req, res) => {
  */
 const getUserByEmail = catchAsync(async (req, res) => {
   const { email } = pick(req.query, ['email'])
-  const user = await userService.getUserByEmail(email)
+  const user = await userService.getUserByEmail({ email })
   res.json({
     success: true,
     data: user,
@@ -114,7 +114,7 @@ const getUserByEmail = catchAsync(async (req, res) => {
  */
 const updateUser = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])
-  const user = await userService.updateUserById(userId, req.body)
+  const user = await userService.updateUserById({ userId, updateBody: req.body })
   res.json({
     success: true,
     data: user,
@@ -129,10 +129,53 @@ const updateUser = catchAsync(async (req, res) => {
  */
 const deleteUser = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])
-  await userService.deleteUserById(userId)
+  await userService.deleteUserById({ userId })
   res.status(httpStatus.NO_CONTENT).json({
     success: true,
     message: 'User deleted successfully'
+  })
+})
+
+/**
+ * Add book to user's favorites
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
+ */
+const addFavoriteBook = catchAsync(async (req, res) => {
+  const { userId, bookId } = pick(req.params, ['userId', 'bookId'])
+  const result = await userService.addFavoriteBook({ userId, bookId })
+  res.json({
+    success: result.success,
+    message: result.message
+  })
+})
+
+/**
+ * Remove book from user's favorites
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
+ */
+const removeFavoriteBook = catchAsync(async (req, res) => {
+  const { userId, bookId } = pick(req.params, ['userId', 'bookId'])
+  const result = await userService.removeFavoriteBook({ userId, bookId })
+  res.json({
+    success: result.success,
+    message: result.message
+  })
+})
+
+/**
+ * Get user's favorite books
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
+ */
+const getFavoriteBooks = catchAsync(async (req, res) => {
+  const { userId } = pick(req.params, ['userId'])
+  const result = await userService.getFavoriteBooks({ userId })
+  res.json({
+    success: result.success,
+    data: result.data,
+    message: 'Favorite books retrieved successfully'
   })
 })
 
@@ -145,5 +188,8 @@ module.exports = {
   getUserById,
   getUserByEmail,
   updateUser,
-  deleteUser
+  deleteUser,
+  addFavoriteBook,
+  removeFavoriteBook,
+  getFavoriteBooks
 }
