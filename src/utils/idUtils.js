@@ -4,6 +4,7 @@ const { db } = require('../config/db')
 
 const userMetadataRef = db.ref('metadata/lastCustomId')
 const categoryMetadataRef = db.ref('metadata/lastCategoryId')
+const historyMetadataRef = db.ref('metadata/lastHistoryId')
 
 /**
  * Generate custom ID automatically for users
@@ -61,4 +62,32 @@ const generateCategoryId = async () => {
   }
 }
 
-module.exports = { generateCustomId, generateCategoryId }
+/**
+ * Generate custom ID automatically for history
+ * @returns {Promise<string>}
+ * @throws {ApiError}
+ */
+const generateHistoryId = async () => {
+  try {
+    const newHistoryId = await historyMetadataRef.transaction((currentValue) => {
+      return (currentValue || 0) + 1
+    })
+
+    if (!newHistoryId.committed) {
+      throw new ApiError(
+        500,
+        'Unable to generate historyId due to transaction conflict'
+      )
+    }
+
+    return newHistoryId.snapshot.val().toString()
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    throw new ApiError(
+      500,
+      `Failed to generate historyId: ${error.message}`
+    )
+  }
+}
+
+module.exports = { generateCustomId, generateCategoryId, generateHistoryId }

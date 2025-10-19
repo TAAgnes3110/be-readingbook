@@ -8,7 +8,7 @@ const { auth } = require('../config/db')
 let refreshTokenCache
 try {
   refreshTokenCache = new NodeCache({
-    stdTTL: (config && config.cache && config.cache.ttl) || 300 // 5 minutes default
+    stdTTL: (config && config.cache && config.cache.ttl) || 300
   })
 } catch (error) {
   // Fallback if config is not available

@@ -6,13 +6,25 @@ const logger = require('../config/logger')
 const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader) {
       throw new ApiError(
         httpStatus.UNAUTHORIZED,
-        'Valid token is required'
+        'Authorization header is required'
+      )
+    }
+    if (!authHeader.startsWith('Bearer ')) {
+      throw new ApiError(
+        httpStatus.UNAUTHORIZED,
+        'Authorization header must start with Bearer '
       )
     }
     const token = authHeader.split(' ')[1]
+    if (!token) {
+      throw new ApiError(
+        httpStatus.UNAUTHORIZED,
+        'Token is required'
+      )
+    }
     const payload = tokenService.verifyToken({ token })
     req.userId = payload.sub
     next()

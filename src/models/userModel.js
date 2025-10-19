@@ -383,7 +383,6 @@ const userModel = {
    */
   addFavoriteBook: async (userId, bookId) => {
     try {
-      // Kiểm tra dữ liệu đầu vào
       if (!userId || !bookId) {
         throw new ApiError(
           httpStatus.status.BAD_REQUEST,
@@ -391,7 +390,6 @@ const userModel = {
         )
       }
 
-      // Lấy thông tin user hiện tại
       const user = await userModel.findById(userId)
       if (!user) {
         throw new ApiError(
@@ -400,7 +398,15 @@ const userModel = {
         )
       }
 
-      // Kiểm tra sách đã có trong danh sách yêu thích chưa
+      const bookModel = require('./bookModel')
+      const book = await bookModel.getById(bookId)
+      if (!book) {
+        throw new ApiError(
+          httpStatus.status.NOT_FOUND,
+          'Không tìm thấy sách trong hệ thống'
+        )
+      }
+
       if (user.favoriteBooks && user.favoriteBooks.includes(bookId)) {
         throw new ApiError(
           httpStatus.status.BAD_REQUEST,
@@ -408,11 +414,9 @@ const userModel = {
         )
       }
 
-      // Thêm bookId vào danh sách yêu thích
       const currentFavorites = user.favoriteBooks || []
       const updatedFavorites = [...currentFavorites, bookId]
 
-      // Cập nhật database
       await db.getRef(`users/${userId}`).update({
         favoriteBooks: updatedFavorites,
         updatedAt: Date.now()
@@ -438,7 +442,6 @@ const userModel = {
    */
   removeFavoriteBook: async (userId, bookId) => {
     try {
-      // Kiểm tra dữ liệu đầu vào
       if (!userId || !bookId) {
         throw new ApiError(
           httpStatus.status.BAD_REQUEST,
@@ -446,7 +449,6 @@ const userModel = {
         )
       }
 
-      // Lấy thông tin user hiện tại
       const user = await userModel.findById(userId)
       if (!user) {
         throw new ApiError(
@@ -455,7 +457,15 @@ const userModel = {
         )
       }
 
-      // Kiểm tra sách có trong danh sách yêu thích không
+      const bookModel = require('./bookModel')
+      const book = await bookModel.getById(bookId)
+      if (!book) {
+        throw new ApiError(
+          httpStatus.status.NOT_FOUND,
+          'Không tìm thấy sách trong hệ thống'
+        )
+      }
+
       const currentFavorites = user.favoriteBooks || []
       if (!currentFavorites.includes(bookId)) {
         throw new ApiError(
@@ -464,10 +474,8 @@ const userModel = {
         )
       }
 
-      // Xóa bookId khỏi danh sách yêu thích
       const updatedFavorites = currentFavorites.filter(id => id !== bookId)
 
-      // Cập nhật database
       await db.getRef(`users/${userId}`).update({
         favoriteBooks: updatedFavorites,
         updatedAt: Date.now()

@@ -42,7 +42,8 @@ GET http://localhost:9000/api/categories
         "updatedAt": "2024-01-16T11:30:00.000Z"
       }
     ]
-  }
+  },
+  "message": "Lấy danh sách thể loại thành công"
 }
 ```
 
@@ -73,7 +74,8 @@ GET http://localhost:9000/api/categories/1
       "createdAt": "2024-01-15T10:30:00.000Z",
       "updatedAt": "2024-01-15T10:30:00.000Z"
     }
-  }
+  },
+  "message": "Lấy thể loại thành công"
 }
 ```
 
@@ -97,7 +99,8 @@ GET http://localhost:9000/api/categories/current-max-id
   "success": true,
   "data": {
     "currentMaxId": 5
-  }
+  },
+  "message": "Lấy ID hiện tại thành công"
 }
 ```
 

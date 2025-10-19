@@ -115,7 +115,7 @@ EMAIL_FROM=your-email@gmail.com
 
 # JWT (BẮT BUỘC)
 JWT_SECRET=your-super-secret-jwt-key-here
-JWT_EXPIRY=1h
+JWT_EXPIRY=24h
 
 # OTP Configuration
 OTP_LENGTH=6

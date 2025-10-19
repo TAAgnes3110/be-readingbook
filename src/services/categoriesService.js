@@ -7,8 +7,7 @@ const httpStatus = require('http-status')
  * @param {Object} categoryBody - Dữ liệu thể loại
  * @returns {Promise<Object>} - Đối tượng thể loại đã tạo
  */
-const createCategory = async (data) => {
-  const { categoryBody } = data;
+const createCategory = async (categoryBody) => {
   try {
     const { name, image_url } = categoryBody
 
@@ -59,12 +58,13 @@ const createCategory = async (data) => {
  * Lấy tất cả thể loại
  * @returns {Promise<Object>} - Danh sách thể loại
  */
-const getAllCategories = async (data) => {
+const getAllCategories = async () => {
   try {
     const categories = await categoryModel.findAll()
     return {
       success: true,
-      data: { categories }
+      data: { categories },
+      message: 'Lấy danh sách thể loại thành công'
     }
   } catch (error) {
     if (error instanceof ApiError) throw error
@@ -80,13 +80,13 @@ const getAllCategories = async (data) => {
  * @param {string} categoryId - ID thể loại
  * @returns {Promise<Object>} - Thể loại
  */
-const getCategoryById = async (data) => {
-  const { categoryId } = data;
+const getCategoryById = async (categoryId) => {
   try {
     const category = await categoryModel.findById(categoryId)
     return {
       success: true,
-      data: { category }
+      data: { category },
+      message: 'Lấy thể loại thành công'
     }
   } catch (error) {
     if (error instanceof ApiError) throw error
@@ -103,8 +103,7 @@ const getCategoryById = async (data) => {
  * @param {Object} updateData - Dữ liệu cập nhật
  * @returns {Promise<Object>} - Thể loại đã cập nhật
  */
-const updateCategory = async (data) => {
-  const { categoryId, updateData } = data;
+const updateCategory = async (categoryId, updateData) => {
   try {
     await categoryModel.update(categoryId, updateData)
     const updatedCategory = await categoryModel.findById(categoryId)
@@ -127,8 +126,7 @@ const updateCategory = async (data) => {
  * @param {string} categoryId - ID thể loại
  * @returns {Promise<Object>} - Kết quả xóa
  */
-const deleteCategory = async (data) => {
-  const { categoryId } = data;
+const deleteCategory = async (categoryId) => {
   try {
     await categoryModel.delete(categoryId)
     return {
@@ -148,12 +146,13 @@ const deleteCategory = async (data) => {
  * Lấy ID hiện tại lớn nhất của category
  * @returns {Promise<Object>} - ID hiện tại
  */
-const getCurrentMaxCategoryId = async (data) => {
+const getCurrentMaxCategoryId = async () => {
   try {
     const maxId = await categoryModel.getCurrentMaxCategoryId()
     return {
       success: true,
-      data: { currentMaxId: maxId }
+      data: { currentMaxId: maxId },
+      message: 'Lấy ID hiện tại thành công'
     }
   } catch (error) {
     if (error instanceof ApiError) throw error

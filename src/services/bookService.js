@@ -26,7 +26,8 @@ const getBooksList = async (data) => {
     const result = await bookModel.search(options)
     return {
       success: true,
-      data: result
+      data: result,
+      message: 'Lấy danh sách sách thành công'
     }
   } catch (error) {
     return {
@@ -49,7 +50,8 @@ const getBookById = async (data) => {
     const book = await bookModel.getById(id)
     return {
       success: true,
-      data: { book }
+      data: { book },
+      message: 'Lấy sách thành công'
     }
   } catch (error) {
     return {
@@ -145,7 +147,8 @@ const getLatestBooks = async (data) => {
     const books = await bookModel.getLatest(limit)
     return {
       success: true,
-      data: { books }
+      data: { books },
+      message: 'Lấy sách mới nhất thành công'
     }
   } catch (error) {
     return {
@@ -165,7 +168,8 @@ const getCurrentMaxBookId = async () => {
     const maxId = await bookModel.getMaxId()
     return {
       success: true,
-      data: { currentMaxId: maxId }
+      data: { currentMaxId: maxId },
+      message: 'Lấy ID sách lớn nhất thành công'
     }
   } catch (error) {
     return {
@@ -207,7 +211,8 @@ const getFavoriteBooksDetails = async (data) => {
 
     return {
       success: true,
-      data: { books }
+      data: { books },
+      message: 'Lấy danh sách sách yêu thích thành công'
     }
   } catch (error) {
     return {

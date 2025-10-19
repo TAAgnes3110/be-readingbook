@@ -1,13 +1,14 @@
-const { 
-  getEpubMetadata, 
-  getEpubChapters, 
-  getEpubChapterContent, 
-  validateEpubUrl, 
-  getEpubChapterRaw, 
-  getEpubImage, 
-  getEpubFile, 
-  getEpubImages 
+const {
+  getEpubMetadata,
+  getEpubChapters,
+  getEpubChapterContent,
+  validateEpubUrl,
+  getEpubChapterRaw,
+  getEpubImage,
+  getEpubFile,
+  getEpubImages
 } = require('../services/epubService')
+const logger = require('../config/logger')
 
 const epubController = {
   /**
@@ -17,21 +18,27 @@ const epubController = {
     try {
       const { epub_url } = req.body
 
+      logger.info(`📖 EPUB Metadata Request - URL: ${epub_url}`)
+
       if (!epub_url) {
+        logger.warn('❌ EPUB Metadata Request failed - Missing epub_url')
         return res.status(400).json({
           success: false,
           message: 'epub_url is required'
         })
       }
 
-      const result = await getEpubMetadata(epub_url)
+      const result = await getEpubMetadata({ url: epub_url })
 
       if (result.success) {
+        logger.info(`✅ EPUB Metadata Request successful - Title: ${result.data?.metadata?.title || 'Unknown'}`)
         res.status(200).json(result)
       } else {
+        logger.warn(`❌ EPUB Metadata Request failed - ${result.message}`)
         res.status(400).json(result)
       }
     } catch (error) {
+      logger.error(`💥 EPUB Metadata Request error: ${error.message}`)
       res.status(500).json({
         success: false,
         message: `Lỗi server: ${error.message}`
@@ -53,7 +60,7 @@ const epubController = {
         })
       }
 
-      const result = await getEpubChapters(epub_url)
+      const result = await getEpubChapters({ url: epub_url })
 
       if (result.success) {
         res.status(200).json(result)
@@ -82,7 +89,7 @@ const epubController = {
         })
       }
 
-      const result = await getEpubChapterContent(epub_url, chapter_id)
+      const result = await getEpubChapterContent({ url: epub_url, chapterId: chapter_id })
 
       if (result.success) {
         res.status(200).json(result)
@@ -111,7 +118,7 @@ const epubController = {
         })
       }
 
-      const result = await validateEpubUrl(epub_url)
+      const result = await validateEpubUrl({ url: epub_url })
 
       if (result.success) {
         res.status(200).json(result)
@@ -140,7 +147,7 @@ const epubController = {
         })
       }
 
-      const result = await getEpubChapterRaw(epub_url, chapter_id)
+      const result = await getEpubChapterRaw({ url: epub_url, chapterId: chapter_id })
 
       if (result.success) {
         res.status(200).json(result)
@@ -169,7 +176,7 @@ const epubController = {
         })
       }
 
-      const result = await getEpubImage(epub_url, image_id)
+      const result = await getEpubImage({ url: epub_url, imageId: image_id })
 
       if (result.success) {
         res.status(200).json(result)
@@ -198,7 +205,7 @@ const epubController = {
         })
       }
 
-      const result = await getEpubFile(epub_url, file_id)
+      const result = await getEpubFile({ url: epub_url, fileId: file_id })
 
       if (result.success) {
         res.status(200).json(result)
@@ -227,7 +234,7 @@ const epubController = {
         })
       }
 
-      const result = await getEpubImages(epub_url)
+      const result = await getEpubImages({ url: epub_url })
 
       if (result.success) {
         res.status(200).json(result)

@@ -51,7 +51,7 @@ router.post(
 
 router.post(
   '/images',
-  validate(epubValidation.getMetadata),
+  validate(epubValidation.getImages),
   epubController.getImages
 )
 

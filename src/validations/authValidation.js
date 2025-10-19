@@ -1,100 +1,138 @@
 const Joi = require('joi')
 const { password, confirmPassword } = require('./custom')
 
-const register = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email().messages({
-      'string.email': 'Email không hợp lệ',
-      'any.required': 'Email là bắt buộc'
-    }),
-    password: Joi.string().required().custom(password).messages({
-      'any.required': 'Mật khẩu là bắt buộc'
-    }),
-    confirmPassword: Joi.string().required().custom(confirmPassword).messages({
-      'any.required': 'Xác nhận mật khẩu là bắt buộc'
-    }),
-    fullName: Joi.string().required().messages({
-      'any.required': 'Họ tên là bắt buộc'
-    }),
-    phoneNumber: Joi.string()
-      .required()
-      .pattern(/^[0-9]{10,11}$/)
-      .messages({
-        'any.required': 'Số điện thoại là bắt buộc',
-        'string.pattern.base': 'Số điện thoại phải có 10-11 chữ số'
+/**
+ * Validation schemas for authentication operations
+ * @namespace authValidation
+ */
+const authValidation = {
+  /**
+   * @param {Object} body - Request body
+   * @param {string} body.email - Email address (valid email format)
+   * @param {string} body.password - Password (custom validation)
+   * @param {string} body.confirmPassword - Password confirmation (must match password)
+   * @param {string} body.fullName - Full name (required)
+   * @param {string} body.phoneNumber - Phone number (10-11 digits)
+   * @param {string} [body.role='user'] - User role ('user' or 'admin')
+   * @param {number} [body._id] - User ID (positive integer)
+   * @param {number} [body.userId] - User ID (positive integer)
+   * @return {Object} Joi validation schema
+   */
+  register: {
+    body: Joi.object().keys({
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
       }),
-    role: Joi.string().valid('user', 'admin').default('user').messages({
-      'any.only': 'Vai trò phải là user hoặc admin'
-    }),
-    _id: Joi.number().integer().positive().optional(),
-    userId: Joi.number().integer().positive().optional()
-  })
-}
-
-const verifyOTP = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email().messages({
-      'string.email': 'Email không hợp lệ',
-      'any.required': 'Email là bắt buộc'
-    }),
-    otp: Joi.string().required().messages({
-      'any.required': 'Mã OTP là bắt buộc'
+      password: Joi.string().required().custom(password).messages({
+        'any.required': 'Mật khẩu là bắt buộc'
+      }),
+      confirmPassword: Joi.string().required().custom(confirmPassword).messages({
+        'any.required': 'Xác nhận mật khẩu là bắt buộc'
+      }),
+      fullName: Joi.string().required().messages({
+        'any.required': 'Họ tên là bắt buộc'
+      }),
+      phoneNumber: Joi.string()
+        .required()
+        .pattern(/^[0-9]{10,11}$/)
+        .messages({
+          'any.required': 'Số điện thoại là bắt buộc',
+          'string.pattern.base': 'Số điện thoại phải có 10-11 chữ số'
+        }),
+      role: Joi.string().valid('user', 'admin').default('user').messages({
+        'any.only': 'Vai trò phải là user hoặc admin'
+      }),
+      _id: Joi.number().integer().positive().optional(),
+      userId: Joi.number().integer().positive().optional()
     })
-  })
-}
+  },
 
-const resendOTP = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email().messages({
-      'string.email': 'Email không hợp lệ',
-      'any.required': 'Email là bắt buộc'
+  /**
+   * @param {Object} body - Request body
+   * @param {string} body.email - Email address (valid email format)
+   * @param {string} body.otp - OTP code (required)
+   * @return {Object} Joi validation schema
+   */
+  verifyOTP: {
+    body: Joi.object().keys({
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      }),
+      otp: Joi.string().required().messages({
+        'any.required': 'Mã OTP là bắt buộc'
+      })
     })
-  })
-}
+  },
 
-
-const login = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email().messages({
-      'string.email': 'Email không hợp lệ',
-      'any.required': 'Email là bắt buộc'
-    }),
-    password: Joi.string().required().messages({
-      'any.required': 'Mật khẩu là bắt buộc'
+  /**
+   * @param {Object} body - Request body
+   * @param {string} body.email - Email address (valid email format)
+   * @return {Object} Joi validation schema
+   */
+  resendOTP: {
+    body: Joi.object().keys({
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      })
     })
-  })
-}
+  },
 
-const forgotPassword = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email().messages({
-      'string.email': 'Email không hợp lệ',
-      'any.required': 'Email là bắt buộc'
+  /**
+   * @param {Object} body - Request body
+   * @param {string} body.email - Email address (valid email format)
+   * @param {string} body.password - Password (required)
+   * @return {Object} Joi validation schema
+   */
+  login: {
+    body: Joi.object().keys({
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      }),
+      password: Joi.string().required().messages({
+        'any.required': 'Mật khẩu là bắt buộc'
+      })
     })
-  })
-}
+  },
 
-
-const resetPassword = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email().messages({
-      'string.email': 'Email không hợp lệ',
-      'any.required': 'Email là bắt buộc'
-    }),
-    newPassword: Joi.string().required().custom(password).messages({
-      'any.required': 'Mật khẩu mới là bắt buộc'
-    }),
-    confirmPassword: Joi.string().required().custom(confirmPassword).messages({
-      'any.required': 'Xác nhận mật khẩu là bắt buộc'
+  /**
+   * @param {Object} body - Request body
+   * @param {string} body.email - Email address (valid email format)
+   * @return {Object} Joi validation schema
+   */
+  forgotPassword: {
+    body: Joi.object().keys({
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      })
     })
-  })
+  },
+
+  /**
+   * @param {Object} body - Request body
+   * @param {string} body.email - Email address (valid email format)
+   * @param {string} body.newPassword - New password (custom validation)
+   * @param {string} body.confirmPassword - Password confirmation (must match newPassword)
+   * @return {Object} Joi validation schema
+   */
+  resetPassword: {
+    body: Joi.object().keys({
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      }),
+      newPassword: Joi.string().required().custom(password).messages({
+        'any.required': 'Mật khẩu mới là bắt buộc'
+      }),
+      confirmPassword: Joi.string().required().custom(confirmPassword).messages({
+        'any.required': 'Xác nhận mật khẩu là bắt buộc'
+      })
+    })
+  }
 }
 
-module.exports = {
-  register,
-  verifyOTP,
-  resendOTP,
-  login,
-  forgotPassword,
-  resetPassword
-}
+module.exports = authValidation
