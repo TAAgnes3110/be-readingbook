@@ -7,17 +7,17 @@ const epubService = require('./epubService')
 
 const historyService = {
   /**
-   * @param {Object} bookmarkData - Bookmark data
-   * @return {Object} Save result
+   * Lưu bookmark cho người dùng
+   * @param {Object} bookmarkData - Dữ liệu bookmark
+   * @returns {Promise<Object>} - Kết quả lưu bookmark
+   * @throws {ApiError} - Nếu lưu bookmark thất bại
    */
   saveBookmark: async (bookmarkData) => {
     try {
       const { userId, bookId, chapterId } = bookmarkData
 
-      // Validate user exists
       await userModel.findById(userId)
 
-      // Validate book exists
       await bookModel.getById(bookId)
 
       if (chapterId === 'null') {
@@ -38,11 +38,8 @@ const historyService = {
 
 
       if (existingHistory) {
-        // Update existing history
         const updatedHistory = await historyModel.update(existingHistory._id, updateData)
 
-        // Remove page property from response
-        // eslint-disable-next-line no-unused-vars
         const { page, ...historyWithoutPage } = updatedHistory
         return {
           success: true,
@@ -50,16 +47,13 @@ const historyService = {
           data: historyWithoutPage
         }
       } else {
-        // Create new history
         const newHistory = await historyModel.create({
           userId,
           bookId,
           ...updateData
         })
 
-        // Get the created history without page property
         const createdHistory = await historyModel.findById(newHistory.historyId)
-        // eslint-disable-next-line no-unused-vars
         const { page, ...historyWithoutPage } = createdHistory
         return {
           success: true,
@@ -78,20 +72,19 @@ const historyService = {
   },
 
   /**
-   * @param {number} userId - User ID
-   * @param {Object} options - Query options
-   * @return {Object} Reading history result
+   * Lấy lịch sử đọc của người dùng
+   * @param {number} userId - ID người dùng
+   * @param {Object} options - Tùy chọn phân trang
+   * @returns {Promise<Object>} - Lịch sử đọc và thông tin phân trang
+   * @throws {ApiError} - Nếu lấy lịch sử thất bại
    */
   getReadingHistory: async (userId, options = {}) => {
     try {
-      // Validate user exists
       await userModel.findById(userId)
 
-      // Get reading history
       const historyResult = await historyModel.getByUserId(userId, options)
       const { histories, pagination } = historyResult
 
-      // Get detailed book information for each history
       const historiesWithBooks = await Promise.all(
         histories.map(async (history) => {
           try {
@@ -107,7 +100,6 @@ const historyService = {
               }
             }
           } catch (error) {
-            // If book not found, return history without book info
             return {
               ...history,
               book: null
@@ -135,19 +127,18 @@ const historyService = {
   },
 
   /**
-   * @param {number} userId - User ID
-   * @param {number} bookId - Book ID
-   * @return {Object} Bookmark result
+   * Lấy bookmark của người dùng cho một cuốn sách
+   * @param {number} userId - ID người dùng
+   * @param {number} bookId - ID sách
+   * @returns {Promise<Object>} - Thông tin bookmark
+   * @throws {ApiError} - Nếu lấy bookmark thất bại
    */
   getBookmark: async (userId, bookId) => {
     try {
-      // Validate user exists
       await userModel.findById(userId)
 
-      // Validate book exists
       const book = await bookModel.getById(bookId)
 
-      // Find bookmark
       const history = await historyModel.findByUserAndBook(userId, bookId)
 
       if (!history) {
@@ -192,16 +183,16 @@ const historyService = {
   },
 
   /**
-   * @param {number} userId - User ID
-   * @param {number} bookId - Book ID
-   * @return {Object} Delete result
+   * Xóa bookmark của người dùng
+   * @param {number} userId - ID người dùng
+   * @param {number} bookId - ID sách
+   * @returns {Promise<Object>} - Kết quả xóa bookmark
+   * @throws {ApiError} - Nếu xóa bookmark thất bại
    */
   deleteBookmark: async (userId, bookId) => {
     try {
-      // Kiểm tra user có tồn tại không
       await userModel.findById(userId)
 
-      // Tìm bookmark
       const history = await historyModel.findByUserAndBook(userId, bookId)
 
       if (!history) {
@@ -211,7 +202,6 @@ const historyService = {
         )
       }
 
-      // Xóa bookmark
       await historyModel.delete(history._id)
 
       return {
@@ -229,15 +219,15 @@ const historyService = {
   },
 
   /**
-   * @param {number} userId - User ID
-   * @return {Object} History by user result
+   * Lấy lịch sử đọc theo người dùng
+   * @param {number} userId - ID người dùng
+   * @returns {Promise<Object>} - Lịch sử đọc của người dùng
+   * @throws {ApiError} - Nếu lấy lịch sử thất bại
    */
   getHistoryByUser: async (userId) => {
     try {
-      // Kiểm tra user có tồn tại không
       await userModel.findById(userId)
 
-      // Tìm tất cả lịch sử đọc của user
       const historyResult = await historyModel.getByUserId(userId)
       const histories = historyResult.histories
 
@@ -258,15 +248,15 @@ const historyService = {
   },
 
   /**
-   * @param {number} bookId - Book ID
-   * @return {Object} History by book result
+   * Lấy lịch sử đọc theo sách
+   * @param {number} bookId - ID sách
+   * @returns {Promise<Object>} - Lịch sử đọc của sách
+   * @throws {ApiError} - Nếu lấy lịch sử thất bại
    */
   getHistoryByBook: async (bookId) => {
     try {
-      // Kiểm tra book có tồn tại không
       await bookModel.getById(bookId)
 
-      // Tìm tất cả lịch sử đọc của book
       const histories = await historyModel.findByBook(bookId)
 
       return {
@@ -294,4 +284,3 @@ module.exports = {
   getHistoryByUser: historyService.getHistoryByUser,
   getHistoryByBook: historyService.getHistoryByBook
 }
-

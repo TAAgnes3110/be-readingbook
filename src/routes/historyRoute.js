@@ -6,7 +6,6 @@ const authenticate = require('../middlewares/authMiddleware')
 
 const router = express.Router()
 
-// Save bookmark/reading progress
 router.post(
   '/bookmark',
   authenticate,
@@ -14,7 +13,6 @@ router.post(
   historyController.saveBookmark
 )
 
-// Get reading history with pagination
 router.get(
   '/:userId',
   authenticate,
@@ -22,7 +20,6 @@ router.get(
   historyController.getReadingHistory
 )
 
-// Get specific bookmark
 router.get(
   '/:userId/bookmark/:bookId',
   authenticate,
@@ -30,7 +27,6 @@ router.get(
   historyController.getBookmark
 )
 
-// Delete bookmark
 router.delete(
   '/:userId/bookmark/:bookId',
   authenticate,
@@ -39,7 +35,6 @@ router.delete(
 )
 
 
-// Get all reading history by user ID
 router.get(
   '/user/:userId',
   authenticate,
@@ -47,7 +42,6 @@ router.get(
   historyController.getHistoryByUser
 )
 
-// Get all reading history by book ID (public endpoint)
 router.get(
   '/book/:bookId',
   validate(historyValidation.getHistoryByBook),

@@ -5,7 +5,8 @@ const httpStatus = require('http-status')
 /**
  * Tạo thể loại mới
  * @param {Object} categoryBody - Dữ liệu thể loại
- * @returns {Promise<Object>} - Đối tượng thể loại đã tạo
+ * @returns {Promise<Object>} - Thông tin thể loại đã tạo
+ * @throws {ApiError} - Nếu tạo thể loại thất bại
  */
 const createCategory = async (categoryBody) => {
   try {
@@ -56,7 +57,8 @@ const createCategory = async (categoryBody) => {
 
 /**
  * Lấy tất cả thể loại
- * @returns {Promise<Object>} - Danh sách thể loại
+ * @returns {Promise<Object>} - Danh sách thể loại và thông báo
+ * @throws {ApiError} - Nếu lấy danh sách thất bại
  */
 const getAllCategories = async () => {
   try {
@@ -77,8 +79,9 @@ const getAllCategories = async () => {
 
 /**
  * Lấy thể loại theo ID
- * @param {string} categoryId - ID thể loại
- * @returns {Promise<Object>} - Thể loại
+ * @param {string} categoryId - ID của thể loại
+ * @returns {Promise<Object>} - Thông tin thể loại và thông báo
+ * @throws {ApiError} - Nếu không tìm thấy thể loại
  */
 const getCategoryById = async (categoryId) => {
   try {
@@ -98,10 +101,11 @@ const getCategoryById = async (categoryId) => {
 }
 
 /**
- * Cập nhật thể loại
- * @param {string} categoryId - ID thể loại
+ * Cập nhật thể loại theo ID
+ * @param {string} categoryId - ID của thể loại
  * @param {Object} updateData - Dữ liệu cập nhật
- * @returns {Promise<Object>} - Thể loại đã cập nhật
+ * @returns {Promise<Object>} - Thông tin thể loại đã cập nhật
+ * @throws {ApiError} - Nếu cập nhật thất bại
  */
 const updateCategory = async (categoryId, updateData) => {
   try {
@@ -122,9 +126,10 @@ const updateCategory = async (categoryId, updateData) => {
 }
 
 /**
- * Xóa thể loại
- * @param {string} categoryId - ID thể loại
- * @returns {Promise<Object>} - Kết quả xóa
+ * Xóa thể loại theo ID
+ * @param {string} categoryId - ID của thể loại
+ * @returns {Promise<Object>} - Thông báo kết quả xóa
+ * @throws {ApiError} - Nếu xóa thất bại
  */
 const deleteCategory = async (categoryId) => {
   try {
@@ -143,8 +148,9 @@ const deleteCategory = async (categoryId) => {
 }
 
 /**
- * Lấy ID hiện tại lớn nhất của category
- * @returns {Promise<Object>} - ID hiện tại
+ * Lấy ID thể loại lớn nhất hiện tại
+ * @returns {Promise<Object>} - ID thể loại lớn nhất và thông báo
+ * @throws {ApiError} - Nếu lấy ID thất bại
  */
 const getCurrentMaxCategoryId = async () => {
   try {

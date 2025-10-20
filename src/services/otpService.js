@@ -4,24 +4,23 @@ const logger = require('../config/logger')
 
 /**
  * Gửi OTP đến email theo loại yêu cầu
- * @param {string} email
- * @param {'register'|'reset'|'update'} type
- * @returns {Promise<object>}
+ * @param {Object} data - Dữ liệu gửi OTP
+ * @param {string} data.email - Email người nhận
+ * @param {'register'|'reset'|'update'} data.type - Loại OTP
+ * @returns {Promise<Object>} - Kết quả gửi OTP
+ * @throws {Error} - Nếu gửi OTP thất bại
  */
 const sendOTP = async (data) => {
   const { email, type } = data
-  // Kiểm tra loại OTP hợp lệ
   if (!['register', 'reset', 'update'].includes(type)) {
     logger.error(`Invalid OTP type: ${type}`)
     throw new Error('Loại OTP không hợp lệ')
   }
 
   try {
-    // Tạo và lưu trữ OTP
     const otp = otpProvider.generate()
     await otpProvider.store(email, otp)
 
-    // Gửi OTP qua email
     const result = await emailService.sendOTP({ email, otp, type })
     logger.info(`OTP sent to ${email} for ${type}`)
 
@@ -34,14 +33,15 @@ const sendOTP = async (data) => {
 
 /**
  * Xác thực OTP
- * @param {string} email
- * @param {string} otp
- * @returns {Promise<object>}
+ * @param {Object} data - Dữ liệu xác thực
+ * @param {string} data.email - Email người dùng
+ * @param {string} data.otp - Mã OTP
+ * @returns {Promise<Object>} - Kết quả xác thực
+ * @throws {Error} - Nếu xác thực thất bại
  */
 const verifyOTP = async (data) => {
   const { email, otp } = data
   try {
-    // Xác thực OTP
     const result = await otpProvider.verify(email, otp)
 
     if (result.success) {
@@ -59,13 +59,14 @@ const verifyOTP = async (data) => {
 
 /**
  * Xóa OTP đã lưu trữ
- * @param {string} email
+ * @param {Object} data - Dữ liệu xóa OTP
+ * @param {string} data.email - Email người dùng
  * @returns {Promise<void>}
+ * @throws {Error} - Nếu xóa OTP thất bại
  */
 const clearOTP = async (data) => {
   const { email } = data
   try {
-    // Xóa OTP khỏi database
     await otpProvider.delete(email)
     logger.info(`Cleared OTP for ${email}`)
   } catch (error) {

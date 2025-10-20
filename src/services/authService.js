@@ -50,7 +50,6 @@ const SignUp = async (userBody) => {
       }
     }
 
-    // Tạo user trong Firebase Auth và database
     await getFirebaseService().createAuthUser({ email: userData.email, password: userData.password })
     const { userId: createdUserId, message } = await userModel.create(userData)
     await getOtpService().sendOTP({ email: userData.email, type: 'register' })
@@ -76,7 +75,6 @@ const SignUp = async (userBody) => {
  */
 const verifyOTP = async (email, otp) => {
   try {
-    // Xác thực OTP
     const otpResult = await getOtpService().verifyOTP({ email, otp })
     if (!otpResult.success) {
       throw new ApiError(httpStatus.status.BAD_REQUEST, otpResult.message)
@@ -87,7 +85,6 @@ const verifyOTP = async (email, otp) => {
       return { success: true, message: 'Xác thực OTP thành công, bạn có thể đặt mật khẩu mới' }
     } catch (error) {
       if (error.statusCode === httpStatus.status.NOT_FOUND) {
-        // User chưa active, kích hoạt tài khoản
         try {
           const inactiveUser = await userModel.findByEmailForActivation(email)
           const userId = inactiveUser._id
@@ -190,7 +187,6 @@ const login = async (email, password) => {
       lastLogin: Date.now()
     })
 
-    // Loại bỏ password khỏi response
     const userWithoutPassword = { ...user }
     delete userWithoutPassword.password
 
@@ -221,7 +217,6 @@ const login = async (email, password) => {
  */
 const forgotPassword = async (email) => {
   try {
-    // Kiểm tra email có tồn tại không
     try {
       await userModel.findByEmail(email)
     } catch (error) {

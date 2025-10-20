@@ -6,6 +6,7 @@ const Joi = require('joi')
  */
 const bookValidation = {
   /**
+   * Validation schema cho lấy danh sách sách
    * @param {Object} query - Query parameters
    * @param {number} [query.page=1] - Page number (min: 1)
    * @param {number} [query.limit=10] - Items per page (min: 1, max: 100)
@@ -14,7 +15,7 @@ const bookValidation = {
    * @param {string} [query.status='active'] - Status filter ('active' or 'inactive')
    * @param {string} [query.sortBy='createdAt'] - Sort field ('title', 'author', 'createdAt', 'updatedAt')
    * @param {string} [query.sortOrder='desc'] - Sort order ('asc' or 'desc')
-   * @return {Object} Joi validation schema
+   * @returns {Object} Joi validation schema
    */
   getList: {
     query: Joi.object().keys({
@@ -32,6 +33,18 @@ const bookValidation = {
       search: Joi.string().allow('').optional().messages({
         'string.base': 'Từ khóa tìm kiếm phải là chuỗi'
       }),
+      q: Joi.string().allow('').optional().messages({
+        'string.base': 'Từ khóa tìm kiếm phải là chuỗi'
+      }),
+      title: Joi.string().allow('').optional().messages({
+        'string.base': 'Tiêu đề phải là chuỗi'
+      }),
+      author: Joi.string().allow('').optional().messages({
+        'string.base': 'Tác giả phải là chuỗi'
+      }),
+      keyword: Joi.string().allow('').optional().messages({
+        'string.base': 'Từ khóa phải là chuỗi'
+      }),
       category: Joi.string().allow('').optional().messages({
         'string.base': 'Thể loại phải là chuỗi'
       }),
@@ -48,9 +61,10 @@ const bookValidation = {
   },
 
   /**
+   * Validation schema cho lấy sách theo ID
    * @param {Object} params - URL parameters
    * @param {number} params.id - Book ID (positive integer)
-   * @return {Object} Joi validation schema
+   * @returns {Object} Joi validation schema
    */
   getById: {
     params: Joi.object().keys({
@@ -269,6 +283,27 @@ const bookValidation = {
         'number.integer': 'Limit phải là số nguyên',
         'number.min': 'Limit phải lớn hơn 0',
         'number.max': 'Limit không được vượt quá 50'
+      })
+    })
+  },
+
+
+  quickSearch: {
+    query: Joi.object().keys({
+      input: Joi.string().allow('').required().messages({
+        'string.base': 'Input phải là chuỗi',
+        'any.required': 'Input là bắt buộc'
+      }),
+      page: Joi.number().integer().min(1).default(1).messages({
+        'number.base': 'Trang phải là số',
+        'number.integer': 'Trang phải là số nguyên',
+        'number.min': 'Trang phải lớn hơn 0'
+      }),
+      limit: Joi.number().integer().min(1).max(50).default(20).messages({
+        'number.base': 'Giới hạn phải là số',
+        'number.integer': 'Giới hạn phải là số nguyên',
+        'number.min': 'Giới hạn phải lớn hơn 0',
+        'number.max': 'Giới hạn không được vượt quá 50'
       })
     })
   }

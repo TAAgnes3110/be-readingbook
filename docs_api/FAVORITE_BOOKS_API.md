@@ -136,21 +136,21 @@ Khi tạo user mới, trường `favoriteBooks` sẽ được khởi tạo là m
 ### Thêm sách yêu thích:
 ```bash
 curl -X POST \
-  http://localhost:3000/api/users/123/favorites/456 \
+  http://localhost:9000/api/users/123/favorites/456 \
   -H 'Authorization: Bearer your_token_here'
 ```
 
 ### Xóa sách yêu thích:
 ```bash
 curl -X DELETE \
-  http://localhost:3000/api/users/123/favorites/456 \
+  http://localhost:9000/api/users/123/favorites/456 \
   -H 'Authorization: Bearer your_token_here'
 ```
 
 ### Lấy danh sách sách yêu thích:
 ```bash
 curl -X GET \
-  http://localhost:3000/api/users/123/favorites \
+  http://localhost:9000/api/users/123/favorites \
   -H 'Authorization: Bearer your_token_here'
 ```
 

@@ -1,24 +1,18 @@
-const { bookModel } = require('../models/index')
+const { bookModel, categoryModel } = require('../models/index')
 const logger = require('../config/logger')
 
 /**
  * Lấy danh sách sách với tìm kiếm và phân trang
  * @param {Object} data - Dữ liệu tìm kiếm
- * @param {Object} data.options - Các tùy chọn tìm kiếm
+ * @param {Object} data.options - Tùy chọn tìm kiếm
  * @param {number} data.options.page - Trang hiện tại
- * @param {number} data.options.limit - Số lượng sách trên mỗi trang
+ * @param {number} data.options.limit - Số lượng sách mỗi trang
  * @param {string} data.options.search - Từ khóa tìm kiếm
  * @param {string} data.options.category - Thể loại sách
  * @param {string} data.options.status - Trạng thái sách
  * @param {string} data.options.sortBy - Trường sắp xếp
  * @param {string} data.options.sortOrder - Thứ tự sắp xếp
- * @returns {Object} data - Dữ liệu sách
- * @returns {Array} data.books - Danh sách sách
- * @returns {Object} data.pagination - Thông tin phân trang
- * @returns {number} data.pagination.page - Trang hiện tại
- * @returns {number} data.pagination.limit - Số lượng sách trên mỗi trang
- * @returns {number} data.pagination.total - Tổng số lượng sách
- * @returns {number} data.pagination.totalPages - Tổng số trang
+ * @returns {Promise<Object>} - Danh sách sách và thông báo
  */
 const getBooksList = async (data) => {
   const { options = {} } = data || {}
@@ -38,11 +32,10 @@ const getBooksList = async (data) => {
 }
 
 /**
- * Lấy sách theo ID
- * @param {Object} data - Dữ liệu sách
- * @param {string} data.id - ID sách
- * @returns {Object} data - Dữ liệu sách
- * @returns {Object} data.book - Sách
+ * Lấy thông tin sách theo ID
+ * @param {Object} data - Dữ liệu yêu cầu
+ * @param {string} data.id - ID của sách
+ * @returns {Promise<Object>} - Thông tin sách và thông báo
  */
 const getBookById = async (data) => {
   const { id } = data
@@ -63,10 +56,9 @@ const getBookById = async (data) => {
 
 /**
  * Tạo sách mới
- * @param {Object} data - Dữ liệu sách
- * @param {Object} data.bookData - Dữ liệu sách
- * @returns {Object} data - Dữ liệu sách
- * @returns {Object} data.book - Sách
+ * @param {Object} data - Dữ liệu yêu cầu
+ * @param {Object} data.bookData - Thông tin sách cần tạo
+ * @returns {Promise<Object>} - Thông tin sách đã tạo và thông báo
  */
 const createBook = async (data) => {
   const { bookData } = data
@@ -86,12 +78,11 @@ const createBook = async (data) => {
 }
 
 /**
- * Cập nhật sách
- * @param {Object} data - Dữ liệu sách
- * @param {string} data.id - ID sách
- * @param {Object} data.updateData - Dữ liệu sách cập nhật
- * @returns {Object} data - Dữ liệu sách
- * @returns {Object} data.book - Sách
+ * Cập nhật thông tin sách theo ID
+ * @param {Object} data - Dữ liệu yêu cầu
+ * @param {string} data.id - ID của sách
+ * @param {Object} data.updateData - Dữ liệu cập nhật
+ * @returns {Promise<Object>} - Thông tin sách đã cập nhật và thông báo
  */
 const updateBookById = async (data) => {
   const { id, updateData } = data
@@ -111,12 +102,10 @@ const updateBookById = async (data) => {
 }
 
 /**
- * Xóa sách
- * @param {Object} data - Dữ liệu sách
- * @param {string} data.id - ID sách
- * @returns {Object} Kết quả tìm kiếm
- * @returns {Object} data - Dữ liệu sách
- * @returns {Object} data.book - Sách
+ * Xóa sách theo ID
+ * @param {Object} data - Dữ liệu yêu cầu
+ * @param {string} data.id - ID của sách
+ * @returns {Promise<Object>} - Thông báo kết quả xóa
  */
 const deleteBookById = async (data) => {
   const { id } = data
@@ -135,11 +124,10 @@ const deleteBookById = async (data) => {
 }
 
 /**
- * Lấy sách mới nhất
- * @param {Object} data - Dữ liệu sách
- * @param {number} data.limit - Số lượng sách
- * @returns {Object} Kết quả tìm kiếm
- * @returns {Array} data.books - Danh sách sách
+ * Lấy danh sách sách mới nhất
+ * @param {Object} data - Dữ liệu yêu cầu
+ * @param {number} data.limit - Số lượng sách tối đa
+ * @returns {Promise<Object>} - Danh sách sách mới nhất và thông báo
  */
 const getLatestBooks = async (data) => {
   const { limit = 10 } = data || {}
@@ -159,9 +147,8 @@ const getLatestBooks = async (data) => {
 }
 
 /**
- * Lấy ID lớn nhất
- * @returns {Object} Kết quả tìm kiếm
- * @returns {Object} data.currentMaxId - ID lớn nhất
+ * Lấy ID sách lớn nhất hiện tại
+ * @returns {Promise<Object>} - ID sách lớn nhất và thông báo
  */
 const getCurrentMaxBookId = async () => {
   try {
@@ -180,11 +167,10 @@ const getCurrentMaxBookId = async () => {
 }
 
 /**
- * Lấy thông tin chi tiết của các sách yêu thích
- * @param {Object} data - Dữ liệu sách
- * @param {Array} data.bookIds - Danh sách ID sách
- * @returns {Object} Kết quả tìm kiếm
- * @returns {Array} data.books - Danh sách sách yêu thích
+ * Lấy chi tiết danh sách sách yêu thích
+ * @param {Object} data - Dữ liệu yêu cầu
+ * @param {Array} data.bookIds - Mảng ID các sách yêu thích
+ * @returns {Promise<Object>} - Danh sách sách yêu thích và thông báo
  */
 const getFavoriteBooksDetails = async (data) => {
   const { bookIds } = data
@@ -204,7 +190,6 @@ const getFavoriteBooksDetails = async (data) => {
           books.push(book)
         }
       } catch (error) {
-        // Bỏ qua sách không tồn tại
         logger.warn(`Book with ID ${bookId} not found`)
       }
     }
@@ -222,8 +207,64 @@ const getFavoriteBooksDetails = async (data) => {
   }
 }
 
+/**
+ * Tìm kiếm nhanh theo một input duy nhất
+ * @param {Object} data
+ * @param {string} data.input
+ * @param {number} [data.page]
+ * @param {number} [data.limit]
+ */
+const quickSearch = async (data) => {
+  const { input = '', page = 1, limit = 20 } = data || {}
+  try {
+    const normalize = (str = '') => String(str).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    const needle = normalize(input.trim())
+    if (!needle) {
+      return { success: true, data: { books: [] } }
+    }
+
+    const categoriesObj = await categoryModel.findAll()
+    const categoryIdMatches = new Set()
+    if (categoriesObj) {
+      for (const [catId, cat] of Object.entries(categoriesObj)) {
+        if (normalize(cat?.name || '').includes(needle)) {
+          categoryIdMatches.add(String(catId))
+        }
+      }
+    }
+
+    const allBooks = await bookModel.getAll()
+    const filtered = allBooks.filter(book => {
+      const nTitle = normalize(book.title)
+      const nAuthor = normalize(book.author)
+      const nDesc = normalize(book.description)
+      const nKeywords = Array.isArray(book.keywords) ? normalize(book.keywords.join(' ')) : normalize(book.keywords)
+      const catMatch = categoryIdMatches.has(String(book.category))
+      return (
+        nTitle.includes(needle) ||
+        nAuthor.includes(needle) ||
+        nDesc.includes(needle) ||
+        nKeywords.includes(needle) ||
+        catMatch
+      )
+    })
+
+    const total = filtered.length
+    const p = parseInt(page) || 1
+    const l = Math.min(50, parseInt(limit) || 20)
+    const startIndex = (p - 1) * l
+    const endIndex = startIndex + l
+    const books = filtered.slice(startIndex, endIndex)
+
+    return { success: true, data: { books, pagination: { page: p, limit: l, total, totalPages: Math.ceil(total / l) } } }
+  } catch (error) {
+    return { success: false, message: error.message }
+  }
+}
+
 module.exports = {
   getBooksList,
+  quickSearch,
   getBookById,
   createBook,
   updateBookById,

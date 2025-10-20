@@ -17,7 +17,10 @@ GET /api/books
 ### **Query Parameters (tùy chọn):**
 - `page`: Số trang (mặc định: 1)
 - `limit`: Số sách/trang (mặc định: 10)
-- `search`: Từ khóa tìm kiếm
+- `search` hoặc `q`: Từ khóa tổng quát (title, author, description, keywords) — bỏ dấu, match từng ký tự
+- `title`: Lọc theo tên sách (partial)
+- `author`: Lọc theo tác giả (partial)
+- `keyword`: Lọc theo từ khóa (partial; khớp phần tử trong mảng `keywords`)
 - `category`: ID thể loại
 - `status`: active/inactive (mặc định: active)
 - `sortBy`: title/author/createdAt/updatedAt (mặc định: createdAt)
@@ -65,7 +68,27 @@ GET http://localhost:9000/api/books?page=1&limit=5&search=harry&category=1&statu
 
 ---
 
-## 📖 **2. GET - Lấy sách theo ID**
+## 🔎 **2. GET - Tìm kiếm sách (API chuẩn, một input duy nhất)**
+
+### **Endpoint:**
+```
+GET /api/books/search
+```
+
+### **Query Parameters:**
+- `input` (khuyến nghị) hoặc `q`/`search` (alias): Tự động tìm theo tên sách, tác giả, tên thể loại, mô tả và keywords. Hỗ trợ bỏ dấu, match từng ký tự.
+- `page` (mặc định: 1), `limit` (mặc định: 20, tối đa: 50)
+
+### **Ví dụ:**
+```
+GET http://localhost:9000/api/books/search?input=nguyen&page=1&limit=20
+GET http://localhost:9000/api/books/search?input=dora
+GET http://localhost:9000/api/books/search?input=phi%C3%AAu%20l%C6%B0u&limit=10
+```
+
+---
+
+## 📖 **3. GET - Lấy sách theo ID**
 
 ### **Endpoint:**
 ```
@@ -106,7 +129,7 @@ GET http://localhost:9000/api/books/1
 
 ---
 
-## 🆕 **3. GET - Lấy sách mới nhất**
+## 🆕 **4. GET - Lấy sách mới nhất**
 
 ### **Endpoint:**
 ```
@@ -156,7 +179,7 @@ GET http://localhost:9000/api/books/latest?limit=5
 
 ---
 
-## 🔢 **4. GET - Lấy ID lớn nhất**
+## 🔢 **5. GET - Lấy ID lớn nhất**
 
 ### **Endpoint:**
 ```
@@ -180,7 +203,7 @@ GET http://localhost:9000/api/books/current-max-id
 
 ---
 
-## ➕ **5. POST - Tạo sách mới**
+## ➕ **6. POST - Tạo sách mới**
 
 ### **Endpoint:**
 ```
@@ -245,7 +268,7 @@ Content-Type: application/json
 
 ---
 
-## ✏️ **6. PUT - Cập nhật sách**
+## ✏️ **7. PUT - Cập nhật sách**
 
 ### **Endpoint:**
 ```
@@ -314,7 +337,7 @@ Content-Type: application/json
 
 ---
 
-## 🗑️ **7. DELETE - Xóa sách**
+## 🗑️ **8. DELETE - Xóa sách**
 
 ### **Endpoint:**
 ```
@@ -341,6 +364,7 @@ DELETE http://localhost:9000/api/books/1
 | Method | Endpoint | Mô tả |
 |--------|----------|-------|
 | GET | `/api/books` | Lấy danh sách sách (có filter) |
+| GET | `/api/books/search` | Tìm kiếm sách (một input duy nhất) |
 | GET | `/api/books/latest` | Lấy sách mới nhất |
 | GET | `/api/books/current-max-id` | Lấy ID lớn nhất |
 | GET | `/api/books/{id}` | Lấy sách theo ID |

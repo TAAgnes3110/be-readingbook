@@ -2,6 +2,11 @@ const { emailProvider } = require('../providers/index')
 const config = require('../config/config')
 const logger = require('../config/logger')
 
+/**
+ * Lấy tiêu đề email theo loại
+ * @param {string} type - Loại email (register, reset, update, notification)
+ * @returns {string} - Tiêu đề email
+ */
 const getSubject = (type) => {
   const subjects = {
     register: 'Registration Verification Code - Fliply',
@@ -12,6 +17,13 @@ const getSubject = (type) => {
   return subjects[type] || 'Notification from Fliply'
 }
 
+/**
+ * Tạo template HTML cho email OTP
+ * @param {string} email - Email người nhận
+ * @param {string} otp - Mã OTP
+ * @param {string} type - Loại OTP (register, reset, update)
+ * @returns {string} - Template HTML
+ */
 const getOTPTemplate = (email, otp, type) => {
   const typeText = {
     register: 'registration',
@@ -54,6 +66,15 @@ const getOTPTemplate = (email, otp, type) => {
   return template
 }
 
+/**
+ * Gửi email OTP
+ * @param {Object} data - Dữ liệu gửi email
+ * @param {string} data.email - Email người nhận
+ * @param {string} data.otp - Mã OTP
+ * @param {string} data.type - Loại OTP
+ * @returns {Promise<Object>} - Kết quả gửi email
+ * @throws {Error} - Nếu gửi email thất bại
+ */
 const sendOTP = async (data) => {
   const { email, otp, type } = data
   try {
@@ -70,6 +91,15 @@ const sendOTP = async (data) => {
   }
 }
 
+/**
+ * Gửi email thông báo
+ * @param {Object} data - Dữ liệu gửi email
+ * @param {string} data.email - Email người nhận
+ * @param {string} data.subject - Tiêu đề email
+ * @param {string} data.content - Nội dung email
+ * @returns {Promise<Object>} - Kết quả gửi email
+ * @throws {Error} - Nếu gửi email thất bại
+ */
 const sendNotification = async (data) => {
   const { email, subject, content } = data
   try {

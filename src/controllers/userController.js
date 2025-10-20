@@ -3,9 +3,10 @@ const { pick, catchAsync } = require('../utils/index')
 const { userService, authService } = require('../services/index')
 
 /**
- * Create new user
+ * Tạo người dùng mới
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const createUser = catchAsync(async (req, res) => {
   const result = await userService.createUser(req.body)
@@ -17,9 +18,10 @@ const createUser = catchAsync(async (req, res) => {
 })
 
 /**
- * Verify OTP for user
+ * Xác thực OTP cho người dùng
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const verifyUserOTP = catchAsync(async (req, res) => {
   const { userId, email, otp } = pick(req.body, ['userId', 'email', 'otp'])
@@ -31,9 +33,10 @@ const verifyUserOTP = catchAsync(async (req, res) => {
 })
 
 /**
- * User login
+ * Đăng nhập người dùng
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const login = catchAsync(async (req, res) => {
   const { email, password } = pick(req.body, ['email', 'password'])
@@ -46,9 +49,10 @@ const login = catchAsync(async (req, res) => {
 })
 
 /**
- * Request password reset
+ * Yêu cầu đặt lại mật khẩu
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const requestResetPassword = catchAsync(async (req, res) => {
   const { email } = pick(req.body, ['email'])
@@ -60,9 +64,10 @@ const requestResetPassword = catchAsync(async (req, res) => {
 })
 
 /**
- * Reset password
+ * Đặt lại mật khẩu
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const resetPassword = catchAsync(async (req, res) => {
   const { email, otp, newPassword } = pick(req.body, [
@@ -78,9 +83,10 @@ const resetPassword = catchAsync(async (req, res) => {
 })
 
 /**
- * Get user by ID
+ * Lấy thông tin người dùng theo ID
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const getUserById = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])
@@ -93,9 +99,10 @@ const getUserById = catchAsync(async (req, res) => {
 })
 
 /**
- * Get user by email
+ * Lấy thông tin người dùng theo email
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const getUserByEmail = catchAsync(async (req, res) => {
   const { email } = pick(req.query, ['email'])
@@ -108,9 +115,10 @@ const getUserByEmail = catchAsync(async (req, res) => {
 })
 
 /**
- * Update user information
+ * Cập nhật thông tin người dùng
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const updateUser = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])
@@ -123,9 +131,10 @@ const updateUser = catchAsync(async (req, res) => {
 })
 
 /**
- * Delete user (soft delete)
+ * Xóa người dùng (xóa mềm)
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const deleteUser = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])
@@ -137,9 +146,10 @@ const deleteUser = catchAsync(async (req, res) => {
 })
 
 /**
- * Add book to user's favorites
+ * Thêm sách vào danh sách yêu thích
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const addFavoriteBook = catchAsync(async (req, res) => {
   const { userId, bookId } = pick(req.params, ['userId', 'bookId'])
@@ -151,9 +161,10 @@ const addFavoriteBook = catchAsync(async (req, res) => {
 })
 
 /**
- * Remove book from user's favorites
+ * Xóa sách khỏi danh sách yêu thích
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const removeFavoriteBook = catchAsync(async (req, res) => {
   const { userId, bookId } = pick(req.params, ['userId', 'bookId'])
@@ -165,9 +176,10 @@ const removeFavoriteBook = catchAsync(async (req, res) => {
 })
 
 /**
- * Get user's favorite books
+ * Lấy danh sách sách yêu thích của người dùng
  * @param {Object} req - HTTP request
  * @param {Object} res - HTTP response
+ * @returns {void}
  */
 const getFavoriteBooks = catchAsync(async (req, res) => {
   const { userId } = pick(req.params, ['userId'])

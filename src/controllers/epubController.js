@@ -13,6 +13,8 @@ const logger = require('../config/logger')
 const epubController = {
   /**
    * Lấy metadata EPUB từ URL
+   * @param {Object} req - HTTP request (body: { epub_url })
+   * @param {Object} res - HTTP response
    */
   getMetadata: async (req, res) => {
     try {
@@ -48,6 +50,8 @@ const epubController = {
 
   /**
    * Lấy danh sách chương EPUB từ URL
+   * @param {Object} req - HTTP request (body: { epub_url })
+   * @param {Object} res - HTTP response
    */
   getChapters: async (req, res) => {
     try {
@@ -77,6 +81,8 @@ const epubController = {
 
   /**
    * Lấy nội dung chương EPUB từ URL
+   * @param {Object} req - HTTP request (body: { epub_url, chapter_id })
+   * @param {Object} res - HTTP response
    */
   getChapterContent: async (req, res) => {
     try {
@@ -106,6 +112,8 @@ const epubController = {
 
   /**
    * Validate EPUB URL
+   * @param {Object} req - HTTP request (body: { epub_url })
+   * @param {Object} res - HTTP response
    */
   validateUrl: async (req, res) => {
     try {
@@ -135,6 +143,8 @@ const epubController = {
 
   /**
    * Lấy nội dung chương dạng raw
+   * @param {Object} req - HTTP request (body: { epub_url, chapter_id })
+   * @param {Object} res - HTTP response
    */
   getChapterRaw: async (req, res) => {
     try {
@@ -164,6 +174,8 @@ const epubController = {
 
   /**
    * Lấy ảnh từ EPUB
+   * @param {Object} req - HTTP request (body: { epub_url, image_id })
+   * @param {Object} res - HTTP response
    */
   getImage: async (req, res) => {
     try {
@@ -193,6 +205,8 @@ const epubController = {
 
   /**
    * Lấy file từ EPUB
+   * @param {Object} req - HTTP request (body: { epub_url, file_id })
+   * @param {Object} res - HTTP response
    */
   getFile: async (req, res) => {
     try {
@@ -222,6 +236,8 @@ const epubController = {
 
   /**
    * Lấy danh sách ảnh trong EPUB
+   * @param {Object} req - HTTP request (body: { epub_url })
+   * @param {Object} res - HTTP response
    */
   getImages: async (req, res) => {
     try {
