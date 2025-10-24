@@ -4,6 +4,7 @@ const categoriesRoute = require('./categoriesRoute')
 const epubRoute = require('./epubRoute')
 const userRoute = require('./userRoute')
 const historyRoute = require('./historyRoute')
+const feedbackRoute = require('./feedbackRoute')
 
 module.exports = {
   authRoute,
@@ -11,5 +12,6 @@ module.exports = {
   categoriesRoute,
   epubRoute,
   userRoute,
-  historyRoute
+  historyRoute,
+  feedbackRoute
 }

@@ -1,0 +1,25 @@
+meta {
+  name: Lấy danh sách book theo các params
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:9000/api/books?page=1&limit=5&search=harry&category=1&status=active&sortBy=title&sortOrder=asc
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 5
+  search: harry
+  category: 1
+  status: active
+  sortBy: title
+  sortOrder: asc
+}
+
+settings {
+  encodeUrl: true
+}

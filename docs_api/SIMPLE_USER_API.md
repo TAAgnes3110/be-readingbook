@@ -31,9 +31,9 @@ Content-Type: application/json
 {
   "email": "user@example.com",
   "password": "password123",
-  "fullname": "Nguyễn Văn A",
+  "fullName": "Nguyễn Văn A",
   "username": "nguyenvana",
-  "phonenumber": "0123456789",
+  "phoneNumber": "0123456789",
   "role": "user",
   "preferences": ["fiction", "science"],
   "avatar": "https://example.com/avatar.jpg"
@@ -165,7 +165,86 @@ Authorization: Bearer <token>
 
 ---
 
-## 5. Thêm sách vào danh sách yêu thích
+## 5. Cập nhật thông tin người dùng
+
+**PUT** `/api/users/:userId`
+
+**Headers:**
+```
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "fullName": "Nguyễn Văn B",
+  "phoneNumber": "0987654321",
+  "preferences": ["fiction", "mystery"],
+  "avatar": "https://example.com/new-avatar.jpg"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "_id": "123456",
+    "fullName": "Nguyễn Văn B",
+    "email": "user@example.com",
+    "phoneNumber": "0987654321",
+    "avatar": "https://example.com/new-avatar.jpg",
+    "preferences": ["fiction", "mystery"],
+    "isActive": true,
+    "isOnline": false,
+    "role": "user",
+    "favoriteBooks": ["book1", "book2"],
+    "createdAt": 1234567890,
+    "updatedAt": 1234567891
+  },
+  "message": "User updated successfully"
+}
+```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "message": "User not found"
+}
+```
+
+---
+
+## 6. Xóa người dùng (soft delete)
+
+**DELETE** `/api/users/:userId`
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "User deleted successfully"
+}
+```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "message": "User not found"
+}
+```
+
+---
+
+## 7. Thêm sách vào danh sách yêu thích
 
 **POST** `/api/users/:userId/favorites/:bookId`
 
@@ -192,7 +271,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 6. Xóa sách khỏi danh sách yêu thích
+## 8. Xóa sách khỏi danh sách yêu thích
 
 **DELETE** `/api/users/:userId/favorites/:bookId`
 

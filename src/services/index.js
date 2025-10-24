@@ -8,6 +8,7 @@ const bookService = require('./bookService')
 const categoriesService = require('./categoriesService')
 const epubService = require('./epubService')
 const historyService = require('./historyService')
+const feedbackService = require('./feedbackService')
 
 module.exports = {
   userService,
@@ -19,5 +20,6 @@ module.exports = {
   bookService,
   categoriesService,
   epubService,
-  historyService
+  historyService,
+  feedbackService
 }

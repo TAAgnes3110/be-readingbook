@@ -1,10 +1,10 @@
-const httpStatus = require('http-status')
 const { ApiError } = require('./index')
 const { db } = require('../config/db')
 
 const userMetadataRef = db.ref('metadata/lastCustomId')
 const categoryMetadataRef = db.ref('metadata/lastCategoryId')
 const historyMetadataRef = db.ref('metadata/lastHistoryId')
+const feedbackMetadataRef = db.ref('metadata/lastFeedbackId')
 
 /**
  * Generate custom ID automatically for users
@@ -90,4 +90,32 @@ const generateHistoryId = async () => {
   }
 }
 
-module.exports = { generateCustomId, generateCategoryId, generateHistoryId }
+/**
+ * Generate custom ID automatically for feedback
+ * @returns {Promise<string>}
+ * @throws {ApiError}
+ */
+const generateFeedbackId = async () => {
+  try {
+    const newFeedbackId = await feedbackMetadataRef.transaction((currentValue) => {
+      return (currentValue || 0) + 1
+    })
+
+    if (!newFeedbackId.committed) {
+      throw new ApiError(
+        500,
+        'Unable to generate feedbackId due to transaction conflict'
+      )
+    }
+
+    return newFeedbackId.snapshot.val().toString()
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    throw new ApiError(
+      500,
+      `Failed to generate feedbackId: ${error.message}`
+    )
+  }
+}
+
+module.exports = { generateCustomId, generateCategoryId, generateHistoryId, generateFeedbackId }

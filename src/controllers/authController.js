@@ -92,6 +92,31 @@ const resetPassword = catchAsync(async (req, res) => {
   })
 })
 
+/**
+ * Đổi mật khẩu (yêu cầu đăng nhập)
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
+ */
+const changePassword = catchAsync(async (req, res) => {
+  const { oldPassword, newPassword, confirmPassword } = req.body
+  const userId = req.userId
+  const result = await authService.changePassword(userId, oldPassword, newPassword, confirmPassword)
+  res.json({
+    success: result.success,
+    message: result.message
+  })
+})
+
+/**
+ * Đăng xuất người dùng
+ * @param {Object} req - HTTP request
+ * @param {Object} res - HTTP response
+ */
+const logout = catchAsync(async (req, res) => {
+  const { email } = req.body
+  await authService.logout(email)
+  res.json({ success: true, message: 'Đăng xuất thành công' })
+})
 
 module.exports = {
   register,
@@ -99,5 +124,7 @@ module.exports = {
   resendOTP,
   login,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  changePassword,
+  logout
 }

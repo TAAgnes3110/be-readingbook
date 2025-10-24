@@ -1,0 +1,15 @@
+meta {
+  name: Đưa ra id lớn nhất của thể loại
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:9000/api/categories/current-max-id
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

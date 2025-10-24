@@ -1,4 +1,5 @@
 const express = require('express')
+const auth = require('../middlewares/authMiddleware')
 const validate = require('../middlewares/validate')
 const authValidation = require('../validations/authValidation')
 const authController = require('../controllers/authController')
@@ -41,6 +42,19 @@ router.post(
   '/reset-password',
   validate(authValidation.resetPassword),
   authController.resetPassword
+)
+
+router.post(
+  '/change-password',
+  auth,
+  validate(authValidation.changePassword),
+  authController.changePassword
+)
+
+router.post(
+  '/logout',
+  validate(authValidation.logout),
+  authController.logout
 )
 
 

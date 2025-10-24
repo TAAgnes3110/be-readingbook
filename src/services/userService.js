@@ -97,15 +97,15 @@ const updateUserById = async (data) => {
         ? updateBody.phoneNumber.trim()
         : user.phoneNumber,
       password: hashedPassword,
-      fullname: updateBody.fullname
-        ? updateBody.fullname.trim()
-        : user.fullname,
+      fullName: updateBody.fullName
+        ? updateBody.fullName.trim()
+        : user.fullName,
       role: updateBody.role || user.role,
       avatar: updateBody.avatar ? updateBody.avatar.trim() : user.avatar,
       preferences: updateBody.preferences || user.preferences,
       comments: updateBody.comments || user.comments,
       history: updateBody.history || user.history,
-      customId: user.customId, // Not allowed to update
+      customId: user.customId,
       isActive: user.isActive,
       updatedAt: admin.database.ServerValue.TIMESTAMP
     }
@@ -131,7 +131,7 @@ const updateUserById = async (data) => {
 const deleteUserById = async (data) => {
   const { userId } = data
   try {
-    await getUserById({ id: userId }) // Check if exists
+    await getUserById({ id: userId })
     await userModel.update(userId, {
       isActive: false,
       updatedAt: admin.database.ServerValue.TIMESTAMP
@@ -226,7 +226,6 @@ const getFavoriteBooks = async (data) => {
     }
 
     const favoriteBookIds = await userModel.getFavoriteBooks(userId)
-    // Lấy thông tin chi tiết của các sách yêu thích
     const booksResult = await bookService.getFavoriteBooksDetails({ bookIds: favoriteBookIds })
     return {
       success: true,

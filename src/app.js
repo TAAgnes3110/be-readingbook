@@ -9,7 +9,7 @@ const httpStatus = require('http-status')
 const config = require('./config/config')
 const logger = require('./config/logger')
 const { successHandler, errorHandler } = require('./config/morgan')
-const { authRoute, userRoute, categoriesRoute, bookRoute, epubRoute, historyRoute } = require('./routes/index')
+const { authRoute, userRoute, categoriesRoute, bookRoute, epubRoute, historyRoute, feedbackRoute } = require('./routes/index')
 const { firebaseStrategy } = require('./config/passport')
 
 const app = express()
@@ -99,6 +99,7 @@ app.use('/api/categories', categoriesRoute)
 app.use('/api/books', bookRoute)
 app.use('/api/epub', epubRoute)
 app.use('/api/history', historyRoute)
+app.use('/api/feedback', feedbackRoute)
 
 
 // ERROR HANDLER

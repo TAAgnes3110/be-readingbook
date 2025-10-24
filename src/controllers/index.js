@@ -4,6 +4,7 @@ const bookController = require('./bookController')
 const categoriesController = require('./categoriesController')
 const epubController = require('./epubController')
 const historyController = require('./historyController')
+const feedbackController = require('./feedbackController')
 
 module.exports = {
   userController,
@@ -11,5 +12,6 @@ module.exports = {
   bookController,
   categoriesController,
   epubController,
-  historyController
+  historyController,
+  feedbackController
 }

@@ -285,11 +285,102 @@ const resetPassword = async (email, newPassword, confirmPassword) => {
   }
 }
 
+/**
+ * Đổi mật khẩu (yêu cầu đăng nhập)
+ * @param {string} userId - ID người dùng
+ * @param {string} oldPassword - Mật khẩu cũ
+ * @param {string} newPassword - Mật khẩu mới
+ * @param {string} confirmPassword - Xác nhận mật khẩu mới
+ * @returns {Promise<Object>} - Kết quả đổi mật khẩu
+ * @throws {ApiError} - Nếu đổi mật khẩu thất bại
+ */
+const changePassword = async (userId, oldPassword, newPassword, confirmPassword) => {
+  try {
+    if (newPassword !== confirmPassword) {
+      throw new ApiError(
+        httpStatus.status.BAD_REQUEST,
+        'Mật khẩu mới và xác nhận mật khẩu không khớp'
+      )
+    }
+
+    const user = await userModel.findById(userId)
+    if (!user) {
+      throw new ApiError(
+        httpStatus.status.NOT_FOUND,
+        'Không tìm thấy người dùng'
+      )
+    }
+
+    const isOldPasswordValid = await comparePassword(oldPassword, user.password)
+    if (!isOldPasswordValid) {
+      throw new ApiError(
+        httpStatus.status.BAD_REQUEST,
+        'Mật khẩu cũ không đúng'
+      )
+    }
+
+    const isSamePassword = await comparePassword(newPassword, user.password)
+    if (isSamePassword) {
+      throw new ApiError(
+        httpStatus.status.BAD_REQUEST,
+        'Mật khẩu mới phải khác mật khẩu cũ'
+      )
+    }
+
+    await getFirebaseService().updateAuthUserPassword({ email: user.email, newPassword })
+    await userModel.updatePassword(user.email, newPassword)
+
+    return {
+      success: true,
+      message: 'Đổi mật khẩu thành công'
+    }
+  } catch (error) {
+    logger.error(`Error changing password for user ${userId}: ${error.stack}`)
+    throw error instanceof ApiError
+      ? error
+      : new ApiError(
+        httpStatus.status.INTERNAL_SERVER_ERROR,
+        `Đổi mật khẩu thất bại: ${error.message}`
+      )
+  }
+}
+
+/**
+ * Đăng xuất người dùng
+ * @param {string} email - Email người dùng
+ * @returns {Promise<void>} - Kết quả đăng xuất
+ * @throws {ApiError} - Nếu đăng xuất thất bại
+ */
+const logout = async (email) => {
+  try {
+    const user = await userModel.findByEmail(email)
+    if (!user) {
+      throw new ApiError(
+        httpStatus.status.NOT_FOUND,
+        'Email không tồn tại trong hệ thống'
+      )
+    }
+
+    await userModel.update(user._id, {
+      isOnline: false,
+      lastLogout: Date.now()
+    })
+
+    await getTokenService().revoke(user._id)
+    // await getFirebaseService().deleteAuthUser(email)
+  } catch (error) {
+    logger.error(`Error logging out user ${email}: ${error.stack}`)
+    throw error
+  }
+}
+
 module.exports = {
   SignUp,
   verifyOTP,
   resendOTP,
   login,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  changePassword,
+  logout
 }

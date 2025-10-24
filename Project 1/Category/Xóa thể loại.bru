@@ -1,0 +1,38 @@
+meta {
+  name: Xóa thể loại
+  type: http
+  seq: 6
+}
+
+delete {
+  url: http://localhost:9000/api/categories/2
+  body: text
+  auth: inherit
+}
+
+body:text {
+  {
+    "name": "testCategoy"
+  }
+  
+  /**
+  {
+      "image_url": "url image"
+  }
+  
+  {
+      "name" : "testCategory",
+      "image_url": "url image",
+  }
+  
+  {
+      "name" : "testCategory",
+      "image_url": "url image",
+      "status": "inactive"
+  }
+  */
+}
+
+settings {
+  encodeUrl: true
+}

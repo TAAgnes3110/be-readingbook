@@ -132,7 +132,7 @@ Quick start:
 ```bash
 curl -X POST http://localhost:3000/api/auth/register \
   -H 'Content-Type: application/json' \
-  -d '{"email":"user@example.com","password":"password123","fullname":"Nguyễn Văn A","username":"nguyenvana","phonenumber":"0123456789"}'
+  -d '{"email":"user@example.com","password":"password123","fullName":"Nguyễn Văn A","username":"nguyenvana","phoneNumber":"0123456789"}'
 ```
 
 ## 📁 Cấu trúc dự án (rút gọn)

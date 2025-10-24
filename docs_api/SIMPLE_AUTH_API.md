@@ -27,9 +27,9 @@ Content-Type: application/json
 {
   "email": "user@example.com",
   "password": "password123",
-  "fullname": "Nguyễn Văn A",
+  "fullName": "Nguyễn Văn A",
   "username": "nguyenvana",
-  "phonenumber": "0123456789",
+  "phoneNumber": "0123456789",
   "role": "user"
 }
 ```
@@ -247,6 +247,40 @@ Content-Type: application/json
 
 ---
 
+## 6. Đăng xuất
+
+**POST** `/api/auth/logout`
+
+**Headers:**
+```
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Đăng xuất thành công"
+}
+```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "message": "Email không tồn tại trong hệ thống"
+}
+```
+
+---
+
 ## Cấu trúc dữ liệu
 
 ### User Object (trong response đăng nhập)
@@ -339,9 +373,9 @@ curl -X POST http://localhost:9000/api/auth/register \
   -d '{
     "email": "user@example.com",
     "password": "password123",
-    "fullname": "Nguyễn Văn A",
+    "fullName": "Nguyễn Văn A",
     "username": "nguyenvana",
-    "phonenumber": "0123456789"
+    "phoneNumber": "0123456789"
   }'
 ```
 
@@ -385,12 +419,21 @@ curl -X POST http://localhost:9000/api/auth/reset-password \
   }'
 ```
 
+### Đăng xuất:
+```bash
+curl -X POST http://localhost:9000/api/auth/logout \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "email": "user@example.com"
+  }'
+```
+
 ---
 
 ## Lưu ý quan trọng
 
 1. **OTP Expiry**: OTP có thời hạn 5 phút (300 giây)
-2. **Token Expiry**: 
+2. **Token Expiry**:
    - Access token: 1 giờ
    - Refresh token: 30 ngày
 3. **Rate Limiting**: Có giới hạn số lần gửi OTP để tránh spam
@@ -398,6 +441,70 @@ curl -X POST http://localhost:9000/api/auth/reset-password \
 5. **Password Requirements**: Mật khẩu phải đủ mạnh (tùy theo cấu hình)
 6. **Phone Validation**: Số điện thoại phải có 10-11 chữ số
 7. **Auto-detection**: API tự động phát hiện loại OTP (đăng ký/reset password) dựa trên trạng thái user
+
+---
+
+## 6. Đổi mật khẩu
+
+**Endpoint:** `POST /api/auth/change-password`
+
+**Mô tả:** Đổi mật khẩu cho người dùng đã đăng nhập
+
+**Headers:**
+```
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "oldPassword": "oldpassword123",
+  "newPassword": "newpassword123",
+  "confirmPassword": "newpassword123"
+}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "message": "Đổi mật khẩu thành công"
+}
+```
+
+**Response Error (400):**
+```json
+{
+  "success": false,
+  "message": "Mật khẩu cũ không đúng"
+}
+```
+
+**Response Error (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized"
+}
+```
+
+**Validation Rules:**
+- `oldPassword`: Bắt buộc
+- `newPassword`: Bắt buộc, tối thiểu 8 ký tự, 1 chữ cái, 1 số
+- `confirmPassword`: Bắt buộc, phải khớp với newPassword
+
+**Curl Example:**
+```bash
+curl -X POST http://localhost:9000/api/auth/change-password \
+  -H 'Authorization: Bearer <your-token>' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "oldPassword": "oldpassword123",
+    "newPassword": "newpassword123",
+    "confirmPassword": "newpassword123"
+  }'
+```
 
 ---
 

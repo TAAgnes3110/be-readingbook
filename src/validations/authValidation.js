@@ -138,6 +138,43 @@ const authValidation = {
         'any.required': 'Xác nhận mật khẩu là bắt buộc'
       })
     })
+  },
+
+  /**
+   * Validation schema cho đổi mật khẩu
+   * @param {Object} body - Request body
+   * @param {string} body.oldPassword - Mật khẩu cũ (required)
+   * @param {string} body.newPassword - Mật khẩu mới (custom validation)
+   * @param {string} body.confirmPassword - Xác nhận mật khẩu mới (must match newPassword)
+   * @returns {Object} Joi validation schema
+   */
+  changePassword: {
+    body: Joi.object().keys({
+      oldPassword: Joi.string().required().messages({
+        'any.required': 'Mật khẩu cũ là bắt buộc'
+      }),
+      newPassword: Joi.string().required().custom(password).messages({
+        'any.required': 'Mật khẩu mới là bắt buộc'
+      }),
+      confirmPassword: Joi.string().required().custom(confirmPassword).messages({
+        'any.required': 'Xác nhận mật khẩu là bắt buộc'
+      })
+    })
+  },
+
+  /**
+   * Validation schema cho đăng xuất
+   * @param {Object} body - Request body
+   * @param {string} body.email - Email address (valid email format)
+   * @returns {Object} Joi validation schema
+   */
+  logout: {
+    body: Joi.object().keys({
+      email: Joi.string().required().email().message({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      })
+    })
   }
 }
 

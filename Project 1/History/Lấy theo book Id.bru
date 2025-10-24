@@ -1,0 +1,15 @@
+meta {
+  name: Lấy theo book Id
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://localhost:9000/api/history/book/456
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

@@ -13,7 +13,9 @@ router
 
 router
   .route('/:userId')
-  .get(auth, validate(userValidation.getUsers), userController.getUserById)
+  .get(auth, validate(userValidation.getUserById), userController.getUserById)
+  .put(auth, validate(userValidation.updateUser), userController.updateUser)
+  .delete(auth, validate(userValidation.deleteUser), userController.deleteUser)
 
 router
   .route('/:userId/favorites')

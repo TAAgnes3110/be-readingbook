@@ -1,0 +1,28 @@
+meta {
+  name: Tạo user
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:9000/api/users/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "taagnes3110@gmail.com",
+    "password": "663110ak",
+    "fullname": "Vũ Tuấn Kiệt",
+    "username": "TAAgnes",
+    "phonenumber": "0936992346",
+    "role": "user",
+    "preferences": ["fiction", "science"],
+    "avatar": "https://example.com/avatar.jpg"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

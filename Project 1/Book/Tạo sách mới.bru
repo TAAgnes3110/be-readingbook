@@ -1,0 +1,31 @@
+meta {
+  name: Tạo sách mới
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:9000/api/books/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "kiet",
+    "author": "kiet",
+    "category": 1,
+    "description": "test du lieu sach",
+    "release_date": "2025-10-07",
+    "cover_url": "https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg",
+    "txt_url": "https://www.gutenberg.org/files/16527/16527-0.txt",
+    "book_url": "https://www.gutenberg.org/ebooks/2701",
+    "epub_url": "https://www.gutenberg.org/ebooks/2701.epub.noimages",
+    "keywords": ["kiet", "test"],
+    "status": "active"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

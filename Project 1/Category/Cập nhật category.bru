@@ -1,0 +1,38 @@
+meta {
+  name: Cập nhật category
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:9000/api/categories/1
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "testCategoy"
+  }
+  
+  /**
+  {
+      "image_url": "url image"
+  }
+  
+  {
+      "name" : "testCategory",
+      "image_url": "url image",
+  }
+  
+  {
+      "name" : "testCategory",
+      "image_url": "url image",
+      "status": "inactive"
+  }
+  */
+}
+
+settings {
+  encodeUrl: true
+}

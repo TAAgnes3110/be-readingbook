@@ -4,6 +4,7 @@ const bookValidation = require('./bookValidation')
 const categoriesValidation = require('./categoriesValidation')
 const epubValidation = require('./epubValidation')
 const historyValidation = require('./historyValidation')
+const feedbackValidation = require('./feedbackValidation')
 const custom = require('./custom')
 
 module.exports = {
@@ -13,5 +14,6 @@ module.exports = {
   categoriesValidation,
   epubValidation,
   historyValidation,
+  feedbackValidation,
   custom
 }

@@ -10,9 +10,9 @@ const userValidation = {
    * @param {Object} body - Request body
    * @param {string} body.email - Email address (valid email format)
    * @param {string} body.password - Password (custom validation)
-   * @param {string} body.fullname - Full name (required)
+   * @param {string} body.fullName - Full name (required)
    * @param {string} body.username - Username (3-30 characters)
-   * @param {string} body.phonenumber - Phone number (10-11 digits)
+   * @param {string} body.phoneNumber - Phone number (10-11 digits)
    * @param {string} [body.role='user'] - User role ('user' or 'admin')
    * @param {Array<string>} [body.preferences] - User preferences
    * @param {string} [body.avatar] - Avatar URL
@@ -20,14 +20,31 @@ const userValidation = {
    */
   createUser: {
     body: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required().custom(password),
-      fullname: Joi.string().required(),
-      username: Joi.string().required().min(3).max(30),
-      phonenumber: Joi.string()
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      }),
+      password: Joi.string().required().custom(password).messages({
+        'any.required': 'Mật khẩu là bắt buộc'
+      }),
+      fullName: Joi.string().required().messages({
+        'any.required': 'Họ tên là bắt buộc'
+      }),
+      username: Joi.string().required().min(3).max(30).messages({
+        'any.required': 'Tên người dùng là bắt buộc',
+        'string.min': 'Tên người dùng phải có ít nhất 3 ký tự',
+        'string.max': 'Tên người dùng không được quá 30 ký tự'
+      }),
+      phoneNumber: Joi.string()
         .required()
-        .pattern(/^[0-9]{10,11}$/),
-      role: Joi.string().valid('user', 'admin').default('user'),
+        .pattern(/^[0-9]{10,11}$/)
+        .messages({
+          'any.required': 'Số điện thoại là bắt buộc',
+          'string.pattern.base': 'Số điện thoại phải có 10-11 chữ số'
+        }),
+      role: Joi.string().valid('user', 'admin').default('user').messages({
+        'any.only': 'Vai trò phải là user hoặc admin'
+      }),
       preferences: Joi.array().items(Joi.string()),
       avatar: Joi.string()
     })
@@ -42,9 +59,16 @@ const userValidation = {
    */
   verifyUserOTP: {
     body: Joi.object().keys({
-      userId: Joi.string().required(),
-      email: Joi.string().required().email(),
-      otp: Joi.string().required()
+      userId: Joi.string().required().messages({
+        'any.required': 'ID người dùng là bắt buộc'
+      }),
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      }),
+      otp: Joi.string().required().messages({
+        'any.required': 'Mã OTP là bắt buộc'
+      })
     })
   },
 
@@ -56,8 +80,13 @@ const userValidation = {
    */
   login: {
     body: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required()
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      }),
+      password: Joi.string().required().messages({
+        'any.required': 'Mật khẩu là bắt buộc'
+      })
     })
   },
 
@@ -68,7 +97,10 @@ const userValidation = {
    */
   requestResetPassword: {
     body: Joi.object().keys({
-      email: Joi.string().required().email()
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      })
     })
   },
 
@@ -81,9 +113,16 @@ const userValidation = {
    */
   resetPassword: {
     body: Joi.object().keys({
-      email: Joi.string().required().email(),
-      otp: Joi.string().required(),
-      newPassword: Joi.string().required().custom(password)
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      }),
+      otp: Joi.string().required().messages({
+        'any.required': 'Mã OTP là bắt buộc'
+      }),
+      newPassword: Joi.string().required().custom(password).messages({
+        'any.required': 'Mật khẩu mới là bắt buộc'
+      })
     })
   },
 
@@ -98,11 +137,15 @@ const userValidation = {
    */
   getUsers: {
     query: Joi.object().keys({
-      fullname: Joi.string(),
+      fullName: Joi.string(),
       role: Joi.string(),
       sortBy: Joi.string(),
-      limit: Joi.number().integer(),
-      page: Joi.number().integer()
+      limit: Joi.number().integer().messages({
+        'number.base': 'Giới hạn phải là số'
+      }),
+      page: Joi.number().integer().messages({
+        'number.base': 'Trang phải là số'
+      })
     })
   },
 
@@ -113,7 +156,10 @@ const userValidation = {
    */
   getUser: {
     query: Joi.object().keys({
-      email: Joi.string().required().email()
+      email: Joi.string().required().email().messages({
+        'string.email': 'Email không hợp lệ',
+        'any.required': 'Email là bắt buộc'
+      })
     })
   },
 
@@ -123,9 +169,9 @@ const userValidation = {
    * @param {Object} body - Request body (at least 1 field required)
    * @param {string} [body.email] - Email address (valid email format)
    * @param {string} [body.password] - Password (custom validation)
-   * @param {string} [body.fullname] - Full name
+   * @param {string} [body.fullName] - Full name
    * @param {string} [body.username] - Username (3-30 characters)
-   * @param {string} [body.phonenumber] - Phone number (10-11 digits)
+   * @param {string} [body.phoneNumber] - Phone number (10-11 digits)
    * @param {Array<string>} [body.preferences] - User preferences
    * @param {string} [body.avatar] - Avatar URL
    * @param {boolean} [body.isActive] - User active status
@@ -133,20 +179,32 @@ const userValidation = {
    */
   updateUser: {
     params: Joi.object().keys({
-      userId: Joi.string().required()
+      userId: Joi.string().required().messages({
+        'any.required': 'ID người dùng là bắt buộc'
+      })
     }),
     body: Joi.object()
       .keys({
-        email: Joi.string().email(),
+        email: Joi.string().email().messages({
+          'string.email': 'Email không hợp lệ'
+        }),
         password: Joi.string().custom(password),
-        fullname: Joi.string(),
-        username: Joi.string().min(3).max(30),
-        phonenumber: Joi.string().pattern(/^[0-9]{10,11}$/),
+        fullName: Joi.string(),
+        username: Joi.string().min(3).max(30).messages({
+          'string.min': 'Tên người dùng phải có ít nhất 3 ký tự',
+          'string.max': 'Tên người dùng không được quá 30 ký tự'
+        }),
+        phoneNumber: Joi.string().pattern(/^[0-9]{10,11}$/).messages({
+          'string.pattern.base': 'Số điện thoại phải có 10-11 chữ số'
+        }),
         preferences: Joi.array().items(Joi.string()),
         avatar: Joi.string(),
         isActive: Joi.boolean()
       })
       .min(1)
+      .messages({
+        'object.min': 'Phải cung cấp ít nhất một trường để cập nhật'
+      })
   },
 
   /**
@@ -156,7 +214,9 @@ const userValidation = {
    */
   deleteUser: {
     params: Joi.object().keys({
-      userId: Joi.string().required()
+      userId: Joi.string().required().messages({
+        'any.required': 'ID người dùng là bắt buộc'
+      })
     })
   },
 
@@ -168,8 +228,12 @@ const userValidation = {
    */
   addFavoriteBook: {
     params: Joi.object().keys({
-      userId: Joi.string().required(),
-      bookId: Joi.string().required()
+      userId: Joi.string().required().messages({
+        'any.required': 'ID người dùng là bắt buộc'
+      }),
+      bookId: Joi.string().required().messages({
+        'any.required': 'ID sách là bắt buộc'
+      })
     })
   },
 
@@ -181,8 +245,25 @@ const userValidation = {
    */
   removeFavoriteBook: {
     params: Joi.object().keys({
-      userId: Joi.string().required(),
-      bookId: Joi.string().required()
+      userId: Joi.string().required().messages({
+        'any.required': 'ID người dùng là bắt buộc'
+      }),
+      bookId: Joi.string().required().messages({
+        'any.required': 'ID sách là bắt buộc'
+      })
+    })
+  },
+
+  /**
+   * @param {Object} params - URL parameters
+   * @param {string} params.userId - User ID (required)
+   * @return {Object} Joi validation schema
+   */
+  getUserById: {
+    params: Joi.object().keys({
+      userId: Joi.string().required().messages({
+        'any.required': 'ID người dùng là bắt buộc'
+      })
     })
   },
 
@@ -193,7 +274,70 @@ const userValidation = {
    */
   getFavoriteBooks: {
     params: Joi.object().keys({
-      userId: Joi.string().required()
+      userId: Joi.string().required().messages({
+        'any.required': 'ID người dùng là bắt buộc'
+      })
+    })
+  },
+
+  /**
+   * Đánh giá app
+   * @param {Object} body - request body
+   * @param {string} body.userId - user id
+   *
+   * @param {string} body.comment - comment
+   * @return {Object} Joi validation schema
+   */
+
+  addRatingApp: {
+    body: Joi.object().keys({
+      userId: Joi.string().required().messages({
+        'any.required': 'ID người dùng là bắt buộc'
+      }),
+      fullName: Joi.string().required().messages({
+        'any.required': 'Họ tên là bắt buộc'
+      }),
+      phoneNumber: Joi.string().pattern(/^[0-9]{10,11}$/).messages({
+        'string.pattern.base': 'Số điện thoại phải có 10-11 chữ số'
+      }),
+      email: Joi.string().email().messages({
+        'string.email': 'Email không hợp lệ'
+      }),
+      comment: Joi.string().required().messages({
+        'any.required': 'Bình luận là bắt buộc'
+      })
+    })
+  },
+
+  /**
+   * Lấy danh sách đánh giá app của người dùng
+   * @param {Object} params - URL parameters
+   * @param {string} params.userId - User ID (required)
+   * @return {Object} Joi validation schema
+   */
+  getRatingApp: {
+    params: Joi.object().keys({
+      userId: Joi.string().required().messages({
+        'any.required': 'ID người dùng là bắt buộc'
+      })
+    })
+  },
+
+  /**
+   * Xóa đánh giá app của người dùng
+   * @param {Object} params - URL parameters
+   * @param {string} params.userId - User ID (required)
+   * @param {string} params.ratingId - Rating ID (required)
+   * @return {Object} Joi validation schema
+   */
+  deleteRatingApp: {
+    params: Joi.object().keys({
+      userId: Joi.string().required().messages({
+        'any.required': 'ID người dùng là bắt buộc'
+      }),
+      commentId: Joi.string().required().messages({
+        'any.required': 'ID bình luận là bắt buộc'
+      })
     })
   }
 }

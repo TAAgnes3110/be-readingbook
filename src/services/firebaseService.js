@@ -57,10 +57,7 @@ const createAuthUser = async (data) => {
 const updateAuthUserPassword = async (data) => {
   const { email, newPassword } = data
   try {
-    // Tìm user trong Firebase Auth bằng email
     const userRecord = await auth.getUserByEmail(email)
-
-    // Cập nhật password trong Firebase Auth
     await auth.updateUser(userRecord.uid, { password: newPassword })
 
     return true
@@ -75,7 +72,35 @@ const updateAuthUserPassword = async (data) => {
   }
 }
 
+/**
+ * Delete Firebase Auth user
+ * @param {string} email
+ * @returns {Promise<void>}
+ */
+const deleteAuthUser = async (email) => {
+  try {
+    const userRecord = await auth.getUserByEmail(email)
+    await auth.deleteUser(userRecord.uid)
+
+    logger.info(`Deleted Firebase Auth user: ${email}`)
+  } catch (error) {
+    logger.error(`Error deleting Firebase Auth user ${email}: ${error.message}`)
+    if (error.code === 'auth/user-not-found') {
+      logger.warn(`Firebase Auth user not found: ${email}`)
+      return
+    } else {
+      throw error instanceof ApiError
+        ? error
+        : new ApiError(
+          httpStatus.status.INTERNAL_SERVER_ERROR,
+          `Xóa người dùng Firebase Auth thất bại: ${error.message}`
+        )
+    }
+  }
+}
+
 module.exports = {
   createAuthUser,
-  updateAuthUserPassword
+  updateAuthUserPassword,
+  deleteAuthUser
 }

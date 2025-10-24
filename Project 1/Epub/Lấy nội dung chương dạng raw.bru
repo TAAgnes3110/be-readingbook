@@ -1,0 +1,22 @@
+meta {
+  name: Lấy nội dung chương dạng raw
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:9000/api/epub/chapter-raw
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+      "epub_url": "https://www.gutenberg.org/ebooks/2701.epub.noimages",
+      "chapter_id": "item3"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

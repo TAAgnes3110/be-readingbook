@@ -1,0 +1,19 @@
+meta {
+  name: Lấy sách theo id
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:8000/api/books/1
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~search: harry
+}
+
+settings {
+  encodeUrl: true
+}

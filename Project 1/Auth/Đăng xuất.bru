@@ -1,0 +1,27 @@
+meta {
+  name: Đăng xuất
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://localhost:9000/api/auth/logout
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzYxMTE1MzQ0LCJleHAiOjE3NjExMTg5NDR9.TrYZEZbzC3cLL6WdUFwuqmAvuXlesw7TZeF-c3xeZTw
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "taagnes3110@gmail.com"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
