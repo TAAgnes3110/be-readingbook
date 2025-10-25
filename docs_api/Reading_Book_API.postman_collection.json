@@ -1,0 +1,1405 @@
+{
+	"info": {
+		"_postman_id": "reading-book-api-collection",
+		"name": "Reading Book API - Complete Collection",
+		"description": "Complete API collection for Reading Book application with optimized endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "reading-book-team"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		},
+		{
+			"key": "dockerUrl",
+			"value": "http://localhost:9000/api",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "bookId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "categoryId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"description": "Authentication APIs for user registration, login, OTP verification",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"Nguyễn Văn A\",\n  \"username\": \"nguyenvana\",\n  \"phoneNumber\": \"0123456789\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/verify-otp",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "verify-otp"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resend OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/resend-otp",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "resend-otp"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/forgot-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "forgot-password"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"newpassword123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/reset-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "reset-password"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newpassword123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/change-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "change-password"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "logout"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "👤 User Management",
+			"description": "User profile and favorite books management",
+			"item": [
+				{
+					"name": "Get User by Email",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users?email=user@example.com",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"],
+							"query": [
+								{
+									"key": "email",
+									"value": "user@example.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"Nguyễn Văn B\",\n  \"username\": \"nguyenvanb\",\n  \"phoneNumber\": \"0987654321\",\n  \"avatar\": \"https://example.com/new-avatar.jpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Favorite Books",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}/favorites",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}", "favorites"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Favorite Book",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}/favorites/{{bookId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}", "favorites", "{{bookId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Favorite Book",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}/favorites/{{bookId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}", "favorites", "{{bookId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📚 Books",
+			"description": "Book management and search APIs",
+			"item": [
+				{
+					"name": "Get Books List",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/books?page=1&limit=10&search=harry&category=fiction&sortBy=title&sortOrder=asc",
+							"host": ["{{baseUrl}}"],
+							"path": ["books"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": "harry"
+								},
+								{
+									"key": "category",
+									"value": "fiction"
+								},
+								{
+									"key": "sortBy",
+									"value": "title"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Latest Books",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/books/latest?limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["books", "latest"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Book by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/books/{{bookId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["books", "{{bookId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Books",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/books/search?q=harry potter&page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["books", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "harry potter"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📂 Categories",
+			"description": "Category management APIs",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/categories",
+							"host": ["{{baseUrl}}"],
+							"path": ["categories"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/categories/{{categoryId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["categories", "{{categoryId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📖 EPUB",
+			"description": "EPUB processing and reading APIs",
+			"item": [
+				{
+					"name": "Get EPUB Metadata",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"epub_url\": \"https://example.com/book.epub\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/epub/metadata",
+							"host": ["{{baseUrl}}"],
+							"path": ["epub", "metadata"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get EPUB Chapters",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"epub_url\": \"https://example.com/book.epub\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/epub/chapters",
+							"host": ["{{baseUrl}}"],
+							"path": ["epub", "chapters"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chapter Content",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"epub_url\": \"https://example.com/book.epub\",\n  \"chapter_id\": \"chapter1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/epub/chapter-content",
+							"host": ["{{baseUrl}}"],
+							"path": ["epub", "chapter-content"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate EPUB URL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"epub_url\": \"https://example.com/book.epub\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/epub/validate-url",
+							"host": ["{{baseUrl}}"],
+							"path": ["epub", "validate-url"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chapter Raw Content",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"epub_url\": \"https://example.com/book.epub\",\n  \"chapter_id\": \"chapter1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/epub/chapter-raw",
+							"host": ["{{baseUrl}}"],
+							"path": ["epub", "chapter-raw"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get EPUB Image",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"epub_url\": \"https://example.com/book.epub\",\n  \"image_id\": \"cover.jpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/epub/image",
+							"host": ["{{baseUrl}}"],
+							"path": ["epub", "image"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get EPUB File",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"epub_url\": \"https://example.com/book.epub\",\n  \"file_id\": \"style.css\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/epub/file",
+							"host": ["{{baseUrl}}"],
+							"path": ["epub", "file"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get EPUB Images",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"epub_url\": \"https://example.com/book.epub\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/epub/images",
+							"host": ["{{baseUrl}}"],
+							"path": ["epub", "images"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📝 Reading History",
+			"description": "Reading history and bookmark management",
+			"item": [
+				{
+					"name": "Save Bookmark",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{userId}}\",\n  \"bookId\": \"{{bookId}}\",\n  \"chapterId\": \"chapter1\",\n  \"pageNumber\": 1,\n  \"progress\": 25.5,\n  \"lastReadAt\": \"2024-01-15T10:30:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/history/bookmark",
+							"host": ["{{baseUrl}}"],
+							"path": ["history", "bookmark"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reading History by User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/history/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["history", "{{userId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bookmark",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/history/{{userId}}/bookmark/{{bookId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["history", "{{userId}}", "bookmark", "{{bookId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Bookmark",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/history/{{userId}}/bookmark/{{bookId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["history", "{{userId}}", "bookmark", "{{bookId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get History by User ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/history/user/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["history", "user", "{{userId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get History by Book ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/history/book/{{bookId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["history", "book", "{{bookId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "💬 Feedback",
+			"description": "User feedback and rating system",
+			"item": [
+				{
+					"name": "Create Feedback",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"bookId\": \"{{bookId}}\",\n  \"rating\": 5,\n  \"comment\": \"Cuốn sách rất hay và bổ ích!\",\n  \"userId\": \"{{userId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/feedback",
+							"host": ["{{baseUrl}}"],
+							"path": ["feedback"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Feedbacks",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/feedback/my-feedbacks",
+							"host": ["{{baseUrl}}"],
+							"path": ["feedback", "my-feedbacks"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Feedback by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/feedback/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["feedback", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Feedback",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rating\": 4,\n  \"comment\": \"Cập nhật đánh giá: Cuốn sách khá hay!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/feedback/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["feedback", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Feedback",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/feedback/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["feedback", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🛡️ Admin APIs",
+			"description": "Admin management APIs for system administration",
+			"item": [
+				{
+					"name": "Categories Management",
+					"item": [
+						{
+							"name": "Create Category",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Science Fiction\",\n  \"description\": \"Science fiction books\",\n  \"icon\": \"https://example.com/sci-fi-icon.png\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin/categories",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "categories"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Category",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Updated Science Fiction\",\n  \"description\": \"Updated description\",\n  \"icon\": \"https://example.com/new-icon.png\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin/categories/{{categoryId}}",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "categories", "{{categoryId}}"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Category",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/categories/{{categoryId}}",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "categories", "{{categoryId}}"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Books Management",
+					"item": [
+						{
+							"name": "Create Book",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Harry Potter and the Philosopher's Stone\",\n  \"author\": \"J.K. Rowling\",\n  \"description\": \"The first book in the Harry Potter series\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"isbn\": \"978-0747532699\",\n  \"publishedDate\": \"1997-06-26\",\n  \"coverImage\": \"https://example.com/harry-potter-cover.jpg\",\n  \"epubUrl\": \"https://example.com/harry-potter.epub\",\n  \"tags\": [\"fantasy\", \"magic\", \"adventure\"]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin/books",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "books"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Book",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Updated Harry Potter Title\",\n  \"author\": \"J.K. Rowling\",\n  \"description\": \"Updated description\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin/books/{{bookId}}",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "books", "{{bookId}}"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Book",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/books/{{bookId}}",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "books", "{{bookId}}"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Users Management",
+					"item": [
+						{
+							"name": "Get All Users",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/users?page=1&limit=10",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "users"],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/users/{{userId}}",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "users", "{{userId}}"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update User",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"fullName\": \"Updated Name\",\n  \"role\": \"admin\",\n  \"isActive\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin/users/{{userId}}",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "users", "{{userId}}"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/users/{{userId}}",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "users", "{{userId}}"]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "🔧 System",
+			"description": "System health and utility endpoints",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

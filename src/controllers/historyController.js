@@ -12,7 +12,6 @@ const historyController = {
   saveBookmark: catchAsync(async (req, res) => {
     const { userId, bookId, chapterId } = req.body
 
-    // Validate required fields
     if (!userId || !bookId || chapterId === 'null') {
       throw new ApiError(
         httpStatus.status.BAD_REQUEST,

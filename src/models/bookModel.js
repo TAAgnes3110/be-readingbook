@@ -2,18 +2,20 @@ const db = require('../config/db')
 
 const bookModel = {
   /**
-   * Lấy tất cả sách
-   * @returns {Promise<Array>} Danh sách sách
+   * Lấy tất cả sách (chỉ sách active, loại bỏ sách đã bị xóa mềm)
+   * @returns {Promise<Array>} Danh sách sách active
    */
   getAll: async () => {
     try {
       const snapshot = await db.getRef('books').once('value')
       const books = snapshot.val() || {}
 
-      const booksArray = Object.keys(books).map(key => ({
-        _id: key,
-        ...books[key]
-      }))
+      const booksArray = Object.keys(books)
+        .map(key => ({
+          _id: key,
+          ...books[key]
+        }))
+        .filter(book => book.isActive !== false)
 
       return booksArray
     } catch (error) {
@@ -22,9 +24,10 @@ const bookModel = {
   },
 
   /**
-   * Lấy sách theo ID
-   * @param {string|number} id
-   * @returns {Promise<Object>} Thông tin sách
+   * Lấy sách theo ID (chỉ sách active)
+   * @param {string|number} id - ID của sách
+   * @returns {Promise<Object>} Thông tin sách active
+   * @throws {Error} Nếu sách không tồn tại hoặc đã bị xóa mềm
    */
   getById: async (id) => {
     try {
@@ -33,6 +36,10 @@ const bookModel = {
 
       if (!book) {
         throw new Error('Không tìm thấy sách')
+      }
+
+      if (book.isActive === false) {
+        throw new Error('Sách đã bị xóa')
       }
 
       return { _id: id, ...book }
@@ -82,7 +89,13 @@ const bookModel = {
     }
   },
 
-  /** Cập nhật sách */
+  /**
+   * Cập nhật thông tin sách
+   * @param {string|number} id - ID của sách
+   * @param {Object} updateData - Dữ liệu cần cập nhật
+   * @returns {Promise<Object>} Sách đã được cập nhật
+   * @throws {Error} Nếu sách không tồn tại
+   */
   update: async (id, updateData) => {
     try {
       const existingBook = await bookModel.getById(id)
@@ -102,8 +115,39 @@ const bookModel = {
     }
   },
 
-  /** Xóa sách */
+  /**
+   * Xóa mềm sách (soft delete)
+   * Đánh dấu isActive = false thay vì xóa hẳn khỏi database
+   * @param {string|number} id - ID của sách
+   * @returns {Promise<boolean>} True nếu xóa thành công
+   * @throws {Error} Nếu sách không tồn tại
+   */
   delete: async (id) => {
+    try {
+      const existingBook = await bookModel.getById(id)
+      if (!existingBook) {
+        throw new Error('Không tìm thấy sách')
+      }
+
+      await db.getRef(`books/${id}`).update({
+        isActive: false,
+        deletedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      })
+      return true
+    } catch (error) {
+      throw new Error(`Lỗi khi xóa sách: ${error.message}`)
+    }
+  },
+
+  /**
+   * Xóa vĩnh viễn sách khỏi database (hard delete)
+   * Chỉ dành cho admin, không thể khôi phục
+   * @param {string|number} id - ID của sách
+   * @returns {Promise<boolean>} True nếu xóa thành công
+   * @throws {Error} Nếu sách không tồn tại
+   */
+  hardDelete: async (id) => {
     try {
       const existingBook = await bookModel.getById(id)
       if (!existingBook) {
@@ -113,11 +157,47 @@ const bookModel = {
       await db.getRef(`books/${id}`).remove()
       return true
     } catch (error) {
-      throw new Error(`Lỗi khi xóa sách: ${error.message}`)
+      throw new Error(`Lỗi khi xóa sách vĩnh viễn: ${error.message}`)
     }
   },
 
-  /** Lấy sách mới nhất */
+  /**
+   * Khôi phục sách đã bị xóa mềm
+   * @param {string|number} id - ID của sách
+   * @returns {Promise<boolean>} True nếu khôi phục thành công
+   * @throws {Error} Nếu sách không tồn tại hoặc chưa bị xóa mềm
+   */
+  restore: async (id) => {
+    try {
+      const bookRef = db.getRef(`books/${id}`)
+      const snapshot = await bookRef.once('value')
+      const book = snapshot.val()
+
+      if (!book) {
+        throw new Error('Không tìm thấy sách')
+      }
+
+      if (book.isActive !== false) {
+        throw new Error('Sách chưa bị xóa mềm')
+      }
+
+      await bookRef.update({
+        isActive: true,
+        restoredAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      })
+      return true
+    } catch (error) {
+      throw new Error(`Lỗi khi khôi phục sách: ${error.message}`)
+    }
+  },
+
+  /**
+   * Lấy danh sách sách mới nhất (chỉ sách active)
+   * @param {number} limit - Số lượng sách cần lấy (mặc định: 10)
+   * @returns {Promise<Array>} Danh sách sách mới nhất
+   * @throws {Error} Nếu có lỗi khi lấy dữ liệu
+   */
   getLatest: async (limit = 10) => {
     try {
       const allBooks = await bookModel.getAll()
@@ -133,7 +213,11 @@ const bookModel = {
     }
   },
 
-  /** Lấy ID lớn nhất */
+  /**
+   * Lấy ID lớn nhất của sách
+   * @returns {Promise<number>} ID lớn nhất
+   * @throws {Error} Nếu có lỗi khi lấy dữ liệu
+   */
   getMaxId: async () => {
     try {
       const allBooks = await bookModel.getAll()
@@ -146,7 +230,23 @@ const bookModel = {
     }
   },
 
-  /** Tìm kiếm sách */
+  /**
+   * Tìm kiếm sách với nhiều tiêu chí (chỉ sách active)
+   * @param {Object} options - Các tùy chọn tìm kiếm
+   * @param {number} options.page - Số trang (mặc định: 1)
+   * @param {number} options.limit - Số sách mỗi trang (mặc định: 10)
+   * @param {string} options.search - Từ khóa tìm kiếm chung
+   * @param {string} options.q - Từ khóa tìm kiếm (alias của search)
+   * @param {string} options.title - Tìm theo tiêu đề
+   * @param {string} options.author - Tìm theo tác giả
+   * @param {string} options.keyword - Tìm theo từ khóa
+   * @param {string} options.category - Lọc theo thể loại
+   * @param {string} options.status - Lọc theo trạng thái (mặc định: 'active')
+   * @param {string} options.sortBy - Sắp xếp theo trường (mặc định: 'createdAt')
+   * @param {string} options.sortOrder - Thứ tự sắp xếp 'asc'/'desc' (mặc định: 'desc')
+   * @returns {Promise<Object>} Kết quả tìm kiếm với phân trang
+   * @throws {Error} Nếu có lỗi khi tìm kiếm
+   */
   search: async (options = {}) => {
     try {
       const {
@@ -165,21 +265,18 @@ const bookModel = {
 
       let allBooks = await bookModel.getAll()
 
-      // Helper: accent-insensitive normalize
       const normalize = (str = '') =>
         String(str)
           .toLowerCase()
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
 
-      // Pre-compute normalized search inputs
       const normSearch = normalize(search)
       const normQ = normalize(q)
       const normTitle = normalize(title)
       const normAuthor = normalize(author)
       const normKeyword = normalize(keyword)
 
-      // Lọc theo q hoặc search (tổng quát: tiêu đề, tác giả, mô tả, từ khóa)
       if (normQ || normSearch) {
         const needle = normQ || normSearch
         allBooks = allBooks.filter(book => {
@@ -199,17 +296,14 @@ const bookModel = {
         })
       }
 
-      // Lọc riêng theo title
       if (normTitle) {
         allBooks = allBooks.filter(book => normalize(book.title).includes(normTitle))
       }
 
-      // Lọc riêng theo author
       if (normAuthor) {
         allBooks = allBooks.filter(book => normalize(book.author).includes(normAuthor))
       }
 
-      // Lọc riêng theo keyword (một từ trong mảng keywords)
       if (normKeyword) {
         allBooks = allBooks.filter(book => {
           if (!book.keywords) return false
@@ -218,17 +312,14 @@ const bookModel = {
         })
       }
 
-      // Lọc theo category
       if (category) {
         allBooks = allBooks.filter(book => book.category == category)
       }
 
-      // Lọc theo status
       if (status) {
         allBooks = allBooks.filter(book => book.status === status)
       }
 
-      // Sắp xếp
       allBooks.sort((a, b) => {
         const aValue = a[sortBy] || ''
         const bValue = b[sortBy] || ''
@@ -240,7 +331,6 @@ const bookModel = {
         }
       })
 
-      // Phân trang
       const total = allBooks.length
       const startIndex = (page - 1) * limit
       const endIndex = startIndex + limit

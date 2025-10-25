@@ -8,14 +8,12 @@ const router = express.Router()
 
 router
   .route('/')
-  .post(auth, validate(userValidation.createUser), userController.createUser)
   .get(auth, validate(userValidation.getUser), userController.getUserByEmail)
 
 router
   .route('/:userId')
   .get(auth, validate(userValidation.getUserById), userController.getUserById)
   .put(auth, validate(userValidation.updateUser), userController.updateUser)
-  .delete(auth, validate(userValidation.deleteUser), userController.deleteUser)
 
 router
   .route('/:userId/favorites')

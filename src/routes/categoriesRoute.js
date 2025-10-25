@@ -1,42 +1,23 @@
 const express = require('express')
+const auth = require('../middlewares/authMiddleware')
 const validate = require('../middlewares/validate')
 const categoriesValidation = require('../validations/categoriesValidation')
 const categoriesController = require('../controllers/categoriesController')
 
 const router = express.Router()
 
-router.post(
-  '/',
-  validate(categoriesValidation.create),
-  categoriesController.create
-)
-
 router.get(
   '/',
+  auth,
   categoriesController.getAll
 )
 
-router.get(
-  '/current-max-id',
-  categoriesController.getCurrentMaxId
-)
 
 router.get(
   '/:categoryId',
+  auth,
   validate(categoriesValidation.getById),
   categoriesController.getById
-)
-
-router.put(
-  '/:categoryId',
-  validate(categoriesValidation.update),
-  categoriesController.update
-)
-
-router.delete(
-  '/:categoryId',
-  validate(categoriesValidation.delete),
-  categoriesController.delete
 )
 
 module.exports = router

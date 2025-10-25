@@ -54,74 +54,6 @@ const getBookById = async (data) => {
   }
 }
 
-/**
- * Tạo sách mới
- * @param {Object} data - Dữ liệu yêu cầu
- * @param {Object} data.bookData - Thông tin sách cần tạo
- * @returns {Promise<Object>} - Thông tin sách đã tạo và thông báo
- */
-const createBook = async (data) => {
-  const { bookData } = data
-  try {
-    const book = await bookModel.create(bookData)
-    return {
-      success: true,
-      data: { book },
-      message: 'Tạo sách thành công'
-    }
-  } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    }
-  }
-}
-
-/**
- * Cập nhật thông tin sách theo ID
- * @param {Object} data - Dữ liệu yêu cầu
- * @param {string} data.id - ID của sách
- * @param {Object} data.updateData - Dữ liệu cập nhật
- * @returns {Promise<Object>} - Thông tin sách đã cập nhật và thông báo
- */
-const updateBookById = async (data) => {
-  const { id, updateData } = data
-  try {
-    const book = await bookModel.update(id, updateData)
-    return {
-      success: true,
-      data: { book },
-      message: 'Cập nhật sách thành công'
-    }
-  } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    }
-  }
-}
-
-/**
- * Xóa sách theo ID
- * @param {Object} data - Dữ liệu yêu cầu
- * @param {string} data.id - ID của sách
- * @returns {Promise<Object>} - Thông báo kết quả xóa
- */
-const deleteBookById = async (data) => {
-  const { id } = data
-  try {
-    await bookModel.delete(id)
-    return {
-      success: true,
-      message: 'Xóa sách thành công'
-    }
-  } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    }
-  }
-}
 
 /**
  * Lấy danh sách sách mới nhất
@@ -266,9 +198,6 @@ module.exports = {
   getBooksList,
   quickSearch,
   getBookById,
-  createBook,
-  updateBookById,
-  deleteBookById,
   getLatestBooks,
   getCurrentMaxBookId,
   getFavoriteBooksDetails

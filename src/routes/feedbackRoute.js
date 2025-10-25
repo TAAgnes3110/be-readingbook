@@ -3,7 +3,6 @@ const router = express.Router()
 const feedbackController = require('../controllers/feedbackController')
 const authMiddleware = require('../middlewares/authMiddleware')
 
-// Routes cho user (cần đăng nhập)
 router.post('/', authMiddleware, feedbackController.createFeedback)
 router.get('/my-feedbacks', authMiddleware, feedbackController.getMyFeedbacks)
 router.get('/:id', authMiddleware, feedbackController.getFeedbackById)

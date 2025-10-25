@@ -1,21 +1,6 @@
-const httpStatus = require('http-status')
 const { pick, catchAsync } = require('../utils/index')
 const { userService, authService } = require('../services/index')
 
-/**
- * Tạo người dùng mới
- * @param {Object} req - HTTP request
- * @param {Object} res - HTTP response
- * @returns {void}
- */
-const createUser = catchAsync(async (req, res) => {
-  const result = await userService.createUser(req.body)
-  res.status(httpStatus.CREATED).json({
-    success: true,
-    data: { userId: result.userId },
-    message: result.message
-  })
-})
 
 /**
  * Xác thực OTP cho người dùng
@@ -130,20 +115,6 @@ const updateUser = catchAsync(async (req, res) => {
   })
 })
 
-/**
- * Xóa người dùng (xóa mềm)
- * @param {Object} req - HTTP request
- * @param {Object} res - HTTP response
- * @returns {void}
- */
-const deleteUser = catchAsync(async (req, res) => {
-  const { userId } = pick(req.params, ['userId'])
-  await userService.deleteUserById({ userId })
-  res.status(httpStatus.NO_CONTENT).json({
-    success: true,
-    message: 'User deleted successfully'
-  })
-})
 
 /**
  * Thêm sách vào danh sách yêu thích
@@ -192,7 +163,6 @@ const getFavoriteBooks = catchAsync(async (req, res) => {
 })
 
 module.exports = {
-  createUser,
   verifyUserOTP,
   login,
   requestResetPassword,
@@ -200,7 +170,6 @@ module.exports = {
   getUserById,
   getUserByEmail,
   updateUser,
-  deleteUser,
   addFavoriteBook,
   removeFavoriteBook,
   getFavoriteBooks

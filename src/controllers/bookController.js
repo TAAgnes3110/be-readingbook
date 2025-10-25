@@ -1,11 +1,7 @@
 const {
   getBooksList,
   getBookById,
-  createBook,
-  updateBookById,
-  deleteBookById,
   getLatestBooks,
-  getCurrentMaxBookId,
   quickSearch
 } = require('../services/bookService')
 
@@ -55,73 +51,6 @@ const bookController = {
     }
   },
 
-  /**
-   * Tạo sách mới
-   * @param {Object} req - HTTP request (body: thông tin sách)
-   * @param {Object} res - HTTP response
-   */
-  create: async (req, res) => {
-    try {
-      const result = await createBook({ bookData: req.body })
-
-      if (result.success) {
-        res.status(201).json(result)
-      } else {
-        res.status(400).json(result)
-      }
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: `Lỗi server: ${error.message}`
-      })
-    }
-  },
-
-  /**
-   * Cập nhật sách theo ID
-   * @param {Object} req - HTTP request (params: id, body: dữ liệu cập nhật)
-   * @param {Object} res - HTTP response
-   */
-  update: async (req, res) => {
-    try {
-      const { id } = req.params
-      const result = await updateBookById({ id, updateData: req.body })
-
-      if (result.success) {
-        res.status(200).json(result)
-      } else {
-        res.status(400).json(result)
-      }
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: `Lỗi server: ${error.message}`
-      })
-    }
-  },
-
-  /**
-   * Xóa sách theo ID
-   * @param {Object} req - HTTP request (params: id)
-   * @param {Object} res - HTTP response
-   */
-  delete: async (req, res) => {
-    try {
-      const { id } = req.params
-      const result = await deleteBookById({ id })
-
-      if (result.success) {
-        res.status(200).json(result)
-      } else {
-        res.status(400).json(result)
-      }
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: `Lỗi server: ${error.message}`
-      })
-    }
-  },
 
   /**
    * Lấy danh sách sách mới nhất
@@ -147,27 +76,6 @@ const bookController = {
     }
   },
 
-  /**
-   * Lấy ID sách lớn nhất hiện tại
-   * @param {Object} req - HTTP request
-   * @param {Object} res - HTTP response
-   */
-  getCurrentMaxId: async (req, res) => {
-    try {
-      const result = await getCurrentMaxBookId()
-
-      if (result.success) {
-        res.status(200).json(result)
-      } else {
-        res.status(400).json(result)
-      }
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: `Lỗi server: ${error.message}`
-      })
-    }
-  },
   /**
    * Tìm kiếm sách theo một input duy nhất (title/author/category/description/keywords)
    * @param {Object} req - HTTP request (query: input | q | search, page, limit)

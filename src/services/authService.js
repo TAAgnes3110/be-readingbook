@@ -367,7 +367,6 @@ const logout = async (email) => {
     })
 
     await getTokenService().revoke(user._id)
-    // await getFirebaseService().deleteAuthUser(email)
   } catch (error) {
     logger.error(`Error logging out user ${email}: ${error.stack}`)
     throw error

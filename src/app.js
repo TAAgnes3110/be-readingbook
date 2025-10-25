@@ -10,6 +10,7 @@ const config = require('./config/config')
 const logger = require('./config/logger')
 const { successHandler, errorHandler } = require('./config/morgan')
 const { authRoute, userRoute, categoriesRoute, bookRoute, epubRoute, historyRoute, feedbackRoute } = require('./routes/index')
+const adminRoutes = require('../admin/routes/index')
 const { firebaseStrategy } = require('./config/passport')
 
 const app = express()
@@ -101,9 +102,12 @@ app.use('/api/epub', epubRoute)
 app.use('/api/history', historyRoute)
 app.use('/api/feedback', feedbackRoute)
 
+// ADMIN ROUTES
+app.use('/api/admin', adminRoutes)
+
 
 // ERROR HANDLER
-app.use((error, req, res, next) => { // eslint-disable-line no-unused-vars
+app.use((error, req, res, next) => {
   logger.error('Unhandled error:', error)
 
   let statusCode = error.status || error.statusCode || httpStatus.status.INTERNAL_SERVER_ERROR

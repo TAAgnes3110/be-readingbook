@@ -122,30 +122,6 @@ const updateUserById = async (data) => {
   }
 }
 
-/**
- * Delete user by ID (soft delete)
- * @param {string} userId - User ID
- * @returns {Promise<Object>} - Deleted user object
- * @throws {ApiError} 404 - User not found
- */
-const deleteUserById = async (data) => {
-  const { userId } = data
-  try {
-    await getUserById({ id: userId })
-    await userModel.update(userId, {
-      isActive: false,
-      updatedAt: admin.database.ServerValue.TIMESTAMP
-    })
-    const updatedUser = await userModel.findById(userId)
-    return { _id: userId, ...updatedUser }
-  } catch (error) {
-    if (error instanceof ApiError) throw error
-    throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      `Failed to delete user: ${error.message}`
-    )
-  }
-}
 
 /**
  * Add book to user's favorites
@@ -246,7 +222,6 @@ module.exports = {
   getUserById,
   getUserByEmail,
   updateUserById,
-  deleteUserById,
   addFavoriteBook,
   removeFavoriteBook,
   getFavoriteBooks
