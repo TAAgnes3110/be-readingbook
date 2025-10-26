@@ -11,10 +11,10 @@
   "scripts": {
     "start": "node build/src/index.js",
     "dev": "nodemon --exec babel-node ./src/index.js",
-    "lint": "eslint src --ext .js --report-unused-disable-directives --max-warnings 0",
-    "lint:fix": "eslint src --ext .js --fix",
+    "lint": "eslint src admin --ext .js --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint src admin --ext .js --fix",
     "clean": "rm -rf build && mkdir build",
-    "build-babel": "babel ./src -d ./build/src",
+    "build-babel": "babel ./src -d ./build/src && babel ./admin -d ./build/admin",
     "build": "npm run clean && npm run build-babel",
     "production": "npm run build && npm run start",
     "docker:build": "docker build -t reading-book-api .",

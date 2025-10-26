@@ -3,6 +3,11 @@
   "presets": ["@babel/preset-env"],
   "plugins": [
     ["@babel/plugin-transform-runtime"],
-    ["babel-plugin-module-resolver", { "alias": { "~": "./src" } }]
+    ["babel-plugin-module-resolver", {
+      "alias": {
+        "~": "./src",
+        "@admin": "./admin"
+      }
+    }]
   ]
 }
