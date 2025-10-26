@@ -9,7 +9,7 @@
     "npm": ">=9.x"
   },
   "scripts": {
-    "start": "node build/src/index.js",
+    "start": "node src/index.js",
     "dev": "nodemon --exec babel-node ./src/index.js",
     "lint": "eslint src admin --ext .js --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint src admin --ext .js --fix",
