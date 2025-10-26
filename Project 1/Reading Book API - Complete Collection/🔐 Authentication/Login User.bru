@@ -1,0 +1,27 @@
+meta {
+  name: Login User
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://0.0.0.0:9000/api/auth/login
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "taagnes3110@gmail.com",
+    "password": "663110ak"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Get History by User ID
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://0.0.0.0:9000/api/history/user/{{userId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

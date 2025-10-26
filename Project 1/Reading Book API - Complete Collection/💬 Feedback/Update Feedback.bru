@@ -1,0 +1,28 @@
+meta {
+  name: Update Feedback
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://0.0.0.0:9000/api/feedback/1
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{authToken}}
+}
+
+body:json {
+  {
+    "rating": 4,
+    "comment": "Cập nhật đánh giá: Cuốn sách khá hay!"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

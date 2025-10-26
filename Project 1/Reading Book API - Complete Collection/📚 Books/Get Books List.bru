@@ -1,0 +1,29 @@
+meta {
+  name: Get Books List
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://0.0.0.0:9000/api/books?page=1&limit=10&search=harry&category=fiction&sortBy=title&sortOrder=asc
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 10
+  search: harry
+  category: fiction
+  sortBy: title
+  sortOrder: asc
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

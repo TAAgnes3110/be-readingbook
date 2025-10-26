@@ -205,8 +205,20 @@ railway status
 # Lấy URL của app
 railway domain
 
-# Test health check
-curl https://your-app.railway.app/api/v1/health
+# Test health check endpoints
+curl https://your-app.railway.app/health
+curl https://your-app.railway.app/api/health
+```
+
+**Health Check Response:**
+```json
+{
+  "success": true,
+  "message": "Server is running normally",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "uptime": 3600,
+  "environment": "production"
+}
 ```
 
 ### Bước 2: Test Firebase Connection
@@ -306,14 +318,33 @@ railway deploy
 
 ### Health Monitoring:
 
+Railway tự động monitor health check thông qua cấu hình trong `railway.json`:
+
+```json
+{
+  "deploy": {
+    "healthcheckPath": "/api/health",
+    "healthcheckTimeout": 100,
+    "healthcheckInterval": 300
+  }
+}
+```
+
+**Manual Health Check Script:**
 ```bash
 # Setup monitoring script
 #!/bin/bash
 while true; do
-    curl -f https://your-app.railway.app/api/v1/health || echo "Health check failed"
+    curl -f https://your-app.railway.app/api/health || echo "Health check failed"
     sleep 60
 done
 ```
+
+**Railway Health Check Features:**
+- Tự động restart service nếu health check fail
+- Monitor uptime và response time
+- Alert khi service không healthy
+- Log health check status trong dashboard
 
 ---
 

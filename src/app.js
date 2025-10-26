@@ -102,6 +102,25 @@ app.get('/health', (req, res) => {
   }
 })
 
+// API HEALTH CHECK
+app.get('/api/health', (req, res) => {
+  try {
+    res.status(200).json({
+      success: true,
+      message: 'Server is running normally',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: config.env || 'unknown'
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Health check failed',
+      error: error.message
+    })
+  }
+})
+
 // API ROUTES
 app.use('/api/auth', authRoute)
 app.use('/api/users', userRoute)

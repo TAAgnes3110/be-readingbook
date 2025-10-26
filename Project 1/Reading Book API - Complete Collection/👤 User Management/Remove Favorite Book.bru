@@ -1,0 +1,20 @@
+meta {
+  name: Remove Favorite Book
+  type: http
+  seq: 6
+}
+
+delete {
+  url: http://0.0.0.0:9000/api/users/{{userId}}/favorites/{{bookId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

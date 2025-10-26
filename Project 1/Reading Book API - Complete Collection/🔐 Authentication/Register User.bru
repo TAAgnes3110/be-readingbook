@@ -1,0 +1,30 @@
+meta {
+  name: Register User
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://0.0.0.0:9000/api/auth/register
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "user@example.com",
+    "password": "password123",
+    "fullName": "Nguyễn Văn A",
+    "username": "nguyenvana",
+    "phoneNumber": "0123456789"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
