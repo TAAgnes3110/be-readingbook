@@ -1,14 +1,31 @@
 const dotenv = require('dotenv')
 dotenv.config()
 
+// Helper function to safely parse environment variables
+const safeParse = (value, defaultValue = null) => {
+  try {
+    return value ? value : defaultValue
+  } catch (error) {
+    return defaultValue
+  }
+}
+
+const safeSplit = (value, defaultValue = []) => {
+  try {
+    return value ? value.split(',') : defaultValue
+  } catch (error) {
+    return defaultValue
+  }
+}
+
 module.exports = {
-  env: process.env.NODE_ENV,
+  env: process.env.NODE_ENV || 'development',
   app: {
-    name: process.env.APP_NAME,
-    host: process.env.APP_HOST,
-    port: process.env.APP_PORT,
-    apiVersion: process.env.API_VERSION,
-    prefix: process.env.API_PREFIX
+    name: safeParse(process.env.APP_NAME, 'Reading Book API'),
+    host: safeParse(process.env.APP_HOST, '0.0.0.0'),
+    port: safeParse(process.env.APP_PORT, 3000),
+    apiVersion: safeParse(process.env.API_VERSION, 'v1'),
+    prefix: safeParse(process.env.API_PREFIX, '')
   },
   firebase: {
     projectId: process.env.FIREBASE_PROJECT_ID,
@@ -36,22 +53,22 @@ module.exports = {
     from: process.env.EMAIL_FROM
   },
   upload: {
-    limit: process.env.UPLOAD_LIMIT,
-    allowedFormats: process.env.ALLOWED_FORMATS.split(','),
-    storagePath: process.env.STORAGE_PATH
+    limit: safeParse(process.env.UPLOAD_LIMIT, '10mb'),
+    allowedFormats: safeSplit(process.env.ALLOWED_FORMATS, ['jpg', 'jpeg', 'png', 'pdf', 'epub']),
+    storagePath: safeParse(process.env.STORAGE_PATH, 'uploads/')
   },
   rateLimit: {
-    max: parseInt(process.env.RATE_LIMIT, 10),
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW, 10) * 60 * 1000
+    max: parseInt(safeParse(process.env.RATE_LIMIT, '100'), 10),
+    windowMs: parseInt(safeParse(process.env.RATE_LIMIT_WINDOW, '15'), 10) * 60 * 1000
   },
   logging: {
-    level: process.env.LOG_LEVEL,
-    format: process.env.LOG_FORMAT
+    level: safeParse(process.env.LOG_LEVEL, 'info'),
+    format: safeParse(process.env.LOG_FORMAT, 'combined')
   },
   cors: {
-    origin: process.env.CORS_ORIGIN,
-    methods: process.env.CORS_METHODS.split(','),
-    credentials: process.env.CORS_CREDENTIALS === 'true'
+    origin: safeParse(process.env.CORS_ORIGIN, '*'),
+    methods: safeSplit(process.env.CORS_METHODS, ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE']),
+    credentials: safeParse(process.env.CORS_CREDENTIALS, 'true') === 'true'
   },
   otp: {
     length: parseInt(process.env.OTP_LENGTH, 10) || 6,
