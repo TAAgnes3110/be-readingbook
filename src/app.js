@@ -83,6 +83,22 @@ app.use(errorHandler)
 app.use(passport.initialize())
 passport.use('firebase', firebaseStrategy)
 
+// ROOT ENDPOINT
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: '📚 Reading Book API - Flipy',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      api: '/api',
+      docs: 'https://github.com/your-repo/docs'
+    },
+    timestamp: new Date().toISOString()
+  })
+})
+
 // HEALTH CHECK
 app.get('/health', (req, res) => {
   try {
