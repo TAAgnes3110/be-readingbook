@@ -41,16 +41,20 @@ module.exports = {
     provider: process.env.EMAIL_PROVIDER || 'smtp',
     smtp: {
       host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
+      port: parseInt(process.env.SMTP_PORT) || 587,
       auth: {
         user: process.env.SMTP_USERNAME,
         pass: process.env.SMTP_PASSWORD
       }
     },
+    resend: {
+      apiKey: process.env.RESEND_API_KEY
+    },
     sendgrid: {
       apiKey: process.env.SENDGRID_API_KEY
     },
-    from: process.env.EMAIL_FROM
+    from: process.env.EMAIL_FROM,
+    support: process.env.SUPPORT_EMAIL || process.env.EMAIL_FROM
   },
   upload: {
     limit: safeParse(process.env.UPLOAD_LIMIT, '10mb'),

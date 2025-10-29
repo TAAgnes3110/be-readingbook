@@ -1,0 +1,120 @@
+services:
+  # Web Service - Reading Book API
+  - type: web
+    name: reading-book-api
+    runtime: node
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      # Email Configuration - Sử dụng Resend API thay vì SMTP
+      # Render Free tier chặn port 587, nên phải dùng API service
+      - key: EMAIL_FROM
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+
+      # SMTP Alternative (nếu muốn dùng Gmail với port 465)
+      # Uncomment nếu muốn thử SMTP
+      # - key: SMTP_HOST
+      #   value: smtp.gmail.com
+      # - key: SMTP_PORT
+      #   value: 465
+      # - key: SMTP_USERNAME
+      #   sync: false
+      # - key: SMTP_PASSWORD
+      #   sync: false
+
+      # Firebase Configuration
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_PROJECT_NUMBER
+        sync: false
+      - key: FIREBASE_DATABASE_URL
+        sync: false
+      - key: FIREBASE_WEB_API_KEY
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY_ID
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_CLIENT_ID
+        sync: false
+
+      # JWT Configuration
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRY
+        value: 24h
+
+      # CORS Configuration
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: CORS_METHODS
+        value: "GET,POST,PUT,DELETE,PATCH"
+      - key: CORS_CREDENTIALS
+        value: "true"
+
+      # Rate Limiting
+      - key: RATE_LIMIT
+        value: 100
+      - key: RATE_LIMIT_WINDOW
+        value: 15
+
+      # App Configuration
+      - key: APP_NAME
+        value: "Reading Book API"
+      - key: APP_HOST
+        value: "0.0.0.0"
+      - key: API_VERSION
+        value: "v1"
+
+      # OTP Configuration
+      - key: OTP_LENGTH
+        value: 6
+      - key: OTP_EXPIRY
+        value: 300
+      - key: OTP_PROVIDER
+        value: email
+
+      # Cache Configuration
+      - key: CACHE_TTL
+        value: 300
+      - key: CACHE_CHECKPERIOD
+        value: 120
+
+    # Health check configuration
+    healthCheckPath: /health
+
+    # Auto-deploy on push to main branch
+    autoDeploy: true
+
+    # Scaling configuration
+    scaling:
+      minInstances: 1
+      maxInstances: 1
+
+# HƯỚNG DẪN SỬ DỤNG:
+# =====================
+# 1. Tạo tài khoản miễn phí tại https://render.com
+# 2. Tạo Web Service mới và connect GitHub repo
+# 3. Chọn "Use existing render.yaml"
+# 4. Lấy Resend API Key miễn phí:
+#    - Đăng ký tại: https://resend.com/signup
+#    - Lấy API Key tại: https://resend.com/api-keys
+#    - Free tier: 100 emails/day, 3,000 emails/month
+# 5. Thêm environment variables vào Render dashboard
+# 6. Deploy!
+#
+# LƯU Ý:
+# - Render Free tier CHẶN port 587 (SMTP) nên PHẢI dùng Resend API
+# - Nếu muốn dùng SMTP, deploy lên Railway hoặc Fly.io
+# - Free tier sẽ sleep sau 15 phút không hoạt động
+

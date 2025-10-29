@@ -35,8 +35,8 @@
 - **Node.js**: >= 18.x
 - **npm**: >= 9.x
 - **Firebase Project**: Cho Authentication và Firestore
-- **Email Service**: SMTP server (Gmail, SendGrid, etc.)
-- **Database**: Firebase Firestore (hoặc MySQL/PostgreSQL)
+- **Resend Account**: Miễn phí để gửi email (thay thế SMTP)
+- **Render Account**: Để deploy miễn phí (không cần credit card)
 
 ## 🚀 Cài đặt
 
@@ -77,11 +77,9 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com
 
 # Email Configuration (BẮT BUỘC)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USERNAME=your-email@gmail.com
-SMTP_PASSWORD=your-app-password
-EMAIL_FROM=your-email@gmail.com
+# Sử dụng Resend API (miễn phí, không bị chặn trên Render)
+RESEND_API_KEY=re_xxxxxxxxxxxx
+EMAIL_FROM=onboarding@resend.dev
 
 # JWT Configuration
 JWT_SECRET=your-super-secret-jwt-key-here
@@ -102,11 +100,16 @@ CORS_ORIGIN=http://localhost:3000,http://localhost:3001
 3. Tạo service account và download JSON key
 4. Cập nhật các biến `FIREBASE_*` trong `.env`
 
-### Cấu hình Email
+### Cấu hình Email (Resend API)
 
-1. **Gmail**: Sử dụng App Password (không phải mật khẩu thường)
-2. **SendGrid**: Sử dụng API key
-3. **SMTP khác**: Cập nhật host, port, username, password
+1. Đăng ký miễn phí tại: https://resend.com/signup
+2. Lấy API Key tại: https://resend.com/api-keys
+3. Copy API key và thêm vào file `.env`:
+   ```env
+   RESEND_API_KEY=re_xxxxxxxxxxxx
+   EMAIL_FROM=onboarding@resend.dev
+   ```
+4. **Free tier**: 100 emails/ngày, 3,000 emails/tháng
 
 ## 🏃‍♂️ Chạy ứng dụng
 
@@ -360,109 +363,60 @@ be-readingbook/
 
 ## 📦 Deployment
 
-### Environment Variables (Production)
+### 🚀 Deploy lên Render.com (ĐỀ XUẤT - Miễn phí)
+
+Dự án này được cấu hình tối ưu để deploy lên **Render.com** - nền tảng miễn phí, không cần credit card.
+
+**Xem hướng dẫn chi tiết:** [DEPLOYMENT.md](DEPLOYMENT.md)
+
+#### Quick Start
+
+1. **Đăng ký Render**: https://render.com (Miễn phí)
+2. **Lấy Resend API Key**: https://resend.com/signup (Miễn phí)
+3. **Deploy**:
+   - New Web Service → Connect GitHub repo
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+   - Add Environment Variables (xem DEPLOYMENT.md)
+
+#### Environment Variables cần thiết
 
 ```env
+# Node Environment
 NODE_ENV=production
-APP_HOST=0.0.0.0
-APP_PORT=3000
-LOG_LEVEL=warn
 
-# Firebase Production
-FIREBASE_PROJECT_ID=your-production-project-id
+# Email via Resend (BẮT BUỘC)
+RESEND_API_KEY=re_xxxxxxxxxxxx
+EMAIL_FROM=onboarding@resend.dev
+
+# JWT
+JWT_SECRET=your-super-secret-jwt-key
+JWT_EXPIRY=24h
+
+# Firebase (BẮT BUỘC)
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_DATABASE_URL=https://your-project.firebaseio.com
+FIREBASE_WEB_API_KEY=your-api-key
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+FIREBASE_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
+# ... các biến Firebase khác
 
-# Email Production
-SMTP_HOST=smtp.sendgrid.net
-SMTP_USERNAME=apikey
-SMTP_PASSWORD=your-sendgrid-api-key
+# CORS
+CORS_ORIGIN=*
 ```
 
-### 🚀 Vercel Deployment
+#### Lưu ý về Render Free Tier
 
-1. **Install Vercel CLI** (optional):
-```bash
-npm i -g vercel
-```
+- ✅ Hoàn toàn miễn phí, không cần credit card
+- ✅ SSL certificate tự động
+- ⚠️ Server sleep sau 15 phút không hoạt động
+- ⚠️ Cold start ~30-60 giây
 
-2. **Deploy**:
-```bash
-vercel
-# Hoặc push code lên GitHub và connect với Vercel dashboard
-```
+**Giải pháp cho sleep issue:**
+- Setup uptime monitoring (https://cron-job.org) để ping `/health` mỗi 10 phút
+- Hoặc upgrade lên Starter plan ($7/tháng) - không sleep
 
-3. **Environment Variables**: Thêm tất cả các biến môi trường trong Vercel dashboard > Settings > Environment Variables
-
-4. **Health Check**: API sẽ tự động có endpoint `/health` và `/api/health`
-
-### 🚂 Railway Deployment
-
-1. **Connect Repository**: Kết nối GitHub repository với Railway
-
-2. **Environment Variables**: Thêm tất cả biến môi trường trong Railway dashboard
-
-3. **Auto Deploy**: Railway sẽ tự động detect `railway.json` và deploy với:
-   - Start command: `npm start`
-   - Health check tại `/health`
-   - Auto restart on failure
-
-### ☁️ Heroku Deployment
-
-1. **Install Heroku CLI**:
-```bash
-npm i -g heroku
-```
-
-2. **Create App**:
-```bash
-heroku create your-app-name
-```
-
-3. **Set Environment Variables**:
-```bash
-heroku config:set NODE_ENV=production
-heroku config:set APP_PORT=3000
-# ... thêm các biến khác
-```
-
-4. **Deploy**:
-```bash
-git push heroku main
-```
-
-### 🖥️ VPS/Server Deployment
-
-1. **Clone và cài đặt**:
-```bash
-git clone <repo-url>
-cd be-readingbook
-npm install
-npm run build
-```
-
-2. **Sử dụng PM2** (recommended):
-```bash
-npm install -g pm2
-pm2 start src/index.js --name reading-book-api
-pm2 save
-pm2 startup
-```
-
-3. **Nginx Configuration**:
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
+**Deployment URL:** `https://your-app-name.onrender.com`
 
 ## 🔧 Troubleshooting
 
@@ -489,12 +443,12 @@ npm run test:firebase
 
 #### Email không gửi được
 ```bash
-# Kiểm tra SMTP configuration
-echo $SMTP_HOST
-echo $SMTP_USERNAME
+# Kiểm tra Resend API key
+echo $RESEND_API_KEY
 
-# Test email service
-npm run test:email
+# Xem logs để kiểm tra
+# Logs nên hiển thị: "📧 Using Resend API for email delivery"
+# Nếu thấy lỗi SMTP, đảm bảo đã set RESEND_API_KEY
 ```
 
 #### JWT Token lỗi
