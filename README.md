@@ -17,7 +17,6 @@
 - 🛡️ **Admin Panel**: Quản lý hệ thống cho admin
 - 🔄 **Real-time**: Socket.io cho tính năng real-time
 - 📧 **Email Service**: Gửi email OTP, thông báo
-- 🐳 **Docker Support**: Containerization hoàn chỉnh
 
 ## 📋 Mục lục
 
@@ -25,7 +24,6 @@
 - [Cài đặt](#-cài-đặt)
 - [Cấu hình](#-cấu-hình)
 - [Chạy ứng dụng](#-chạy-ứng-dụng)
-- [Docker](#-docker)
 - [API Documentation](#-api-documentation)
 - [Cấu trúc dự án](#-cấu-trúc-dự-án)
 - [Security](#-security)
@@ -139,49 +137,11 @@ npm run build          # Build Babel
 npm run test           # Chạy tests
 ```
 
-## 🐳 Docker
-
-### Docker Compose (Khuyến nghị)
-
-```bash
-# Development
-npm run docker:dev
-
-# Production
-npm run docker:prod
-
-# Dừng services
-npm run docker:down
-
-# Xem logs
-npm run docker:logs
-```
-
-### Docker Commands
-
-```bash
-# Build image
-npm run docker:build
-
-# Chạy container
-npm run docker:run
-
-# Xem logs
-docker logs reading-book-api
-```
-
-### Docker Configuration
-
-- **Development**: `docker-compose.dev.yml`
-- **Production**: `docker-compose.prod.yml`
-- **Port mặc định**: 9000 (Docker), 3000 (local)
-
 ## 📖 API Documentation
 
 ### Base URLs
 
 - **Development**: `http://localhost:3000/api`
-- **Docker**: `http://localhost:9000/api`
 - **Production**: `https://your-domain.com/api`
 
 ### API Endpoints
@@ -373,15 +333,7 @@ be-readingbook/
 │   └── 📄 SOFT_DELETE_STRATEGY.md  # Soft delete strategy
 ├── 📁 uploads/                      # Uploaded files
 ├── 📄 package.json                 # Dependencies và scripts
-├── 📄 Dockerfile                   # Docker configuration
-├── 📄 docker-compose.yml           # Docker compose
-├── 📄 docker-compose.dev.yml       # Development compose
-├── 📄 docker-compose.prod.yml      # Production compose
-├── 📄 nginx.conf                   # Nginx configuration
-├── 📄 nginx.production.conf        # Production nginx
-├── 📄 deploy.sh                    # Deployment script
 ├── 📄 env.example                  # Environment variables example
-├── 📄 env.docker.example           # Docker environment example
 └── 📄 README.md                    # This file
 ```
 
@@ -413,7 +365,7 @@ be-readingbook/
 ```env
 NODE_ENV=production
 APP_HOST=0.0.0.0
-APP_PORT=9000
+APP_PORT=3000
 LOG_LEVEL=warn
 
 # Firebase Production
@@ -426,31 +378,88 @@ SMTP_USERNAME=apikey
 SMTP_PASSWORD=your-sendgrid-api-key
 ```
 
-### Docker Production
+### 🚀 Vercel Deployment
 
+1. **Install Vercel CLI** (optional):
 ```bash
-# Build production image
-docker build -t reading-book-api:latest .
-
-# Run production container
-docker run -d \
-  --name reading-book-api \
-  -p 9000:9000 \
-  --env-file .env.production \
-  reading-book-api:latest
+npm i -g vercel
 ```
 
-### Nginx Configuration
+2. **Deploy**:
+```bash
+vercel
+# Hoặc push code lên GitHub và connect với Vercel dashboard
+```
 
+3. **Environment Variables**: Thêm tất cả các biến môi trường trong Vercel dashboard > Settings > Environment Variables
+
+4. **Health Check**: API sẽ tự động có endpoint `/health` và `/api/health`
+
+### 🚂 Railway Deployment
+
+1. **Connect Repository**: Kết nối GitHub repository với Railway
+
+2. **Environment Variables**: Thêm tất cả biến môi trường trong Railway dashboard
+
+3. **Auto Deploy**: Railway sẽ tự động detect `railway.json` và deploy với:
+   - Start command: `npm start`
+   - Health check tại `/health`
+   - Auto restart on failure
+
+### ☁️ Heroku Deployment
+
+1. **Install Heroku CLI**:
+```bash
+npm i -g heroku
+```
+
+2. **Create App**:
+```bash
+heroku create your-app-name
+```
+
+3. **Set Environment Variables**:
+```bash
+heroku config:set NODE_ENV=production
+heroku config:set APP_PORT=3000
+# ... thêm các biến khác
+```
+
+4. **Deploy**:
+```bash
+git push heroku main
+```
+
+### 🖥️ VPS/Server Deployment
+
+1. **Clone và cài đặt**:
+```bash
+git clone <repo-url>
+cd be-readingbook
+npm install
+npm run build
+```
+
+2. **Sử dụng PM2** (recommended):
+```bash
+npm install -g pm2
+pm2 start src/index.js --name reading-book-api
+pm2 save
+pm2 startup
+```
+
+3. **Nginx Configuration**:
 ```nginx
 server {
     listen 80;
     server_name your-domain.com;
 
     location / {
-        proxy_pass http://localhost:9000;
+        proxy_pass http://localhost:3000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
 ```
@@ -505,9 +514,6 @@ npm run dev
 
 # Xem logs production
 npm run production
-
-# Xem Docker logs
-docker logs reading-book-api
 
 # Debug mode
 DEBUG=* npm run dev

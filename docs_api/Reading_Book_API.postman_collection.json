@@ -13,11 +13,6 @@
 			"type": "string"
 		},
 		{
-			"key": "dockerUrl",
-			"value": "http://localhost:9000/api",
-			"type": "string"
-		},
-		{
 			"key": "authToken",
 			"value": "",
 			"type": "string"
