@@ -60,14 +60,23 @@ const gracefulShutdown = (signal) => {
 }
 
 // ERROR HANDLERS
-const handleUnexpectedError = (error) => {
-  logger.error('Unexpected error:', error)
-  gracefulShutdown('UNCAUGHT_EXCEPTION')
+const handleUnexpectedError = (error, source) => {
+  logger.error(`❌ ${source || 'Unexpected error'}:`, {
+    message: error.message,
+    stack: error.stack,
+    name: error.name,
+    ...(error.details && { details: error.details })
+  })
+
+  // Đợi một chút để log được ghi xong trước khi shutdown
+  setTimeout(() => {
+    gracefulShutdown(source || 'UNCAUGHT_EXCEPTION')
+  }, 2000)
 }
 
 // PROCESS EVENT LISTENERS
-process.on('uncaughtException', handleUnexpectedError)
-process.on('unhandledRejection', handleUnexpectedError)
+process.on('uncaughtException', (error) => handleUnexpectedError(error, 'UNCAUGHT_EXCEPTION'))
+process.on('unhandledRejection', (error) => handleUnexpectedError(error, 'UNHANDLED_REJECTION'))
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
 process.on('SIGINT', () => gracefulShutdown('SIGINT'))
 

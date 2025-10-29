@@ -8,11 +8,11 @@ const authorize = (...requiredRights) => {
     try {
       const user = await userService.getUserById({ id: req.userId })
 
-      if (!user.success || !user.data) {
+      if (!user) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'User not found')
       }
 
-      const userRole = user.data.role || 'user'
+      const userRole = user.role || 'user'
       const userRights = roleRights.get(userRole) || []
 
       const hasRequiredRights = requiredRights.every(right =>

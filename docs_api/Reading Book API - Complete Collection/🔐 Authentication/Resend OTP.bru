@@ -1,0 +1,25 @@
+meta {
+  name: Resend OTP
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/auth/resend-otp
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "user@example.com"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

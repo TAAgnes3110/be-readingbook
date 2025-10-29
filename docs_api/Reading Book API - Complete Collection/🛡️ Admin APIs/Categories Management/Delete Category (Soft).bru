@@ -1,0 +1,19 @@
+meta {
+  name: Delete Category (Soft)
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}/admin/categories/{{categoryId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,15 @@
+meta {
+  name: Get History by Book ID
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/history/book/{{bookId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

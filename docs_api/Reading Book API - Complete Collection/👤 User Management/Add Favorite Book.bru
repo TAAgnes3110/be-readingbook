@@ -1,0 +1,19 @@
+meta {
+  name: Add Favorite Book
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/users/{{userId}}/favorites/{{bookId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+}

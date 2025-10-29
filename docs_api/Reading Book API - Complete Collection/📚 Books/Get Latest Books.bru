@@ -1,0 +1,23 @@
+meta {
+  name: Get Latest Books
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/books/latest?limit=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: 10
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+}

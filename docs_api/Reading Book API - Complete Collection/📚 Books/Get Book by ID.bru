@@ -1,0 +1,19 @@
+meta {
+  name: Get Book by ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/books/{{bookId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+}

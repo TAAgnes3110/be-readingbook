@@ -4,8 +4,8 @@ FROM node:18-alpine
 # Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Cài đặt các dependencies cần thiết cho build
-RUN apk add --no-cache python3 make g++
+# Cài đặt các dependencies cần thiết cho build và healthcheck
+RUN apk add --no-cache python3 make g++ wget
 
 # Copy package files
 COPY package*.json ./
@@ -33,8 +33,8 @@ USER nodejs
 EXPOSE 9000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:9000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-3000}/health || exit 1
 
 # Start ứng dụng
 CMD ["npm", "start"]

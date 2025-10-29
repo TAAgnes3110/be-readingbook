@@ -1,0 +1,31 @@
+meta {
+  name: Save Bookmark
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/history/bookmark
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{authToken}}
+}
+
+body:json {
+  {
+    "userId": "{{userId}}",
+    "bookId": "{{bookId}}",
+    "chapterId": "chapter1",
+    "pageNumber": 1,
+    "progress": 25.5,
+    "lastReadAt": "2024-01-15T10:30:00Z"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

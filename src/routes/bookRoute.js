@@ -13,31 +13,26 @@ router.param('id', (req, res, next, id) => {
 
 router.get(
   '/',
-  auth,
   validate(bookValidation.getList),
   bookController.getList
 )
 
 router.get(
   '/latest',
-  auth,
   validate(bookValidation.getLatest),
   bookController.getLatest
 )
 
-
 router.get(
-  '/:id',
-  auth,
-  validate(bookValidation.getById),
-  bookController.getById
+  '/search',
+  validate(bookValidation.quickSearch),
+  bookController.search
 )
 
 router.get(
-  '/search',
-  auth,
-  validate(bookValidation.quickSearch),
-  bookController.search
+  '/:id',
+  validate(bookValidation.getById),
+  bookController.getById
 )
 
 module.exports = router

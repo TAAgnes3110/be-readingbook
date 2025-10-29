@@ -1,0 +1,19 @@
+meta {
+  name: Restore Book
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/admin/books/{{bookId}}/restore
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+}

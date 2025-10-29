@@ -1,0 +1,19 @@
+meta {
+  name: Delete User (Soft)
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{baseUrl}}/admin/users/{{userId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+}

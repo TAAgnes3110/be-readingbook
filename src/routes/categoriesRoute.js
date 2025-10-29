@@ -8,14 +8,12 @@ const router = express.Router()
 
 router.get(
   '/',
-  auth,
   categoriesController.getAll
 )
 
 
 router.get(
   '/:categoryId',
-  auth,
   validate(categoriesValidation.getById),
   categoriesController.getById
 )

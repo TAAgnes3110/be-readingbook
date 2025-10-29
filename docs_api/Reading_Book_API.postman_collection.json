@@ -56,7 +56,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"Nguyễn Văn A\",\n  \"username\": \"nguyenvana\",\n  \"phoneNumber\": \"0123456789\"\n}",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"confirmPassword\": \"password123\",\n  \"fullName\": \"Nguyễn Văn A\",\n  \"phoneNumber\": \"0123456789\",\n  \"role\": \"user\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -67,34 +67,6 @@
 							"raw": "{{baseUrl}}/auth/register",
 							"host": ["{{baseUrl}}"],
 							"path": ["auth", "register"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Login User",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/auth/login",
-							"host": ["{{baseUrl}}"],
-							"path": ["auth", "login"]
 						}
 					},
 					"response": []
@@ -156,6 +128,34 @@
 					"response": []
 				},
 				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Forgot Password",
 					"request": {
 						"method": "POST",
@@ -196,7 +196,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"newpassword123\"\n}",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"newPassword\": \"newpassword123\",\n  \"confirmPassword\": \"newpassword123\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -229,7 +229,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newpassword123\"\n}",
+							"raw": "{\n  \"oldPassword\": \"password123\",\n  \"newPassword\": \"newpassword123\",\n  \"confirmPassword\": \"newpassword123\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -340,7 +340,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"fullName\": \"Nguyễn Văn B\",\n  \"username\": \"nguyenvanb\",\n  \"phoneNumber\": \"0987654321\",\n  \"avatar\": \"https://example.com/new-avatar.jpg\"\n}",
+							"raw": "{\n  \"fullName\": \"Nguyễn Văn B\",\n  \"phoneNumber\": \"0987654321\",\n  \"avatar\": \"https://example.com/new-avatar.jpg\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -838,7 +838,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"userId\": \"{{userId}}\",\n  \"bookId\": \"{{bookId}}\",\n  \"chapterId\": \"chapter1\",\n  \"pageNumber\": 1,\n  \"progress\": 25.5,\n  \"lastReadAt\": \"2024-01-15T10:30:00Z\"\n}",
+							"raw": "{\n  \"userId\": {{userId}},\n  \"bookId\": {{bookId}},\n  \"chapterId\": \"chapter1\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -965,7 +965,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"bookId\": \"{{bookId}}\",\n  \"rating\": 5,\n  \"comment\": \"Cuốn sách rất hay và bổ ích!\",\n  \"userId\": \"{{userId}}\"\n}",
+							"raw": "{\n  \"fullName\": \"Nguyễn Văn A\",\n  \"phoneNumber\": \"0123456789\",\n  \"email\": \"user@example.com\",\n  \"comment\": \"Cuốn sách rất hay và bổ ích! Tôi rất thích cách tác giả viết.\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1036,7 +1036,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"rating\": 4,\n  \"comment\": \"Cập nhật đánh giá: Cuốn sách khá hay!\"\n}",
+							"raw": "{\n  \"comment\": \"Cập nhật đánh giá: Cuốn sách khá hay! Tôi đã đọc lại và thấy có nhiều điểm thú vị hơn.\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1097,7 +1097,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"name\": \"Science Fiction\",\n  \"description\": \"Science fiction books\",\n  \"icon\": \"https://example.com/sci-fi-icon.png\"\n}",
+									"raw": "{\n  \"name\": \"Science Fiction\",\n  \"image_url\": \"https://example.com/sci-fi-icon.png\",\n  \"status\": \"active\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1130,7 +1130,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"name\": \"Updated Science Fiction\",\n  \"description\": \"Updated description\",\n  \"icon\": \"https://example.com/new-icon.png\"\n}",
+									"raw": "{\n  \"name\": \"Updated Science Fiction\",\n  \"image_url\": \"https://example.com/new-icon.png\",\n  \"status\": \"active\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1146,7 +1146,7 @@
 							"response": []
 						},
 						{
-							"name": "Delete Category",
+							"name": "Delete Category (Soft)",
 							"request": {
 								"method": "DELETE",
 								"header": [
@@ -1160,6 +1160,63 @@
 									"raw": "{{baseUrl}}/admin/categories/{{categoryId}}",
 									"host": ["{{baseUrl}}"],
 									"path": ["admin", "categories", "{{categoryId}}"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Category (Hard)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/categories/{{categoryId}}/hard",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "categories", "{{categoryId}}", "hard"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Restore Category",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/categories/{{categoryId}}/restore",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "categories", "{{categoryId}}", "restore"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Deleted Categories",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/categories/deleted",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "categories", "deleted"]
 								}
 							},
 							"response": []
@@ -1187,7 +1244,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"title\": \"Harry Potter and the Philosopher's Stone\",\n  \"author\": \"J.K. Rowling\",\n  \"description\": \"The first book in the Harry Potter series\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"isbn\": \"978-0747532699\",\n  \"publishedDate\": \"1997-06-26\",\n  \"coverImage\": \"https://example.com/harry-potter-cover.jpg\",\n  \"epubUrl\": \"https://example.com/harry-potter.epub\",\n  \"tags\": [\"fantasy\", \"magic\", \"adventure\"]\n}",
+									"raw": "{\n  \"title\": \"Harry Potter and the Philosopher's Stone\",\n  \"author\": \"J.K. Rowling\",\n  \"category\": {{categoryId}},\n  \"description\": \"The first book in the Harry Potter series\",\n  \"release_date\": \"1997-06-26\",\n  \"cover_url\": \"https://example.com/harry-potter-cover.jpg\",\n  \"epub_url\": \"https://example.com/harry-potter.epub\",\n  \"keywords\": [\"fantasy\", \"magic\", \"adventure\"],\n  \"status\": \"active\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1236,7 +1293,7 @@
 							"response": []
 						},
 						{
-							"name": "Delete Book",
+							"name": "Delete Book (Soft)",
 							"request": {
 								"method": "DELETE",
 								"header": [
@@ -1253,6 +1310,63 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Delete Book (Hard)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/books/{{bookId}}/hard",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "books", "{{bookId}}", "hard"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Restore Book",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/books/{{bookId}}/restore",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "books", "{{bookId}}", "restore"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Deleted Books",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/books/deleted",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "books", "deleted"]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -1260,57 +1374,9 @@
 					"name": "Users Management",
 					"item": [
 						{
-							"name": "Get All Users",
+							"name": "Create User",
 							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{authToken}}",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/admin/users?page=1&limit=10",
-									"host": ["{{baseUrl}}"],
-									"path": ["admin", "users"],
-									"query": [
-										{
-											"key": "page",
-											"value": "1"
-										},
-										{
-											"key": "limit",
-											"value": "10"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get User by ID",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{authToken}}",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/admin/users/{{userId}}",
-									"host": ["{{baseUrl}}"],
-									"path": ["admin", "users", "{{userId}}"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update User",
-							"request": {
-								"method": "PUT",
+								"method": "POST",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -1325,7 +1391,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"fullName\": \"Updated Name\",\n  \"role\": \"admin\",\n  \"isActive\": true\n}",
+									"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\",\n  \"confirmPassword\": \"password123\",\n  \"fullName\": \"Admin User\",\n  \"phoneNumber\": \"0123456789\",\n  \"role\": \"admin\",\n  \"isActive\": true\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1333,15 +1399,15 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/admin/users/{{userId}}",
+									"raw": "{{baseUrl}}/admin/users",
 									"host": ["{{baseUrl}}"],
-									"path": ["admin", "users", "{{userId}}"]
+									"path": ["admin", "users"]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "Delete User",
+							"name": "Delete User (Soft)",
 							"request": {
 								"method": "DELETE",
 								"header": [
@@ -1358,6 +1424,226 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Delete User (Hard)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/users/{{userId}}/hard",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "users", "{{userId}}", "hard"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Restore User",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/users/{{userId}}/restore",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "users", "{{userId}}", "restore"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Deleted Users",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/users/deleted",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "users", "deleted"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User Stats",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/users/stats",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "users", "stats"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Feedback Management",
+					"item": [
+						{
+							"name": "Get All Feedbacks",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/admin/feedbacks?page=1&limit=10&sortBy=createdAt&sortOrder=desc",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "feedbacks"],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "Số trang (mặc định: 1)"
+										},
+										{
+											"key": "limit",
+											"value": "10",
+											"description": "Số lượng mỗi trang (mặc định: 10, tối đa: 100)"
+										},
+										{
+											"key": "sortBy",
+											"value": "createdAt",
+											"description": "Sắp xếp theo field (createdAt, updatedAt, status)"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc",
+											"description": "Thứ tự sắp xếp (asc, desc)"
+										},
+										{
+											"key": "status",
+											"value": "",
+											"description": "Lọc theo trạng thái (pending, resolved, rejected) - để trống để lấy tất cả",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success Response",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{authToken}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/admin/feedbacks?page=1&limit=10",
+											"host": ["{{baseUrl}}"],
+											"path": ["admin", "feedbacks"],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "limit",
+													"value": "10"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"success\": true,\n  \"message\": \"Lấy danh sách đánh giá thành công\",\n  \"data\": [\n    {\n      \"_id\": \"123456\",\n      \"userId\": 789,\n      \"fullName\": \"Nguyễn Văn A\",\n      \"phoneNumber\": 1234567890,\n      \"email\": \"user@example.com\",\n      \"comment\": \"Sách rất hay và bổ ích\",\n      \"status\": \"pending\",\n      \"createdAt\": 1640995200000,\n      \"updatedAt\": 1640995200000\n    },\n    {\n      \"_id\": \"123457\",\n      \"userId\": 790,\n      \"fullName\": \"Trần Thị B\",\n      \"phoneNumber\": 9876543210,\n      \"email\": \"user2@example.com\",\n      \"comment\": \"Ứng dụng rất tiện lợi\",\n      \"status\": \"resolved\",\n      \"createdAt\": 1640995100000,\n      \"updatedAt\": 1640995300000\n    }\n  ],\n  \"pagination\": {\n    \"page\": 1,\n    \"limit\": 10,\n    \"total\": 25,\n    \"totalPages\": 3\n  }\n}"
+								},
+								{
+									"name": "Error Response - Unauthorized",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/admin/feedbacks",
+											"host": ["{{baseUrl}}"],
+											"path": ["admin", "feedbacks"]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"success\": false,\n  \"message\": \"Token không hợp lệ hoặc đã hết hạn\"\n}"
+								},
+								{
+									"name": "Error Response - Forbidden",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer invalid_token",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/admin/feedbacks",
+											"host": ["{{baseUrl}}"],
+											"path": ["admin", "feedbacks"]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"success\": false,\n  \"message\": \"Bạn không có quyền truy cập\"\n}"
+								}
+							]
 						}
 					]
 				}
@@ -1375,6 +1661,18 @@
 							"raw": "{{baseUrl}}/health",
 							"host": ["{{baseUrl}}"],
 							"path": ["health"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "API Health Check",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/api/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "health"]
 						}
 					},
 					"response": []

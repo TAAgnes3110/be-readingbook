@@ -1,0 +1,19 @@
+meta {
+  name: Get Bookmark
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/history/{{userId}}/bookmark/{{bookId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+}

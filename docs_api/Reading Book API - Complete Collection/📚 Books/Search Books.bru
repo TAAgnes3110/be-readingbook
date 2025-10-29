@@ -1,0 +1,25 @@
+meta {
+  name: Search Books
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/books/search?q=harry potter&page=1&limit=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  q: harry potter
+  page: 1
+  limit: 10
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+}

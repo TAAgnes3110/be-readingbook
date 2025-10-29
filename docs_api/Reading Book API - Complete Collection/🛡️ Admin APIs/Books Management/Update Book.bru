@@ -1,0 +1,28 @@
+meta {
+  name: Update Book
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/admin/books/{{bookId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{authToken}}
+}
+
+body:json {
+  {
+    "title": "Updated Harry Potter Title",
+    "author": "J.K. Rowling",
+    "description": "Updated description"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

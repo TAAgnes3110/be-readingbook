@@ -1,0 +1,19 @@
+meta {
+  name: Get Deleted Books
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/admin/books/deleted
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+}

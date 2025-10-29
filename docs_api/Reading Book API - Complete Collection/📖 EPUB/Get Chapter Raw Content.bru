@@ -1,0 +1,26 @@
+meta {
+  name: Get Chapter Raw Content
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/epub/chapter-raw
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "epub_url": "https://example.com/book.epub",
+    "chapter_id": "chapter1"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

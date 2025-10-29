@@ -1,0 +1,19 @@
+meta {
+  name: Delete User (Hard)
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}/admin/users/{{userId}}/hard
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+settings {
+  encodeUrl: true
+}
