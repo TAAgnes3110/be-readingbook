@@ -1,5 +1,5 @@
 const { catchAsync } = require('../../src/utils/index')
-const { categoriesService } = require('../../src/services/index')
+const adminCategoriesService = require('../services/adminCategoriesService')
 
 /**
  * Tạo category mới (admin only)
@@ -7,7 +7,7 @@ const { categoriesService } = require('../../src/services/index')
  * @param {Object} res - HTTP response
  */
 const createCategory = catchAsync(async (req, res) => {
-  const result = await categoriesService.createCategory(req.body)
+  const result = await adminCategoriesService.createCategory(req.body)
   res.status(201).json(result)
 })
 
@@ -18,7 +18,7 @@ const createCategory = catchAsync(async (req, res) => {
  */
 const updateCategory = catchAsync(async (req, res) => {
   const { categoryId } = req.params
-  const result = await categoriesService.updateCategory(categoryId, req.body)
+  const result = await adminCategoriesService.updateCategory(categoryId, req.body)
   res.status(200).json(result)
 })
 
@@ -29,7 +29,7 @@ const updateCategory = catchAsync(async (req, res) => {
  */
 const deleteCategory = catchAsync(async (req, res) => {
   const { categoryId } = req.params
-  const result = await categoriesService.deleteCategory(categoryId)
+  const result = await adminCategoriesService.deleteCategory(categoryId)
   res.status(200).json(result)
 })
 
@@ -40,7 +40,7 @@ const deleteCategory = catchAsync(async (req, res) => {
  */
 const hardDeleteCategory = catchAsync(async (req, res) => {
   const { categoryId } = req.params
-  const result = await categoriesService.hardDeleteCategory(categoryId)
+  const result = await adminCategoriesService.hardDeleteCategory(categoryId)
   res.status(200).json(result)
 })
 
@@ -51,7 +51,7 @@ const hardDeleteCategory = catchAsync(async (req, res) => {
  */
 const restoreCategory = catchAsync(async (req, res) => {
   const { categoryId } = req.params
-  const result = await categoriesService.restoreCategory(categoryId)
+  const result = await adminCategoriesService.restoreCategory(categoryId)
   res.status(200).json(result)
 })
 
@@ -61,7 +61,7 @@ const restoreCategory = catchAsync(async (req, res) => {
  * @param {Object} res - HTTP response
  */
 const getDeletedCategories = catchAsync(async (req, res) => {
-  const result = await categoriesService.getDeletedCategories({ options: req.query })
+  const result = await adminCategoriesService.getDeletedCategories({ options: req.query })
   res.status(200).json(result)
 })
 

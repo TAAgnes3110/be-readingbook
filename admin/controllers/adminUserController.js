@@ -1,5 +1,5 @@
 const { catchAsync } = require('../../src/utils/index')
-const { userService } = require('../../src/services/index')
+const adminUserService = require('../services/adminUserService')
 
 /**
  * Tạo user mới
@@ -7,7 +7,7 @@ const { userService } = require('../../src/services/index')
  * @param {Object} res - HTTP response
  */
 const createUser = catchAsync(async (req, res) => {
-  const result = await userService.createUser(req.body)
+  const result = await adminUserService.createUser(req.body)
 
   if (result.success) {
     res.status(201).json(result)
@@ -23,7 +23,7 @@ const createUser = catchAsync(async (req, res) => {
  */
 const deleteUser = catchAsync(async (req, res) => {
   const { userId } = req.params
-  const result = await userService.deleteUserById({ userId })
+  const result = await adminUserService.deleteUserById({ userId })
 
   if (result.success) {
     res.status(200).json(result)
@@ -39,7 +39,7 @@ const deleteUser = catchAsync(async (req, res) => {
  */
 const hardDeleteUser = catchAsync(async (req, res) => {
   const { userId } = req.params
-  const result = await userService.hardDeleteUserById({ userId })
+  const result = await adminUserService.hardDeleteUserById({ userId })
 
   if (result.success) {
     res.status(200).json(result)
@@ -55,7 +55,7 @@ const hardDeleteUser = catchAsync(async (req, res) => {
  */
 const restoreUser = catchAsync(async (req, res) => {
   const { userId } = req.params
-  const result = await userService.restoreUserById({ userId })
+  const result = await adminUserService.restoreUserById({ userId })
 
   if (result.success) {
     res.status(200).json(result)
@@ -70,7 +70,7 @@ const restoreUser = catchAsync(async (req, res) => {
  * @param {Object} res - HTTP response
  */
 const getDeletedUsers = catchAsync(async (req, res) => {
-  const result = await userService.getDeletedUsers({ options: req.query })
+  const result = await adminUserService.getDeletedUsers({ options: req.query })
 
   if (result.success) {
     res.status(200).json(result)
@@ -85,7 +85,7 @@ const getDeletedUsers = catchAsync(async (req, res) => {
  * @param {Object} res - HTTP response
  */
 const getUserStats = catchAsync(async (req, res) => {
-  const result = await userService.getUserStats()
+  const result = await adminUserService.getUserStats()
 
   if (result.success) {
     res.status(200).json(result)

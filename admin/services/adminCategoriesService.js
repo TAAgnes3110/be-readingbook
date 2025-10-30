@@ -1,99 +1,95 @@
-const { categoriesService } = require('../../src/services/index')
 const { categoryModel } = require('../../src/models/index')
+const httpStatus = require('http-status')
+const { ApiError } = require('../../src/utils/index')
 
 /**
- * Xóa vĩnh viễn category khỏi database (hard delete)
- * @param {string} categoryId - ID của category
- * @returns {Promise<Object>} Kết quả xóa
+ * Tạo category mới
+ */
+const createCategory = async (data) => {
+  try {
+    const { categoryId } = await categoryModel.create(data)
+    return { success: true, data: { categoryId }, message: 'Tạo thể loại thành công' }
+  } catch (error) {
+    return { success: false, message: error.message }
+  }
+}
+
+/**
+ * Cập nhật category
+ */
+const updateCategory = async (categoryId, updateData) => {
+  try {
+    await categoryModel.update(categoryId, updateData)
+    const updated = await categoryModel.findById(categoryId)
+    return { success: true, data: { category: updated }, message: 'Cập nhật thể loại thành công' }
+  } catch (error) {
+    return { success: false, message: error.message }
+  }
+}
+
+/**
+ * Xóa mềm category (đánh dấu inactive)
+ */
+const deleteCategory = async (categoryId) => {
+  try {
+    if (!categoryId) throw new ApiError(httpStatus.status.BAD_REQUEST, 'ID thể loại là bắt buộc')
+    await categoryModel.update(categoryId, { status: 'inactive', deletedAt: new Date().toISOString() })
+    return { success: true, message: 'Xóa mềm thể loại thành công' }
+  } catch (error) {
+    return { success: false, message: error.message }
+  }
+}
+
+/**
+ * Xóa vĩnh viễn category
  */
 const hardDeleteCategory = async (categoryId) => {
   try {
-    await categoryModel.hardDelete(categoryId)
-    return {
-      success: true,
-      message: 'Xóa category vĩnh viễn thành công'
-    }
+    await categoryModel.delete(categoryId)
+    return { success: true, message: 'Xóa vĩnh viễn thể loại thành công' }
   } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    }
+    return { success: false, message: error.message }
   }
 }
 
 /**
- * Khôi phục category đã bị xóa mềm
- * @param {string} categoryId - ID của category
- * @returns {Promise<Object>} Kết quả khôi phục
+ * Khôi phục category đã xóa mềm
  */
 const restoreCategory = async (categoryId) => {
   try {
-    await categoryModel.restore(categoryId)
-    return {
-      success: true,
-      message: 'Khôi phục category thành công'
-    }
+    await categoryModel.update(categoryId, { status: 'active', deletedAt: null })
+    const category = await categoryModel.findById(categoryId)
+    return { success: true, data: { category }, message: 'Khôi phục thể loại thành công' }
   } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    }
+    return { success: false, message: error.message }
   }
 }
 
 /**
- * Lấy danh sách categories đã bị xóa mềm
- * @param {Object} data - Dữ liệu yêu cầu
- * @param {Object} data.options - Tùy chọn phân trang
- * @returns {Promise<Object>} Danh sách categories đã xóa
+ * Lấy danh sách category đã xóa mềm
  */
-const getDeletedCategories = async (data) => {
-  const { options = {} } = data
+const getDeletedCategories = async ({ options = {} } = {}) => {
   try {
-    const result = await categoryModel.getDeletedCategories(options)
-    return {
-      success: true,
-      data: result
+    const all = await categoryModel.findAll()
+    const items = []
+    if (all) {
+      for (const [id, cat] of Object.entries(all)) {
+        if (cat.status !== 'active' || cat.deletedAt) {
+          items.push({ _id: parseInt(id), ...cat })
+        }
+      }
     }
+    return { success: true, data: { categories: items }, message: 'Lấy danh sách thể loại đã xóa mềm thành công' }
   } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    }
-  }
-}
-
-/**
- * Lấy thống kê categories
- * @returns {Promise<Object>} Thống kê categories
- */
-const getCategoryStats = async () => {
-  try {
-    const allCategories = await categoryModel.getAll()
-    const deletedCategories = await categoryModel.getDeletedCategories({})
-
-    const stats = {
-      totalCategories: allCategories.length,
-      activeCategories: allCategories.length,
-      deletedCategories: deletedCategories.categories?.length || 0
-    }
-
-    return {
-      success: true,
-      data: stats
-    }
-  } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    }
+    return { success: false, message: error.message }
   }
 }
 
 module.exports = {
-  ...categoriesService,
+  createCategory,
+  updateCategory,
+  deleteCategory,
   hardDeleteCategory,
   restoreCategory,
-  getDeletedCategories,
-  getCategoryStats
+  getDeletedCategories
 }

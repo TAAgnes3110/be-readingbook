@@ -1,5 +1,7 @@
-const { userService } = require('../../src/services/index')
+const { userService, firebaseService } = require('../../src/services/index')
 const { userModel } = require('../../src/models/index')
+const httpStatus = require('http-status')
+const { ApiError } = require('../../src/utils/index')
 
 /**
  * Xóa vĩnh viễn user khỏi database (hard delete)
@@ -104,6 +106,59 @@ module.exports = {
   ...userService,
 
   // Admin-specific services
+  /**
+   * Tạo user mới (admin tạo)
+   * @param {Object} data
+   * @returns {Promise<Object>}
+   */
+  createUser: async (data) => {
+    try {
+      const { email, password } = data || {}
+      if (!email || !password) {
+        throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email và mật khẩu là bắt buộc')
+      }
+
+      await firebaseService.createAuthUser({ email, password })
+      const { userId, message } = await userModel.create(data)
+
+      return {
+        success: true,
+        message,
+        data: { userId }
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
+  },
+
+  /**
+   * Xóa mềm user (đánh dấu isActive=false, lưu deletedAt)
+   * @param {Object} data
+   * @param {string|number} data.userId
+   * @returns {Promise<Object>}
+   */
+  deleteUserById: async (data) => {
+    const { userId } = data || {}
+    try {
+      if (!userId) {
+        throw new ApiError(httpStatus.status.BAD_REQUEST, 'ID user là bắt buộc')
+      }
+      await userModel.update(userId, { isActive: false, deletedAt: Date.now() })
+      return {
+        success: true,
+        message: 'Xóa mềm user thành công'
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
+  },
+
   hardDeleteUserById,
   restoreUserById,
   getDeletedUsers,

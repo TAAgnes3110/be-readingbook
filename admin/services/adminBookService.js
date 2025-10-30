@@ -1,105 +1,93 @@
-const { bookService } = require('../../src/services/index')
 const { bookModel } = require('../../src/models/index')
 
 /**
- * Xóa vĩnh viễn sách khỏi database (hard delete)
- * @param {Object} data - Dữ liệu yêu cầu
- * @param {string} data.id - ID của sách
- * @returns {Promise<Object>} Kết quả xóa
+ * Tạo sách mới
  */
-const hardDeleteBookById = async (data) => {
-  const { id } = data
+const createBook = async ({ bookData }) => {
   try {
-    await bookModel.hardDelete(id)
-    return {
-      success: true,
-      message: 'Xóa sách vĩnh viễn thành công'
-    }
+    const created = await bookModel.create(bookData)
+    return { success: true, data: { book: created }, message: 'Tạo sách thành công' }
   } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    }
+    return { success: false, message: error.message }
   }
 }
 
 /**
- * Khôi phục sách đã bị xóa mềm
- * @param {Object} data - Dữ liệu yêu cầu
- * @param {string} data.id - ID của sách
- * @returns {Promise<Object>} Kết quả khôi phục
+ * Cập nhật sách theo ID
  */
-const restoreBookById = async (data) => {
-  const { id } = data
+const updateBookById = async ({ id, updateData }) => {
   try {
-    await bookModel.restore(id)
-    return {
-      success: true,
-      message: 'Khôi phục sách thành công'
-    }
+    const updated = await bookModel.update(id, updateData)
+    return { success: true, data: { book: updated }, message: 'Cập nhật sách thành công' }
   } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    }
+    return { success: false, message: error.message }
   }
 }
 
 /**
- * Lấy danh sách sách đã bị xóa mềm
- * @param {Object} data - Dữ liệu yêu cầu
- * @param {Object} data.options - Tùy chọn phân trang
- * @returns {Promise<Object>} Danh sách sách đã xóa
+ * Xóa mềm sách
  */
-const getDeletedBooks = async (data) => {
-  const { options = {} } = data
+const deleteBookById = async ({ id }) => {
   try {
-    const result = await bookModel.getDeletedBooks(options)
-    return {
-      success: true,
-      data: result
-    }
+    await bookModel.delete(id)
+    return { success: true, message: 'Xóa mềm sách thành công' }
   } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    }
+    return { success: false, message: error.message }
   }
 }
 
 /**
- * Lấy thống kê sách
- * @returns {Promise<Object>} Thống kê sách
+ * Xóa vĩnh viễn sách
  */
-const getBookStats = async () => {
+const hardDeleteBookById = async ({ id }) => {
   try {
-    const allBooks = await bookModel.getAll()
-    const deletedBooks = await bookModel.getDeletedBooks({})
-
-    const stats = {
-      totalBooks: allBooks.length,
-      activeBooks: allBooks.length,
-      deletedBooks: deletedBooks.books?.length || 0,
-      categories: [...new Set(allBooks.map(book => book.category))].length,
-      avgRating: allBooks.reduce((sum, book) => sum + (book.avgRating || 0), 0) / allBooks.length || 0
+    if (typeof bookModel.hardDelete === 'function') {
+      await bookModel.hardDelete(id)
+    } else {
+      // Nếu không có hardDelete, có thể xóa trực tiếp
+      await bookModel.delete(id)
     }
-
-    return {
-      success: true,
-      data: stats
-    }
+    return { success: true, message: 'Xóa vĩnh viễn sách thành công' }
   } catch (error) {
-    return {
-      success: false,
-      message: error.message
+    return { success: false, message: error.message }
+  }
+}
+
+/**
+ * Khôi phục sách đã xóa mềm
+ */
+const restoreBookById = async ({ id }) => {
+  try {
+    if (typeof bookModel.restore === 'function') {
+      await bookModel.restore(id)
+    } else {
+      await bookModel.update(id, { status: 'active', deletedAt: null })
     }
+    const book = await bookModel.getById(id)
+    return { success: true, data: { book }, message: 'Khôi phục sách thành công' }
+  } catch (error) {
+    return { success: false, message: error.message }
+  }
+}
+
+/**
+ * Lấy danh sách sách đã xóa mềm
+ */
+const getDeletedBooks = async ({ options = {} } = {}) => {
+  try {
+    const all = await bookModel.getAll()
+    const items = all.filter(b => b.status !== 'active' || b.deletedAt)
+    return { success: true, data: { books: items }, message: 'Lấy danh sách sách đã xóa mềm thành công' }
+  } catch (error) {
+    return { success: false, message: error.message }
   }
 }
 
 module.exports = {
-  ...bookService,
+  createBook,
+  updateBookById,
+  deleteBookById,
   hardDeleteBookById,
   restoreBookById,
-  getDeletedBooks,
-  getBookStats
+  getDeletedBooks
 }

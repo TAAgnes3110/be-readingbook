@@ -1,9 +1,0 @@
-{
-  "version": "1",
-  "name": "Reading Book API - Complete Collection",
-  "type": "collection",
-  "ignore": [
-    "node_modules",
-    ".git"
-  ]
-}

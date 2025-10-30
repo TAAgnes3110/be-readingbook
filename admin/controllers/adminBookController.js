@@ -1,5 +1,5 @@
 const { catchAsync } = require('../../src/utils/index')
-const { bookService } = require('../../src/services/index')
+const adminBookService = require('../services/adminBookService')
 
 /**
  * Tạo sách mới (admin only)
@@ -7,7 +7,7 @@ const { bookService } = require('../../src/services/index')
  * @param {Object} res - HTTP response
  */
 const createBook = catchAsync(async (req, res) => {
-  const result = await bookService.createBook({ bookData: req.body })
+  const result = await adminBookService.createBook({ bookData: req.body })
 
   if (result.success) {
     res.status(201).json(result)
@@ -23,7 +23,7 @@ const createBook = catchAsync(async (req, res) => {
  */
 const updateBook = catchAsync(async (req, res) => {
   const { id } = req.params
-  const result = await bookService.updateBookById({ id, updateData: req.body })
+  const result = await adminBookService.updateBookById({ id, updateData: req.body })
 
   if (result.success) {
     res.status(200).json(result)
@@ -39,7 +39,7 @@ const updateBook = catchAsync(async (req, res) => {
  */
 const deleteBook = catchAsync(async (req, res) => {
   const { id } = req.params
-  const result = await bookService.deleteBookById({ id })
+  const result = await adminBookService.deleteBookById({ id })
 
   if (result.success) {
     res.status(200).json(result)
@@ -55,7 +55,7 @@ const deleteBook = catchAsync(async (req, res) => {
  */
 const hardDeleteBook = catchAsync(async (req, res) => {
   const { id } = req.params
-  const result = await bookService.hardDeleteBookById({ id })
+  const result = await adminBookService.hardDeleteBookById({ id })
 
   if (result.success) {
     res.status(200).json(result)
@@ -71,7 +71,7 @@ const hardDeleteBook = catchAsync(async (req, res) => {
  */
 const restoreBook = catchAsync(async (req, res) => {
   const { id } = req.params
-  const result = await bookService.restoreBookById({ id })
+  const result = await adminBookService.restoreBookById({ id })
 
   if (result.success) {
     res.status(200).json(result)
@@ -86,7 +86,7 @@ const restoreBook = catchAsync(async (req, res) => {
  * @param {Object} res - HTTP response
  */
 const getDeletedBooks = catchAsync(async (req, res) => {
-  const result = await bookService.getDeletedBooks({ options: req.query })
+  const result = await adminBookService.getDeletedBooks({ options: req.query })
 
   if (result.success) {
     res.status(200).json(result)
