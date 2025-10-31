@@ -69,8 +69,8 @@ Thumbs.db
 .git
 .gitignore
 
-# Docker
-Dockerfile
+# Docker (Fly.io cần Dockerfile và fly.toml)
+# Dockerfile
 .dockerignore
 docker-compose*.yml
 
