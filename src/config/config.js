@@ -47,9 +47,6 @@ module.exports = {
         pass: process.env.SMTP_PASSWORD
       }
     },
-    resend: {
-      apiKey: process.env.RESEND_API_KEY
-    },
     sendgrid: {
       apiKey: process.env.SENDGRID_API_KEY
     },

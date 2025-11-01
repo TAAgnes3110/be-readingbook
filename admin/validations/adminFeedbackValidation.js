@@ -1,8 +1,5 @@
 const Joi = require('joi')
 
-/**
- * Validation cho query parameters khi lấy danh sách feedback
- */
 const getAllFeedbacksQuery = Joi.object({
   page: Joi.number().integer().min(1).default(1),
   limit: Joi.number().integer().min(1).max(100).default(10),

@@ -28,7 +28,8 @@ const deleteUser = catchAsync(async (req, res) => {
   if (result.success) {
     res.status(200).json(result)
   } else {
-    res.status(400).json(result)
+    const isNotFound = result.message && result.message.includes('không tìm thấy')
+    res.status(isNotFound ? 404 : 400).json(result)
   }
 })
 
@@ -44,7 +45,8 @@ const hardDeleteUser = catchAsync(async (req, res) => {
   if (result.success) {
     res.status(200).json(result)
   } else {
-    res.status(400).json(result)
+    const isNotFound = result.message && result.message.includes('không tìm thấy')
+    res.status(isNotFound ? 404 : 400).json(result)
   }
 })
 
@@ -60,7 +62,8 @@ const restoreUser = catchAsync(async (req, res) => {
   if (result.success) {
     res.status(200).json(result)
   } else {
-    res.status(400).json(result)
+    const isNotFound = result.message && result.message.includes('không tìm thấy')
+    res.status(isNotFound ? 404 : 400).json(result)
   }
 })
 

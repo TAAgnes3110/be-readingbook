@@ -3,11 +3,24 @@ const httpStatus = require('http-status')
 const { ApiError } = require('../../src/utils/index')
 
 /**
+ * Loại bỏ các trường hệ thống không được phép cập nhật
+ */
+const filterSystemFields = (data) => {
+  const filtered = { ...data }
+  const systemFields = ['_id', 'id', 'createdAt', 'updatedAt', 'deletedAt']
+  systemFields.forEach(field => {
+    delete filtered[field]
+  })
+  return filtered
+}
+
+/**
  * Tạo category mới
  */
 const createCategory = async (data) => {
   try {
-    const { categoryId } = await categoryModel.create(data)
+    const filteredData = filterSystemFields(data)
+    const { categoryId } = await categoryModel.create(filteredData)
     return { success: true, data: { categoryId }, message: 'Tạo thể loại thành công' }
   } catch (error) {
     return { success: false, message: error.message }
@@ -19,7 +32,8 @@ const createCategory = async (data) => {
  */
 const updateCategory = async (categoryId, updateData) => {
   try {
-    await categoryModel.update(categoryId, updateData)
+    const filteredData = filterSystemFields(updateData)
+    await categoryModel.update(categoryId, filteredData)
     const updated = await categoryModel.findById(categoryId)
     return { success: true, data: { category: updated }, message: 'Cập nhật thể loại thành công' }
   } catch (error) {

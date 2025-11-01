@@ -8,7 +8,11 @@ const adminCategoriesService = require('../services/adminCategoriesService')
  */
 const createCategory = catchAsync(async (req, res) => {
   const result = await adminCategoriesService.createCategory(req.body)
-  res.status(201).json(result)
+  if (result.success) {
+    res.status(201).json(result)
+  } else {
+    res.status(400).json(result)
+  }
 })
 
 /**
@@ -19,7 +23,12 @@ const createCategory = catchAsync(async (req, res) => {
 const updateCategory = catchAsync(async (req, res) => {
   const { categoryId } = req.params
   const result = await adminCategoriesService.updateCategory(categoryId, req.body)
-  res.status(200).json(result)
+  if (result.success) {
+    res.status(200).json(result)
+  } else {
+    const isNotFound = result.message && result.message.includes('không tìm thấy')
+    res.status(isNotFound ? 404 : 400).json(result)
+  }
 })
 
 /**
@@ -30,7 +39,12 @@ const updateCategory = catchAsync(async (req, res) => {
 const deleteCategory = catchAsync(async (req, res) => {
   const { categoryId } = req.params
   const result = await adminCategoriesService.deleteCategory(categoryId)
-  res.status(200).json(result)
+  if (result.success) {
+    res.status(200).json(result)
+  } else {
+    const isNotFound = result.message && result.message.includes('không tìm thấy')
+    res.status(isNotFound ? 404 : 400).json(result)
+  }
 })
 
 /**
@@ -41,7 +55,12 @@ const deleteCategory = catchAsync(async (req, res) => {
 const hardDeleteCategory = catchAsync(async (req, res) => {
   const { categoryId } = req.params
   const result = await adminCategoriesService.hardDeleteCategory(categoryId)
-  res.status(200).json(result)
+  if (result.success) {
+    res.status(200).json(result)
+  } else {
+    const isNotFound = result.message && result.message.includes('không tìm thấy')
+    res.status(isNotFound ? 404 : 400).json(result)
+  }
 })
 
 /**
@@ -52,7 +71,12 @@ const hardDeleteCategory = catchAsync(async (req, res) => {
 const restoreCategory = catchAsync(async (req, res) => {
   const { categoryId } = req.params
   const result = await adminCategoriesService.restoreCategory(categoryId)
-  res.status(200).json(result)
+  if (result.success) {
+    res.status(200).json(result)
+  } else {
+    const isNotFound = result.message && result.message.includes('không tìm thấy')
+    res.status(isNotFound ? 404 : 400).json(result)
+  }
 })
 
 /**
@@ -62,7 +86,11 @@ const restoreCategory = catchAsync(async (req, res) => {
  */
 const getDeletedCategories = catchAsync(async (req, res) => {
   const result = await adminCategoriesService.getDeletedCategories({ options: req.query })
-  res.status(200).json(result)
+  if (result.success) {
+    res.status(200).json(result)
+  } else {
+    res.status(400).json(result)
+  }
 })
 
 module.exports = {

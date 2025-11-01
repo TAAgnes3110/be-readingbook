@@ -46,6 +46,8 @@ const createBook = {
     status: Joi.string().valid('active', 'inactive', 'draft').default('active').messages({
       'any.only': 'Trạng thái phải là active, inactive hoặc draft'
     })
+  }).unknown(false).messages({
+    'object.unknown': 'Trường {#label} không được phép. Vui lòng không gửi các trường hệ thống như _id, createdAt, updatedAt'
   })
 }
 
@@ -101,8 +103,9 @@ const updateBook = {
     status: Joi.string().valid('active', 'inactive', 'draft').messages({
       'any.only': 'Trạng thái phải là active, inactive hoặc draft'
     })
-  }).min(1).messages({
-    'object.min': 'Phải cung cấp ít nhất một trường để cập nhật'
+  }).min(1).unknown(false).messages({
+    'object.min': 'Phải cung cấp ít nhất một trường để cập nhật',
+    'object.unknown': 'Trường {#label} không được phép. Vui lòng không gửi các trường hệ thống như _id, createdAt, updatedAt'
   })
 }
 

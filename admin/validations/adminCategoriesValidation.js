@@ -16,6 +16,8 @@ const createCategory = {
     status: Joi.string().valid('active', 'inactive').default('active').messages({
       'any.only': 'Trạng thái phải là active hoặc inactive'
     })
+  }).unknown(false).messages({
+    'object.unknown': 'Trường {#label} không được phép. Vui lòng không gửi các trường hệ thống như _id, createdAt, updatedAt'
   })
 }
 
@@ -43,8 +45,9 @@ const updateCategory = {
     status: Joi.string().valid('active', 'inactive').messages({
       'any.only': 'Trạng thái phải là active hoặc inactive'
     })
-  }).min(1).messages({
-    'object.min': 'Phải cung cấp ít nhất một trường để cập nhật'
+  }).min(1).unknown(false).messages({
+    'object.min': 'Phải cung cấp ít nhất một trường để cập nhật',
+    'object.unknown': 'Trường {#label} không được phép. Vui lòng không gửi các trường hệ thống như _id, createdAt, updatedAt'
   })
 }
 

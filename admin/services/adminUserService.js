@@ -4,6 +4,18 @@ const httpStatus = require('http-status')
 const { ApiError } = require('../../src/utils/index')
 
 /**
+ * Loại bỏ các trường hệ thống không được phép cập nhật
+ */
+const filterSystemFields = (data) => {
+  const filtered = { ...data }
+  const systemFields = ['_id', 'id', 'userId', 'createdAt', 'updatedAt', 'deletedAt', 'customId']
+  systemFields.forEach(field => {
+    delete filtered[field]
+  })
+  return filtered
+}
+
+/**
  * Xóa vĩnh viễn user khỏi database (hard delete)
  * @param {Object} data - Dữ liệu yêu cầu
  * @param {string} data.userId - ID của user
@@ -107,19 +119,26 @@ module.exports = {
 
   // Admin-specific services
   /**
+   * Loại bỏ các trường hệ thống không được phép cập nhật
+   */
+  filterSystemFields,
+
+  /**
    * Tạo user mới (admin tạo)
    * @param {Object} data
    * @returns {Promise<Object>}
    */
   createUser: async (data) => {
     try {
-      const { email, password } = data || {}
+      // Filter system fields trước khi xử lý
+      const filteredData = filterSystemFields(data)
+      const { email, password } = filteredData || {}
       if (!email || !password) {
         throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email và mật khẩu là bắt buộc')
       }
 
       await firebaseService.createAuthUser({ email, password })
-      const { userId, message } = await userModel.create(data)
+      const { userId, message } = await userModel.create(filteredData)
 
       return {
         success: true,

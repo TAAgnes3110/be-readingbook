@@ -39,6 +39,8 @@ const createUser = {
     isActive: Joi.boolean().default(true).messages({
       'boolean.base': 'Trạng thái hoạt động phải là true hoặc false'
     })
+  }).unknown(false).messages({
+    'object.unknown': 'Trường {#label} không được phép. Vui lòng không gửi các trường hệ thống như _id, createdAt, updatedAt'
   })
 }
 

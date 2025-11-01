@@ -28,7 +28,9 @@ const updateBook = catchAsync(async (req, res) => {
   if (result.success) {
     res.status(200).json(result)
   } else {
-    res.status(400).json(result)
+    // Kiểm tra nếu là lỗi không tìm thấy
+    const isNotFound = result.message && result.message.includes('không tìm thấy')
+    res.status(isNotFound ? 404 : 400).json(result)
   }
 })
 
@@ -44,7 +46,8 @@ const deleteBook = catchAsync(async (req, res) => {
   if (result.success) {
     res.status(200).json(result)
   } else {
-    res.status(400).json(result)
+    const isNotFound = result.message && result.message.includes('không tìm thấy')
+    res.status(isNotFound ? 404 : 400).json(result)
   }
 })
 
@@ -60,7 +63,8 @@ const hardDeleteBook = catchAsync(async (req, res) => {
   if (result.success) {
     res.status(200).json(result)
   } else {
-    res.status(400).json(result)
+    const isNotFound = result.message && result.message.includes('không tìm thấy')
+    res.status(isNotFound ? 404 : 400).json(result)
   }
 })
 
@@ -76,7 +80,8 @@ const restoreBook = catchAsync(async (req, res) => {
   if (result.success) {
     res.status(200).json(result)
   } else {
-    res.status(400).json(result)
+    const isNotFound = result.message && result.message.includes('không tìm thấy')
+    res.status(isNotFound ? 404 : 400).json(result)
   }
 })
 

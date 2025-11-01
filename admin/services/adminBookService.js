@@ -1,11 +1,24 @@
 const { bookModel } = require('../../src/models/index')
 
 /**
+ * Loại bỏ các trường hệ thống không được phép cập nhật
+ */
+const filterSystemFields = (data) => {
+  const filtered = { ...data }
+  const systemFields = ['_id', 'id', 'createdAt', 'updatedAt', 'deletedAt']
+  systemFields.forEach(field => {
+    delete filtered[field]
+  })
+  return filtered
+}
+
+/**
  * Tạo sách mới
  */
 const createBook = async ({ bookData }) => {
   try {
-    const created = await bookModel.create(bookData)
+    const filteredData = filterSystemFields(bookData)
+    const created = await bookModel.create(filteredData)
     return { success: true, data: { book: created }, message: 'Tạo sách thành công' }
   } catch (error) {
     return { success: false, message: error.message }
@@ -17,7 +30,8 @@ const createBook = async ({ bookData }) => {
  */
 const updateBookById = async ({ id, updateData }) => {
   try {
-    const updated = await bookModel.update(id, updateData)
+    const filteredData = filterSystemFields(updateData)
+    const updated = await bookModel.update(id, filteredData)
     return { success: true, data: { book: updated }, message: 'Cập nhật sách thành công' }
   } catch (error) {
     return { success: false, message: error.message }
