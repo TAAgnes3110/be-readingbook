@@ -80,6 +80,14 @@ const categoryModel = {
         )
       }
 
+      const existingCategory = await categoryModel.findByName(categoryData.name)
+      if (existingCategory) {
+        throw new ApiError(
+          httpStatus.CONFLICT,
+          'Thể loại với tên này đã tồn tại'
+        )
+      }
+
       const categoryId = await categoryModel.getNextCategoryId()
 
       const newCategory = {
@@ -210,6 +218,17 @@ const categoryModel = {
           httpStatus.BAD_REQUEST,
           'ID thể loại là bắt buộc'
         )
+      }
+
+      // Kiểm tra nếu đang cập nhật tên, tên mới không được trùng với category khác
+      if (updateData.name) {
+        const existingCategory = await categoryModel.findByName(updateData.name)
+        if (existingCategory && existingCategory._id !== parseInt(categoryId)) {
+          throw new ApiError(
+            httpStatus.CONFLICT,
+            'Thể loại với tên này đã tồn tại'
+          )
+        }
       }
 
       const sanitizedUpdateData = {
