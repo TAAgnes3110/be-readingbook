@@ -96,13 +96,41 @@ flyctl secrets set LOG_LEVEL=info
 flyctl secrets set LOG_FORMAT=combined
 ```
 
-### Cách 2: Set từ file .env (Tiện lợi hơn)
+### Cách 2: Set tự động từ file .env (NHANH NHẤT - Khuyên dùng) ⚡
 
-Tạo file `.env.production` với tất cả các biến môi trường, sau đó:
+Sử dụng script tự động để import tất cả biến từ file `.env`:
 
 ```bash
-# Export tất cả biến từ file .env và set vào Fly.io
-# (Không hỗ trợ trực tiếp, phải set từng biến)
+npm run fly:set-secrets
+```
+
+Hoặc chạy trực tiếp:
+
+```bash
+# Windows (PowerShell)
+.\set-secrets.ps1
+
+# Mac/Linux (Bash)
+bash set-secrets.sh
+
+# Node.js (Mọi hệ điều hành)
+node set-secrets.js
+```
+
+**Lưu ý quan trọng:**
+- Đảm bảo file `.env` đã được điền đầy đủ giá trị thực tế (không phải placeholder)
+- Script tự động bỏ qua các giá trị placeholder như `your-project-id`
+- Xem hướng dẫn chi tiết trong file `SET_SECRETS.md`
+
+**Ví dụ file .env hợp lệ:**
+
+```env
+FIREBASE_PROJECT_ID=my-real-project-12345  # ✅ Đúng
+JWT_SECRET=my-super-secret-key-abc123      # ✅ Đúng
+
+# ❌ Sẽ bị bỏ qua
+FIREBASE_PROJECT_ID=your-project-id
+JWT_SECRET=your-super-secret-jwt-key-here
 ```
 
 ### Kiểm tra secrets đã set

@@ -36,7 +36,15 @@ flyctl auth login
 
 ### 3. Set Secrets (Biến môi trường)
 
-Set các biến bắt buộc:
+**Cách nhanh nhất - Tự động từ file .env:**
+
+```bash
+npm run fly:set-secrets
+```
+
+Script này sẽ tự động đọc file `.env` và set tất cả biến môi trường lên Fly.io.
+
+**Cách thủ công (nếu muốn set từng biến):**
 
 ```bash
 # Firebase (BẮT BUỘC)
@@ -54,13 +62,16 @@ flyctl secrets set SMTP_PASSWORD=your-app-password
 flyctl secrets set EMAIL_FROM=your@gmail.com
 ```
 
-Xem danh sách đầy đủ trong file `DEPLOY.md`.
+**Lưu ý:** Trước khi chạy `npm run fly:set-secrets`, đảm bảo file `.env` đã được điền đầy đủ giá trị thực tế (không phải placeholder).
+
+📖 Xem hướng dẫn chi tiết trong file `SET_SECRETS.md`.
 
 ## 📝 Các lệnh thường dùng
 
 | Lệnh | Mô tả |
 |------|-------|
 | `npm run deploy` | Deploy lên Fly.io |
+| `npm run fly:set-secrets` | Set tất cả secrets từ .env |
 | `npm run fly:status` | Xem trạng thái app |
 | `npm run fly:logs` | Xem logs real-time |
 | `npm run fly:open` | Mở app trên trình duyệt |

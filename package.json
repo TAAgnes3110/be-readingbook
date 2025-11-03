@@ -26,7 +26,8 @@
     "fly:status": "flyctl status",
     "fly:logs": "flyctl logs",
     "fly:open": "flyctl open",
-    "fly:secrets": "flyctl secrets list"
+    "fly:secrets": "flyctl secrets list",
+    "fly:set-secrets": "node set-secrets.js"
   },
   "dependencies": {
     "@babel/cli": "^7.23.9",
