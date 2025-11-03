@@ -25,9 +25,12 @@
 - [Cấu hình](#-cấu-hình)
 - [Chạy ứng dụng](#-chạy-ứng-dụng)
 - [API Documentation](#-api-documentation)
+- [Deployment](#-deployment)
+  - [CI/CD Pipeline](#-cicd-pipeline-tự-động)
+  - [Set Secrets](#-set-secrets-lên-flyio)
+  - [Deploy thủ công](#-deploy-thủ-công)
 - [Cấu trúc dự án](#-cấu-trúc-dự-án)
 - [Security](#-security)
-- [Deployment](#-deployment)
 - [Troubleshooting](#-troubleshooting)
 
 ## 🔧 Yêu cầu hệ thống
@@ -35,8 +38,8 @@
 - **Node.js**: >= 18.x
 - **npm**: >= 9.x
 - **Firebase Project**: Cho Authentication và Firestore
-- **Resend Account**: Miễn phí để gửi email (thay thế SMTP)
-- **Render Account**: Để deploy miễn phí (không cần credit card)
+- **Resend Account**: Miễn phí để gửi email
+- **Fly.io Account**: Để deploy (có free tier)
 
 ## 🚀 Cài đặt
 
@@ -52,12 +55,14 @@ npm install
 cp env.example .env
 
 # Chỉnh sửa .env với thông tin thực tế
-nano .env
+nano .env  # hoặc code .env
 ```
 
 ## ⚙️ Cấu hình
 
 ### Biến môi trường cần thiết
+
+Xem file `env.example` để biết tất cả các biến môi trường. Dưới đây là các biến quan trọng:
 
 ```env
 # App Configuration
@@ -77,17 +82,12 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com
 
 # Email Configuration (BẮT BUỘC)
-# Sử dụng Resend API (miễn phí, không bị chặn trên Render)
 RESEND_API_KEY=re_xxxxxxxxxxxx
 EMAIL_FROM=onboarding@resend.dev
 
 # JWT Configuration
 JWT_SECRET=your-super-secret-jwt-key-here
 JWT_EXPIRY=24h
-
-# Rate Limiting
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX=100
 
 # CORS
 CORS_ORIGIN=http://localhost:3000,http://localhost:3001
@@ -104,11 +104,7 @@ CORS_ORIGIN=http://localhost:3000,http://localhost:3001
 
 1. Đăng ký miễn phí tại: https://resend.com/signup
 2. Lấy API Key tại: https://resend.com/api-keys
-3. Copy API key và thêm vào file `.env`:
-   ```env
-   RESEND_API_KEY=re_xxxxxxxxxxxx
-   EMAIL_FROM=onboarding@resend.dev
-   ```
+3. Copy API key và thêm vào file `.env`
 4. **Free tier**: 100 emails/ngày, 3,000 emails/tháng
 
 ## 🏃‍♂️ Chạy ứng dụng
@@ -138,6 +134,10 @@ npm run lint          # Kiểm tra lint
 npm run lint:fix       # Tự động sửa lint
 npm run build          # Build Babel
 npm run test           # Chạy tests
+npm run deploy         # Deploy lên Fly.io
+npm run fly:status     # Xem status app
+npm run fly:logs       # Xem logs
+npm run fly:open       # Mở app trên trình duyệt
 ```
 
 ## 📖 API Documentation
@@ -182,23 +182,15 @@ npm run test           # Chạy tests
 - `POST /api/epub/chapters` - Lấy danh sách chương
 - `POST /api/epub/chapter-content` - Lấy nội dung chương
 - `POST /api/epub/validate-url` - Kiểm tra URL EPUB hợp lệ
-- `POST /api/epub/chapter-raw` - Lấy nội dung raw của chương
-- `POST /api/epub/image` - Lấy ảnh từ EPUB
-- `POST /api/epub/file` - Lấy file từ EPUB
-- `POST /api/epub/images` - Lấy danh sách ảnh
 
 #### 📝 History APIs
 - `POST /api/history/bookmark` - Lưu bookmark
 - `GET /api/history/:userId` - Lấy lịch sử đọc theo user
-- `GET /api/history/:userId/bookmark/:bookId` - Lấy bookmark cụ thể
 - `DELETE /api/history/:userId/bookmark/:bookId` - Xóa bookmark
-- `GET /api/history/user/:userId` - Lấy lịch sử theo user
-- `GET /api/history/book/:bookId` - Lấy lịch sử theo sách
 
 #### 💬 Feedback APIs
 - `POST /api/feedback` - Tạo feedback
 - `GET /api/feedback/my-feedbacks` - Lấy feedback của user
-- `GET /api/feedback/:id` - Lấy feedback theo ID
 - `PUT /api/feedback/:id` - Cập nhật feedback
 - `DELETE /api/feedback/:id` - Xóa feedback
 
@@ -238,106 +230,141 @@ curl -X GET "http://localhost:3000/api/books?page=1&limit=10" \
   -H 'Authorization: Bearer YOUR_JWT_TOKEN'
 ```
 
+**Xem tài liệu API chi tiết:** [docs_api/](docs_api/)
+
+## 📦 Deployment
+
+### ⚡ CI/CD Pipeline (Tự động)
+
+Dự án đã được setup **CI/CD tự động** với GitHub Actions. Chỉ cần push code là tự động deploy!
+
+#### Thiết lập ban đầu (chỉ làm 1 lần)
+
+1. **Tạo Fly.io API Token**:
+   ```bash
+   flyctl auth login
+   flyctl tokens create deploy -x 999999h
+   # Lưu lại token này (chỉ hiển thị 1 lần!)
+   ```
+
+2. **Thêm Secret vào GitHub**:
+   - Vào repository → **Settings** → **Secrets and variables** → **Actions**
+   - Click **New repository secret**
+   - **Name**: `FLY_API_TOKEN`
+   - **Value**: Dán token vừa tạo
+   - Click **Add secret**
+
+#### Sử dụng hàng ngày
+
+Sau khi setup xong, chỉ cần push code:
+
+```bash
+git add .
+git commit -m "feat: thêm tính năng mới"
+git push origin main
+```
+
+Pipeline sẽ tự động:
+1. ✅ Deploy lên Fly.io
+2. ✅ Xem progress tại tab **Actions** trên GitHub
+
+#### Tính năng CI/CD
+
+- ✅ **Tự động deploy**: Deploy lên Fly.io khi push vào `main`
+- ✅ **Docker caching**: Build nhanh hơn 2-3 lần
+- ✅ **Bảo mật**: Chạy container với user không phải root
+- ✅ **Health check**: Tự động kiểm tra sức khỏe ứng dụng
+
+### 🔑 Set Secrets lên Fly.io
+
+Để set tất cả biến môi trường từ file `.env` lên Fly.io:
+
+```bash
+# Cách 1: Dùng npm script (Khuyên dùng)
+npm run fly:set-secrets
+
+# Cách 2: Dùng script trực tiếp
+node set-secrets.js          # Node.js (Mọi hệ điều hành)
+.\set-secrets.ps1            # Windows PowerShell
+bash set-secrets.sh          # Mac/Linux
+```
+
+#### Cách hoạt động
+
+1. Script đọc file `.env` trong thư mục hiện tại
+2. Tự động bỏ qua:
+   - Dòng comment (bắt đầu bằng `#`)
+   - Dòng trống
+   - Giá trị placeholder (như `your-project-id`)
+3. Set từng biến lên Fly.io
+4. Hiển thị thống kê số biến đã set thành công
+
+#### Lưu ý quan trọng
+
+- ✅ File `.env` phải tồn tại và có giá trị thực tế (không phải placeholder)
+- ✅ Script sẽ hỏi xác nhận trước khi set
+- ✅ Kiểm tra secrets sau khi set: `npm run fly:secrets`
+
+### 🚀 Deploy thủ công
+
+Nếu muốn deploy thủ công mà không dùng CI/CD:
+
+```bash
+# Deploy lên Fly.io
+npm run deploy
+
+# Hoặc với các options
+npm run deploy:local      # Build local rồi push
+npm run deploy:open       # Deploy và mở trình duyệt
+```
+
+### Kiểm tra deployment
+
+```bash
+# Xem status app
+npm run fly:status
+
+# Xem logs real-time
+npm run fly:logs
+
+# Mở trên trình duyệt
+npm run fly:open
+
+# Xem tất cả secrets
+npm run fly:secrets
+```
+
 ## 📁 Cấu trúc dự án
 
 ```
 be-readingbook/
 ├── 📁 src/                          # Source code chính
 │   ├── 📄 app.js                   # Express app configuration
-│   ├── 📄 index.js                  # Entry point
-│   ├── 📁 config/                   # Configuration files
-│   │   ├── 📄 config.js            # App configuration
-│   │   ├── 📄 db.js                # Database connection
-│   │   ├── 📄 logger.js             # Logging configuration
-│   │   ├── 📄 morgan.js             # HTTP request logging
-│   │   ├── 📄 passport.js           # Firebase authentication
-│   │   └── 📄 role.js               # Role-based access control
-│   ├── 📁 controllers/              # Request handlers
-│   │   ├── 📄 authController.js    # Authentication logic
-│   │   ├── 📄 userController.js     # User management
-│   │   ├── 📄 bookController.js    # Book operations
-│   │   ├── 📄 categoriesController.js # Category operations
-│   │   ├── 📄 epubController.js    # EPUB processing
-│   │   ├── 📄 historyController.js # Reading history
-│   │   └── 📄 feedbackController.js # User feedback
+│   ├── 📄 index.js                 # Entry point
+│   ├── 📁 config/                  # Configuration files
+│   ├── 📁 controllers/             # Request handlers
 │   ├── 📁 middlewares/             # Custom middlewares
-│   │   ├── 📄 authMiddleware.js     # JWT authentication
-│   │   ├── 📄 authorize.js         # Role authorization
-│   │   ├── 📄 softDeleteMiddleware.js # Soft delete handling
-│   │   └── 📄 validate.js          # Request validation
-│   ├── 📁 models/                   # Data models
-│   │   ├── 📄 userModel.js         # User data model
-│   │   ├── 📄 bookModel.js          # Book data model
-│   │   ├── 📄 categoryModel.js     # Category data model
-│   │   ├── 📄 historyModel.js      # Reading history model
-│   │   └── 📄 feedbackModel.js     # Feedback model
-│   ├── 📁 routes/                   # API routes
-│   │   ├── 📄 authRoute.js         # Authentication routes
-│   │   ├── 📄 userRoute.js         # User routes
-│   │   ├── 📄 bookRoute.js         # Book routes
-│   │   ├── 📄 categoriesRoute.js   # Category routes
-│   │   ├── 📄 epubRoute.js         # EPUB routes
-│   │   ├── 📄 historyRoute.js      # History routes
-│   │   ├── 📄 feedbackRoute.js     # Feedback routes
-│   │   └── 📄 index.js             # Route aggregator
-│   ├── 📁 services/                 # Business logic
-│   │   ├── 📄 authService.js       # Authentication service
-│   │   ├── 📄 userService.js       # User service
-│   │   ├── 📄 bookService.js       # Book service
-│   │   ├── 📄 categoriesService.js # Category service
-│   │   ├── 📄 epubService.js       # EPUB service
-│   │   ├── 📄 historyService.js    # History service
-│   │   ├── 📄 feedbackService.js   # Feedback service
-│   │   ├── 📄 emailService.js      # Email service
-│   │   ├── 📄 otpService.js        # OTP service
-│   │   ├── 📄 tokenService.js      # JWT service
-│   │   └── 📄 firebaseService.js   # Firebase service
-│   ├── 📁 validations/              # Request validation schemas
-│   │   ├── 📄 authValidation.js    # Auth validation
-│   │   ├── 📄 userValidation.js     # User validation
-│   │   ├── 📄 bookValidation.js    # Book validation
-│   │   ├── 📄 categoriesValidation.js # Category validation
-│   │   ├── 📄 epubValidation.js    # EPUB validation
-│   │   ├── 📄 historyValidation.js # History validation
-│   │   └── 📄 feedbackValidation.js # Feedback validation
-│   ├── 📁 providers/                # External service providers
-│   │   ├── 📄 emailProvider.js     # Email provider
-│   │   ├── 📄 otpProvider.js       # OTP provider
-│   │   └── 📄 userProvider.js       # User provider
-│   ├── 📁 sockets/                  # Socket.io handlers
-│   │   ├── 📄 connection.js        # Socket connection
-│   │   ├── 📄 auth.js              # Socket authentication
-│   │   └── 📄 events.js            # Socket events
-│   ├── 📁 upload/                   # File upload handling
-│   │   ├── 📄 multer.js            # Multer configuration
-│   │   └── 📄 storage.js            # Storage configuration
+│   ├── 📁 models/                  # Data models
+│   ├── 📁 routes/                  # API routes
+│   ├── 📁 services/                # Business logic
+│   ├── 📁 validations/             # Request validation schemas
+│   ├── 📁 providers/               # External service providers
+│   ├── 📁 sockets/                 # Socket.io handlers
 │   └── 📁 utils/                    # Utility functions
-│       ├── 📄 catchAsync.js         # Async error handling
-│       ├── 📄 response.js           # API response helpers
-│       ├── 📄 validation.js         # Validation helpers
-│       ├── 📄 encryption.js         # Encryption utilities
-│       ├── 📄 date.js              # Date utilities
-│       └── 📄 index.js             # Utility aggregator
 ├── 📁 admin/                        # Admin panel APIs
-│   ├── 📁 controllers/              # Admin controllers
-│   ├── 📁 routes/                   # Admin routes
-│   ├── 📁 services/                 # Admin services
-│   ├── 📁 middlewares/              # Admin middlewares
-│   └── 📁 validations/              # Admin validations
+│   ├── 📁 controllers/             # Admin controllers
+│   ├── 📁 routes/                  # Admin routes
+│   ├── 📁 services/                # Admin services
+│   └── 📁 validations/             # Admin validations
 ├── 📁 docs_api/                     # API documentation
-│   ├── 📄 SIMPLE_AUTH_API.md       # Authentication API docs
-│   ├── 📄 SIMPLE_USER_API.md       # User API docs
-│   ├── 📄 SIMPLE_BOOK_API.md       # Book API docs
-│   ├── 📄 SIMPLE_CATEGORY_API.md   # Category API docs
-│   ├── 📄 SIMPLE_EPUB_API.md       # EPUB API docs
-│   ├── 📄 FAVORITE_BOOKS_API.md    # Favorite books API docs
-│   ├── 📄 HISTORY_API.md           # History API docs
-│   ├── 📄 FEEDBACK_API.md          # Feedback API docs
-│   └── 📄 SOFT_DELETE_STRATEGY.md  # Soft delete strategy
-├── 📁 uploads/                      # Uploaded files
-├── 📄 package.json                 # Dependencies và scripts
-├── 📄 env.example                  # Environment variables example
-└── 📄 README.md                    # This file
+├── 📁 .github/                      # GitHub Actions workflows
+│   └── 📁 workflows/
+│       └── 📄 fly-deploy.yml       # CI/CD pipeline
+├── 📄 Dockerfile                    # Docker configuration
+├── 📄 fly.toml                      # Fly.io configuration
+├── 📄 package.json                  # Dependencies và scripts
+├── 📄 env.example                   # Environment variables example
+└── 📄 README.md                     # This file
 ```
 
 ## 🛡️ Security
@@ -353,107 +380,11 @@ be-readingbook/
 - **CORS**: Cross-origin resource sharing
 - **Rate Limiting**: API rate limiting
 - **Input Validation**: Joi schema validation
-- **SQL Injection Protection**: Parameterized queries
 
 ### Data Protection
 - **Environment Variables**: Sensitive data in .env
 - **Firebase Security Rules**: Database access control
 - **HTTPS**: SSL/TLS encryption
-- **Data Encryption**: Sensitive data encryption
-
-## 📦 Deployment
-
-### ⚡ CI/CD Pipeline (Khuyên dùng - Tự động)
-
-Dự án đã được setup **CI/CD tự động** với GitHub Actions. Chỉ cần push code là tự động deploy!
-
-**Xem hướng dẫn chi tiết:** [CI_CD.md](CI_CD.md)
-
-#### Quick Start CI/CD
-
-1. **Tạo Fly.io API Token**:
-   ```bash
-   flyctl auth login
-   flyctl tokens create deploy -x 999999h
-   ```
-
-2. **Thêm Secret vào GitHub**:
-   - Vào repository → Settings → Secrets and variables → Actions
-   - Thêm secret: `FLY_API_TOKEN` với giá trị token vừa tạo
-
-3. **Push code và tự động deploy**:
-   ```bash
-   git push origin main
-   ```
-   - Pipeline tự động chạy test → deploy lên Fly.io
-   - Xem progress tại tab **Actions** trên GitHub
-
-#### Tính năng CI/CD
-
-- ✅ **Tự động test**: Chạy linter và tests trước khi deploy
-- ✅ **Tự động deploy**: Deploy lên Fly.io khi push vào `main`
-- ✅ **Docker caching**: Build nhanh hơn 2-3 lần
-- ✅ **Bảo mật**: Chạy container với user không phải root
-- ✅ **Health check**: Tự động kiểm tra sức khỏe ứng dụng
-
-**Xem chi tiết:** [CI_CD.md](CI_CD.md)
-
----
-
-### 🚀 Deploy lên Render.com (ĐỀ XUẤT - Miễn phí)
-
-Dự án này được cấu hình tối ưu để deploy lên **Render.com** - nền tảng miễn phí, không cần credit card.
-
-**Xem hướng dẫn chi tiết:** [DEPLOYMENT.md](DEPLOYMENT.md)
-
-#### Quick Start
-
-1. **Đăng ký Render**: https://render.com (Miễn phí)
-2. **Lấy Resend API Key**: https://resend.com/signup (Miễn phí)
-3. **Deploy**:
-   - New Web Service → Connect GitHub repo
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-   - Add Environment Variables (xem DEPLOYMENT.md)
-
-#### Environment Variables cần thiết
-
-```env
-# Node Environment
-NODE_ENV=production
-
-# Email via Resend (BẮT BUỘC)
-RESEND_API_KEY=re_xxxxxxxxxxxx
-EMAIL_FROM=onboarding@resend.dev
-
-# JWT
-JWT_SECRET=your-super-secret-jwt-key
-JWT_EXPIRY=24h
-
-# Firebase (BẮT BUỘC)
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_DATABASE_URL=https://your-project.firebaseio.com
-FIREBASE_WEB_API_KEY=your-api-key
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
-# ... các biến Firebase khác
-
-# CORS
-CORS_ORIGIN=*
-```
-
-#### Lưu ý về Render Free Tier
-
-- ✅ Hoàn toàn miễn phí, không cần credit card
-- ✅ SSL certificate tự động
-- ⚠️ Server sleep sau 15 phút không hoạt động
-- ⚠️ Cold start ~30-60 giây
-
-**Giải pháp cho sleep issue:**
-- Setup uptime monitoring (https://cron-job.org) để ping `/health` mỗi 10 phút
-- Hoặc upgrade lên Starter plan ($7/tháng) - không sleep
-
-**Deployment URL:** `https://your-app-name.onrender.com`
 
 ## 🔧 Troubleshooting
 
@@ -473,9 +404,6 @@ APP_PORT=3001
 # Kiểm tra Firebase configuration
 echo $FIREBASE_PROJECT_ID
 echo $FIREBASE_PRIVATE_KEY
-
-# Test Firebase connection
-npm run test:firebase
 ```
 
 #### Email không gửi được
@@ -483,18 +411,16 @@ npm run test:firebase
 # Kiểm tra Resend API key
 echo $RESEND_API_KEY
 
-# Xem logs để kiểm tra
 # Logs nên hiển thị: "📧 Using Resend API for email delivery"
-# Nếu thấy lỗi SMTP, đảm bảo đã set RESEND_API_KEY
 ```
 
-#### JWT Token lỗi
+#### Deploy fail
 ```bash
-# Kiểm tra JWT secret
-echo $JWT_SECRET
+# Xem logs chi tiết
+npm run fly:logs
 
-# Test JWT generation
-npm run test:jwt
+# Kiểm tra secrets đã set chưa
+npm run fly:secrets
 ```
 
 ### Logs và Debugging
@@ -508,19 +434,6 @@ npm run production
 
 # Debug mode
 DEBUG=* npm run dev
-```
-
-### Performance Monitoring
-
-```bash
-# Memory usage
-npm run monitor:memory
-
-# CPU usage
-npm run monitor:cpu
-
-# Database performance
-npm run monitor:db
 ```
 
 ## 🤝 Contributing
@@ -537,18 +450,14 @@ Dự án này được cấp phép theo [MIT License](LICENSE).
 
 ## 👥 Team
 
-| Tên           | Mã Sinh Viên | Vai Trò            |
-| ------------- | ------------ | ------------------ |
-| Bùi Thanh Phú | 223630702    | Project Management |
-| Bùi Đức Anh   | 223630666    | Tester             |
-| Vũ Tuấn Kiệt  | 223630694    | Backend            |
-| Vũ Quyết Tiến | 223630716    | Frontend           |
-| Đỗ Hoàng Tùng | 223630721    | DevOps             |
+| Tên           | Số điện thoại | Vai Trò   |
+| ------------- | ------------- | --------- |
+| Vũ Tuấn Kiệt  | 0936992346    | Backend   |
 
 ## 📞 Support
 
-- **Email**: support@readingbook.com
-- **GitHub Issues**: [Create Issue](https://github.com/your-repo/issues)
+- **Email**: taagnes3110@gmail.com
+- **GitHub Issues**: [Create Issue](https://github.com/TAAgnes3110/be-readingbook/issues)
 - **Documentation**: [API Docs](docs_api/)
 
 ---
