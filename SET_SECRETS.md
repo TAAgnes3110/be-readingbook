@@ -163,37 +163,13 @@ flyctl auth login
 # 2. Set tất cả secrets từ .env
 npm run fly:set-secrets
 
-# 3. Deploy
+# 3. Deploy (xem hướng dẫn trong DEPLOY.md)
 npm run deploy
 
 # 4. Kiểm tra
 npm run fly:status
 npm run fly:logs
 ```
-
-### ⚠️ Lưu ý về Deploy
-
-**Lỗi "We need your payment information":**
-- Nếu gặp lỗi này khi deploy, đó là do lệnh `--remote-only` cố sử dụng Depot Remote Builder (cần thanh toán)
-- **Giải pháp**: Script `npm run deploy` đã được cập nhật để dùng builder mặc định miễn phí của Fly.io
-- Nếu vẫn gặp lỗi, thử:
-  ```bash
-  # Deploy với builder mặc định (miễn phí)
-  npm run deploy
-
-  # Hoặc build local rồi push
-  npm run deploy:local
-
-  # Deploy và mở trình duyệt sau khi xong
-  npm run deploy:open
-  ```
-
-### 📝 Các script deploy có sẵn
-
-- `npm run deploy` - Deploy với builder mặc định (miễn phí)
-- `npm run deploy:local` - Build local rồi push lên
-- `npm run deploy:remote` - Deploy với remote builder (cần thanh toán nếu dùng Depot)
-- `npm run deploy:open` - Deploy và mở trình duyệt sau khi xong
 
 ## 💡 Tips
 

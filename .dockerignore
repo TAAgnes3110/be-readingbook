@@ -69,14 +69,14 @@ Thumbs.db
 .git
 .gitignore
 
-# Docker (Fly.io cần Dockerfile và fly.toml)
-# Dockerfile
+# Docker
 .dockerignore
 docker-compose*.yml
+# LƯU Ý: KHÔNG ignore Dockerfile và fly.toml vì cần cho build
 
-# Documentation
-README.md
-*.md
+# Documentation (optional - có thể giữ lại nếu muốn)
+# README.md
+# *.md
 
 # Test files
 test

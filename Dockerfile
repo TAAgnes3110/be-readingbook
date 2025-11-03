@@ -1,20 +1,30 @@
-# Base image
+# Optimized Dockerfile với layer caching
 FROM node:18-slim
 
-# Set working directory
 WORKDIR /app
 
-# Install dependencies first (better layer caching)
-COPY package*.json ./
-RUN npm ci --omit=dev --no-audit --no-fund
-
-# Copy source code
-COPY . .
-
-# Environment variables
+# Set environment variables
 ENV NODE_ENV=production \
     PORT=3000 \
     HOST=0.0.0.0
+
+# Install dependencies trước (tận dụng Docker layer caching)
+# Chỉ copy package files để cache layer này nếu dependencies không thay đổi
+COPY package*.json ./
+
+# Install production dependencies
+RUN npm ci --omit=dev --no-audit --no-fund && \
+    npm cache clean --force
+
+# Copy source code (layer này sẽ rebuild khi code thay đổi)
+COPY . .
+
+# Tạo user không phải root để tăng bảo mật
+RUN groupadd -r nodejs && useradd -r -g nodejs nodejs && \
+    chown -R nodejs:nodejs /app
+
+# Switch sang user nodejs
+USER nodejs
 
 # Expose port
 EXPOSE 3000

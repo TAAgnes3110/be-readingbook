@@ -363,6 +363,43 @@ be-readingbook/
 
 ## 📦 Deployment
 
+### ⚡ CI/CD Pipeline (Khuyên dùng - Tự động)
+
+Dự án đã được setup **CI/CD tự động** với GitHub Actions. Chỉ cần push code là tự động deploy!
+
+**Xem hướng dẫn chi tiết:** [CI_CD.md](CI_CD.md)
+
+#### Quick Start CI/CD
+
+1. **Tạo Fly.io API Token**:
+   ```bash
+   flyctl auth login
+   flyctl tokens create deploy -x 999999h
+   ```
+
+2. **Thêm Secret vào GitHub**:
+   - Vào repository → Settings → Secrets and variables → Actions
+   - Thêm secret: `FLY_API_TOKEN` với giá trị token vừa tạo
+
+3. **Push code và tự động deploy**:
+   ```bash
+   git push origin main
+   ```
+   - Pipeline tự động chạy test → deploy lên Fly.io
+   - Xem progress tại tab **Actions** trên GitHub
+
+#### Tính năng CI/CD
+
+- ✅ **Tự động test**: Chạy linter và tests trước khi deploy
+- ✅ **Tự động deploy**: Deploy lên Fly.io khi push vào `main`
+- ✅ **Docker caching**: Build nhanh hơn 2-3 lần
+- ✅ **Bảo mật**: Chạy container với user không phải root
+- ✅ **Health check**: Tự động kiểm tra sức khỏe ứng dụng
+
+**Xem chi tiết:** [CI_CD.md](CI_CD.md)
+
+---
+
 ### 🚀 Deploy lên Render.com (ĐỀ XUẤT - Miễn phí)
 
 Dự án này được cấu hình tối ưu để deploy lên **Render.com** - nền tảng miễn phí, không cần credit card.
