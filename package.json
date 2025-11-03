@@ -16,13 +16,22 @@
     "clean": "rm -rf build && mkdir build",
     "build-babel": "babel ./src -d ./build/src && babel ./admin -d ./build/admin",
     "build": "npm run clean && npm run build-babel",
-    "production": "npm run build && npm run start"
+    "production": "npm run build && npm run start",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "deploy": "flyctl deploy --remote-only",
+    "deploy:local": "flyctl deploy --local-only",
+    "deploy:open": "flyctl deploy --remote-only --open",
+    "fly:status": "flyctl status",
+    "fly:logs": "flyctl logs",
+    "fly:open": "flyctl open",
+    "fly:secrets": "flyctl secrets list"
   },
   "dependencies": {
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.23.9",
     "@babel/plugin-transform-runtime": "^7.23.9",
-    "@babel/preset-env": "^7.23.9",
     "@babel/runtime": "^7.23.9",
     "babel-plugin-module-resolver": "^5.0.0",
     "bcrypt": "^6.0.0",
@@ -54,7 +63,10 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.23.9",
     "@babel/node": "^7.23.9",
+    "@babel/preset-env": "^7.28.5",
+    "babel-jest": "^30.2.0",
     "eslint": "^8.56.0",
+    "jest": "^30.2.0",
     "nodemon": "^3.0.3"
   }
 }

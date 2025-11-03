@@ -220,10 +220,11 @@ const categoryModel = {
         )
       }
 
-      // Kiểm tra nếu đang cập nhật tên, tên mới không được trùng với category khác
+      await categoryModel.findById(categoryId)
+
       if (updateData.name) {
-        const existingCategory = await categoryModel.findByName(updateData.name)
-        if (existingCategory && existingCategory._id !== parseInt(categoryId)) {
+        const categoryWithSameName = await categoryModel.findByName(updateData.name)
+        if (categoryWithSameName && categoryWithSameName._id !== parseInt(categoryId)) {
           throw new ApiError(
             httpStatus.CONFLICT,
             'Thể loại với tên này đã tồn tại'
@@ -270,6 +271,8 @@ const categoryModel = {
           'ID thể loại là bắt buộc'
         )
       }
+
+      await categoryModel.findById(categoryId)
 
       await db.getRef(`categories/${categoryId}`).remove()
       return true
