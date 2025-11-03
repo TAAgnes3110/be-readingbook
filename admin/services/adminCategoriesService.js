@@ -2,9 +2,6 @@ const { categoryModel } = require('../../src/models/index')
 const httpStatus = require('http-status')
 const { ApiError } = require('../../src/utils/index')
 
-/**
- * Loại bỏ các trường hệ thống không được phép cập nhật
- */
 const filterSystemFields = (data) => {
   const filtered = { ...data }
   const systemFields = ['_id', 'id', 'createdAt', 'updatedAt', 'deletedAt']

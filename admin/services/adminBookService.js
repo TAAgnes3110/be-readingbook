@@ -1,8 +1,5 @@
 const { bookModel } = require('../../src/models/index')
 
-/**
- * Loại bỏ các trường hệ thống không được phép cập nhật
- */
 const filterSystemFields = (data) => {
   const filtered = { ...data }
   const systemFields = ['_id', 'id', 'createdAt', 'updatedAt', 'deletedAt']
