@@ -58,6 +58,8 @@ cp env.example .env
 nano .env  # hoặc code .env
 ```
 
+**📖 Xem hướng dẫn chi tiết:** [HUONG_DAN_CHAY_LAI.md](HUONG_DAN_CHAY_LAI.md) - Hướng dẫn đầy đủ để chạy lại dự án trên máy mới.
+
 ## ⚙️ Cấu hình
 
 ### Biến môi trường cần thiết
@@ -414,7 +416,37 @@ echo $RESEND_API_KEY
 # Logs nên hiển thị: "📧 Using Resend API for email delivery"
 ```
 
-#### Deploy fail
+#### Deploy fail - "Could not find App"
+```bash
+# Lỗi: Could not find App "your-app-name"
+
+# Kiểm tra tài khoản đang dùng
+flyctl auth whoami
+
+# Giải pháp 1: Tạo app mới (app sẽ thuộc về tài khoản của bạn)
+flyctl apps create your-app-name
+
+# Giải pháp 2: Dùng app đã có
+flyctl apps list  # Xem danh sách apps của bạn
+# Sau đó sửa fly.toml dòng 6: app = 'your-existing-app-name'
+
+# Giải pháp 3: Tạo app và tự động cấu hình (Tốt nhất)
+flyctl launch --no-deploy
+```
+
+#### Kiểm tra tài khoản Fly.io
+```bash
+# Xem tài khoản đang đăng nhập
+flyctl auth whoami
+
+# Xem danh sách apps của bạn
+flyctl apps list
+
+# Đăng nhập (nếu chưa)
+flyctl auth login
+```
+
+#### Deploy fail - Khác
 ```bash
 # Xem logs chi tiết
 npm run fly:logs
