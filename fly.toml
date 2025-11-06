@@ -52,6 +52,6 @@ primary_region = 'sin'
     protocol = 'http'
 
 [[vm]]
-  memory = '1gb'
+  memory = '256mb'
   cpu_kind = 'shared'
   cpus = 1

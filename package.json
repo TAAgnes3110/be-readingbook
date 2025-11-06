@@ -29,8 +29,9 @@
     "fly:open": "flyctl open",
     "fly:secrets": "flyctl secrets list",
     "fly:set-secrets": "node set-secrets.js",
-    "fly:stop": "flyctl scale count 0",
+    "fly:stop": "flyctl scale count 0 --yes",
     "fly:start": "flyctl scale count 1",
+    "fly:check": "flyctl status && echo '' && flyctl machines list",
     "upload:all": "node upload-data.js all",
     "upload:categories": "node upload-data.js categories",
     "upload:books": "node upload-data.js books"
