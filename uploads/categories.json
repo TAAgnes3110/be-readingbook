@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "name": "Fiction",
+    "imageUrl": "https://scifi.zone/wp-content/uploads/2024/05/bb795c3255ba706236b9c5ee1b4d8316-e1716196615575.b197b0.webp"
+  },
+  {
+    "id": 2,
+    "name": "Drama",
+    "imageUrl": "https://cdn.prod.website-files.com/60a75d8226f3295ecacf9e33/6295941b08c48344148266a7_June%20Korean%20Highlights.jpg"
+  },
+  {
+    "id": 3,
+    "name": "History",
+    "imageUrl": "https://www.excelsior.edu/wp-content/uploads/2018/08/United-States-History_blog.png"
+  },
+  {
+    "id": 4,
+    "name": "Poetry",
+    "imageUrl": "https://media.newyorker.com/photos/5b968681dbd07a5060baef83/master/w_2560%2Cc_limit/NBA-Poetry-2018.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Romance",
+    "imageUrl": "https://cdn.shopify.com/s/files/1/0268/8847/0580/files/Irresistible_Chemistry_1024x1024.jpg?v=1719531436"
+  },
+  {
+    "id": 6,
+    "name": "Travel",
+    "imageUrl": "https://t4.ftcdn.net/jpg/00/65/48/25/360_F_65482539_C0ZozE5gUjCafz7Xq98WB4dW6LAhqKfs.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Philosophy",
+    "imageUrl": "https://www.invaluable.com/blog/wp-content/uploads/sites/77/2018/12/shutterstock_753294010.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Humor",
+    "imageUrl": "https://smartblogger.com/wp-content/uploads/2221/12/types-of-humor-900.png"
+  },
+  {
+    "id": 9,
+    "name": "Biography",
+    "imageUrl": "https://res.cloudinary.com/bloomsbury-atlas/image/upload/w_360,c_scale,dpr_1.5/jackets/9780313330803.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Health",
+    "imageUrl": "https://static.vecteezy.com/system/resources/previews/002/136/625/non_2x/world-health-day-illustration-concept-with-characters-people-are-exercising-yoga-living-healthy-vector.jpg"
+  },
+  {
+    "id": 11,
+    "name": "Education",
+    "imageUrl": "https://www.euroschoolindia.com/blogs/wp-content/uploads/2023/07/importance-of-education.jpg"
+  },
+  {
+    "id": 12,
+    "name": "Religion",
+    "imageUrl": "https://www.pewresearch.org/wp-content/uploads/2020/03/FT_20.03.10_whoComesToMind_featured.png"
+  }
+]

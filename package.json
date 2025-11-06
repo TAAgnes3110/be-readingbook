@@ -28,7 +28,14 @@
     "fly:logs": "flyctl logs",
     "fly:open": "flyctl open",
     "fly:secrets": "flyctl secrets list",
-    "fly:set-secrets": "node set-secrets.js"
+    "fly:set-secrets": "node set-secrets.js",
+    "fly:stop": "flyctl scale count 0",
+    "fly:start": "flyctl scale count 1",
+    "fly:suspend": "flyctl apps suspend",
+    "fly:resume": "flyctl apps resume",
+    "upload:all": "node upload-data.js all",
+    "upload:categories": "node upload-data.js categories",
+    "upload:books": "node upload-data.js books"
   },
   "dependencies": {
     "@babel/cli": "^7.23.9",
