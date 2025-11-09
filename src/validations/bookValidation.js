@@ -11,6 +11,7 @@ const Joi = require('joi')
  * @param {string} [query.author] - Filter by author
  * @param {string} [query.keyword] - Filter by keyword
  * @param {number} [query.category] - Filter by category ID
+ * @param {number} [query.categoryId] - Filter by category ID (alias of category)
  * @param {string} [query.status='active'] - Filter by status
  * @param {string} [query.sortBy='createdAt'] - Sort field ('title', 'author', 'createdAt', 'updatedAt')
  * @param {string} [query.sortOrder='desc'] - Sort order ('asc', 'desc')
@@ -45,6 +46,11 @@ const getList = {
       'string.base': 'Từ khóa phải là chuỗi'
     }),
     category: Joi.number().integer().positive().messages({
+      'number.base': 'Thể loại phải là số nguyên',
+      'number.integer': 'Thể loại phải là số nguyên',
+      'number.positive': 'Thể loại phải là số dương'
+    }),
+    categoryId: Joi.number().integer().positive().messages({
       'number.base': 'Thể loại phải là số nguyên',
       'number.integer': 'Thể loại phải là số nguyên',
       'number.positive': 'Thể loại phải là số dương'

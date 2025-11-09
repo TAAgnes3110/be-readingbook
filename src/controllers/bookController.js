@@ -8,12 +8,17 @@ const {
 const bookController = {
   /**
    * Lấy danh sách sách (hỗ trợ filter + phân trang)
-   * @param {Object} req - HTTP request (query: page, limit, search/q, title, author, keyword, category, status, sortBy, sortOrder)
+   * @param {Object} req - HTTP request (query: page, limit, search/q, title, author, keyword, category/categoryId, status, sortBy, sortOrder)
    * @param {Object} res - HTTP response
    */
   getList: async (req, res) => {
     try {
-      const result = await getBooksList({ options: req.query })
+      const query = { ...req.query }
+      if (query.categoryId && !query.category) {
+        query.category = query.categoryId
+      }
+
+      const result = await getBooksList({ options: query })
 
       if (result.success) {
         res.status(200).json(result)

@@ -240,7 +240,8 @@ const bookModel = {
    * @param {string} options.title - Tìm theo tiêu đề
    * @param {string} options.author - Tìm theo tác giả
    * @param {string} options.keyword - Tìm theo từ khóa
-   * @param {string} options.category - Lọc theo thể loại
+   * @param {string|number} options.category - Lọc theo thể loại
+   * @param {string|number} options.categoryId - Lọc theo thể loại (alias của category)
    * @param {string} options.status - Lọc theo trạng thái (mặc định: 'active')
    * @param {string} options.sortBy - Sắp xếp theo trường (mặc định: 'createdAt')
    * @param {string} options.sortOrder - Thứ tự sắp xếp 'asc'/'desc' (mặc định: 'desc')
@@ -258,10 +259,14 @@ const bookModel = {
         author = '',
         keyword = '',
         category = '',
+        categoryId = '',
         status = 'active',
         sortBy = 'createdAt',
         sortOrder = 'desc'
       } = options
+
+      // Normalize categoryId to category
+      const normalizedCategory = category || categoryId
 
       let allBooks = await bookModel.getAll()
 
@@ -312,8 +317,8 @@ const bookModel = {
         })
       }
 
-      if (category) {
-        allBooks = allBooks.filter(book => book.category == category)
+      if (normalizedCategory) {
+        allBooks = allBooks.filter(book => book.category == normalizedCategory)
       }
 
       if (status) {

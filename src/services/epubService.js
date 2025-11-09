@@ -83,6 +83,7 @@ const parseEpubFromUrl = async (data) => {
 }
 
 /**
+ * Phân tích file EPUB từ đường dẫn
  * @param {Object} data
  * @param {string} data.filePath
  * @return {Promise<Object>}
@@ -137,6 +138,7 @@ const parseEpubFile = async (data) => {
 }
 
 /**
+ * Lấy metadata của file EPUB từ URL
  * @param {Object} data
  * @param {string} data.url
  * @return {Promise<Object>}
@@ -186,6 +188,7 @@ const getEpubChapters = async (data) => {
 }
 
 /**
+ * Lấy nội dung của chương EPUB từ URL
  * @param {Object} data
  * @param {string} data.url
  * @param {string} data.chapterId
